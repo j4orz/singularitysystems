@@ -1,0 +1,90 @@
+                  ,,              ,,      ,...    ,,             
+                `7MM            `7MM    .d' ""  `7MM             
+                  MM              MM    dM`       MM             
+`7MMpMMMb.   ,M""bMM         ,M""bMM   mMMmm ,M""bMM  `7M'   `MF'
+  MM    MM ,AP    MM       ,AP    MM    MM ,AP    MM    `VA ,V'  
+  MM    MM 8MI    MM mmmmm 8MI    MM    MM 8MI    MM      XMX    
+  MM    MM `Mb    MM       `Mb    MM    MM `Mb    MM    ,V' VA.  
+.JMML  JMML.`Wbmd"MML.      `Wbmd"MML..JMML.`Wbmd"MML..AM.   .MA.
+                                                                 
+Singularity Systems: Zero to Hero
+--------------------------------------------------------------------------------
+Syllabus:
+  1. nd-dfdx <-- HERE
+  2. lego
+  3. brrr
+  4. pt2
+Appendix:
+  A. c2r5
+  B. shapes
+--------------------------------------------------------------------------------
+
+Welcome to the beginning of a whirlwind tour on deep learning frameworks!
+Throughout this journey you will build an interpreter and compiler for neural
+networks line by line, from scratch. By the end of this first chapter, you will
+have a working implementation of an interpreter that provides an abstraction for
+the multidimensional array (like numpy's `ndarray` and pytorch's `tensor`) with
+autodifferentiation capabilities to make it *learn*. This chapter frontloads
+all of the semantics needed for the entire journey, so we will keep the
+implementation simple using the host language's CPU support — in the third
+chapter we will accelerate our computations using SIMD capability by the CPU and
+GPU.
+
+Part 1: multidimensional array
+------------------------------
+Let's start with the multidimensional array and follow pytorch's naming convention
+by calling it tensor (and overloading its usage in physics which has invariants
+that do not hold in statistical learning). Consider the following product type
+for tensor:
+
+prod Tensor {
+    ndim: int
+    shape: int[]
+    stride: int[]
+    storage: float[]
+}
+
+where ndim is an integer, shape as well as stride are lists of integers, and
+finally, storage is list of floats. Defining the tensor this way (rather than
+naively using nested arrays) makes the aliasing of underlying data buffers quite
+natural, since  physical storage can be logically interpreted using shape and
+stride. This is desirable in deep learning since many tensor operations only
+involve modifying the shape and stride, thereby updating the "view" of the tensor.
+Consider example 1 and 2 which illustrate that operations such as reshape and
+transpose fundamentally do not add or remove elements from the tensor — they only
+move data around. TODO: not really data. but logical interpretation.
+
+Example 1:
+
+01 02 03   reshape      01 02
+04 05 06     ==>        03 04
+
+07 08 09                05 06
+10 11 12                07 08
+
+                        09 10
+                        11 12
+
+Example 2:
+
+1 2 3    transpose    1 4 7
+4 5 6      ==>        2 5 8
+7 8 9                 3 6 9
+
+
+TODO: why does numpy-C api only support dimension up to 6?
+
+References:
+[0] https://numpy.org/doc/stable/dev/internals.html
+[1] https://numpy.org/doc/stable/dev/internals.code-explanations.html
+[2] https://numpy.org/doc/stable/reference/arrays.ndarray.html#internal-memory-layout-of-an-ndarray
+[3] http://blog.ezyang.com/2019/05/pytorch-internals/
+[4] https://arxiv.org/pdf/1912.01703
+[5] https://docs.jax.dev/en/latest/autodidax.html
+
+Part 2: autodifferentiation
+---------------------------
+TODO
+.
+.
+.

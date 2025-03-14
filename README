@@ -24,34 +24,41 @@ Singularity Systems: Zero to Hero
 
 Researchers in artificial intelligence talk about research debt[0] with respect
 to model development. The same applies to the infrastructure that underlies these
-deep neural networks. Building deep learning compilers (and chips) have been,
-and *is* currently an open research problem: todays leading deep learning
-framework was released[1] less than a decade ago during my senior year of
-highschool, not to mention the 2.0 release[2] with torch.compile functionality
-being released in 2023.
+deep neural networks. Building deep learning compilers (and chips) is currently
+an open research problem: todays leading deep learning framework was released[1]
+less than a decade ago during my senior year of highschool, not to mention the
+2.0 release[2] with torch.compile functionality being released in 2023.
 
-To provide some more perspective, at the time of writing, there are 37 symposiums
-in the list of NeurIPS proceedings[3], 36 symposiums in the list of Hot Chips
-proceedings[4], but only *6 symposiums* in the list of MLSys proceedings[5]! Many
-toy autograds exist which are the software 2.0 equivalent of calculator
-interpreters capable of evaluating arithmetic. These are excellent in providing
-intuition for backpropagation (calculus on a computational graph), a very
-important abstraction to understand considering how leaky it is (think gradient
-initialization and normalization). However, there are absolutely zero resources
-that dive deeper into cutting your teeth on the advanced capabilities of PyTorch
-such as torch.compile and D(istributed)Tensor. If linux has xv6[6], clang has
-chibicc[7], and llvm has qbe[8], then pytorch is missing its equivalent. The
-next best thing is to peek behind the curtains at the actual PyTorch source which
-is close to impossible with its hundreds of thousands of lines of code.
+At the time of writing, there are 37 symposiums in the list of NeurIPS
+proceedings[3], 36 symposiums in the list of Hot Chips proceedings[4], but only
+6 symposiums in the list of MLSys proceedings[5]. Many toy autograds exist
+which are the software 2.0 equivalent of calculator interpreters capable of
+evaluating arithmetic. These are excellent in providing intuition for
+backpropagation (calculus on a computational graph), a very important abstraction
+to understand considering how leaky it is (think gradient initialization and
+normalization). However, there are absolutely zero resources that dive deeper
+into cutting your teeth on the advanced capabilities of PyTorch such as
+torch.compile and D(istributed)Tensor. If linux has xv6[6], clang has chibicc[7],
+and llvm has qbe[8], then pytorch is missing its equivalent. The next best thing
+is to peek behind the curtains at the actual PyTorch source which is close to
+impossible with its hundreds of thousands of lines of code.
 
 Singularity Systems bridges this gap in the ecosystem for engineers interested
-in systems programming and performance engineering of deep learning. Over the
-course of 10 hours worth of lectures, you will build a deep learning interpreter
-and compiler that maps torch.tensor to WGSL/CUDA line by line, from scratch.
+in the internals of deep learning frameworks. The first section covers the eager
+evaluation of neural networks using both CPU and GPU like PyTorch 1.0.
+Implementing an interpreter before compiler is useful to pin down a unique
+semantics for the matrix calculus that will later be translated to hardware
+instructions via compilation. The first section is also useful to researchers
+by adding a procedural semantics in addition to a declarative one for tensor
+processing and autodifferention.
+
+The second section covers the static compilation of neural networks like
+PyTorch 2.0.
+
 There's also a brief appendix on how traditional compiler techniques and
 infrastructure transfer over to tensor compilers by building a compiler that maps
 C89 to RV32I. By the end of Singularity Systems, you will be better equipped to
-contribute to opensource projects like pytorch(~100kLOC) and tinygrad(~10kLOC).
+contribute to opensource projects like pytorch/jax(~100kLOC) and tinygrad(~10kLOC).
 A good next step is to head on over to the latter's bounties[9].
 
 Prereqs:
@@ -59,11 +66,21 @@ Prereqs:
 - solid systems programming (C || C++ || Rust)
 
 Syllabus:
-  1. dfdx
+  1. nd-dfdx
   2. lego
   3. brrr
   4. pt2
-  A. ctoriscv
+  5. cloud
+  ---
+Appendix:
+  A. nets
+  B. shapes
+  C. riscv
+
+Note: this guide is a terse "course notes" that is a top-down deductive mind-dump
+      and leaves many implementation details ill-specified (like the classic
+      how to drawl an owl). Future updates include more approachable pedagogy
+      via bottom-up inductive video.
 
 [0]: https://distill.pub/2017/research-debt/
 [1]: https://soumith.ch/blog/2023-12-17-pytorch-design-origins.md.html
