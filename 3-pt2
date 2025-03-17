@@ -1,0 +1,108 @@
+            mm            
+            MM            
+`7MMpdMAo.mmMMmm  pd*"*b. 
+  MM   `Wb  MM   (O)   j8 
+  MM    M8  MM       ,;j9 
+  MM   ,AP  MM    ,-='    
+  MMbmmd'   `MbmoAmmmmmmm 
+  MM                      
+.JMML.
+
+Singularity Systems: Zero to Hero
+
+--------------------------------------------------------------------------------
+Syllabus:
+  1. nd-dfdx
+  2. brrr
+  3. pt2 <-- HERE
+  4. cloud
+Appendix:
+  A. c2r5
+  B. shapes
+--------------------------------------------------------------------------------
+
+                programming model        execution model
+                ----------------------------------------
+Tensorflow 1  |  graph                    graph
+PyTorch 1     |  graph                    eager
+Modern ML/DL  |  eager                    graph
+
+modern ML/DL: eager programming. graph execution
+-> graph captured needed for optimizations
+-> optimizations are now needed because post-Pascal (volta, ampere, hopper, blackwell),
+    tensor cores make the other 10% very slow???
+torchcompile
+jax.jit
+tinygrad
+mlx
+                          % flop     %runtime 
+tensor contraction        99.80      61.0
+stat. normalization       0.17       25.5 <-- why are we letting the slow ops run 25% of the time (due to mem bw bottlenecking)?
+element-wise              0.03       13.5 <-- why are we letting the slow ops run 13% of the time (due to mem bw bottlenecking)?
+
+
+optimizations
+- compute: fusion
+- memory: recomputation vs reuse (like register spilling)
+- overhead: cudagraphs, or codegen lower overhead wrapper
+
+why use a tensor compiler over handwritten optimizations if we're all running one workload (AR/NTP transformers) with $XBs.
+what programming model do we use for flash attention? fuse qk = mm, qk_scores = softmax(qk), out = mm (qk_scores, V)
+- pattern match?
+- decided on F.scaled_dot_product_attention()
+-> still frustating. introducing high level instruction isn't flexible
+- eg
+    - sliding window attention
+    - alibi
+    - softcapping
+    - pagedattention
+    - neighborhood attention
+    - alibi
+    - relative positional encoding
+    - jagged sequences
+    - prefixlm
+    - treeattention
+    - transfusion
+    - causal
+    - graphattention
+
+flash_attn_forward(....) <-- kwargs keep growing
+
+one monolithic function in the programming model / api isn't flexible enough
+
+THEREFORE: flexattention API (it's no surprise nvidia uses flexattention api for llm generation)
+-> built on top of torch.compile
+-> from in person, pytorch was the right layer of the stack to build something like flexattention
+-> programming models > implementations
+
+programming models > optimizations
+-> it's not like you can get a group of 5 cracked compiler engineers in a room to write compiler passes so everyone can leverage their optimizations
+-> this is b/c the workloads of neural networks (machine learning/deep learning) are constantly in flux. so you need to 
+    create the right programming model that is flexible enough to express functions that weren't thought of in the beginning.
+-> grothendieck: expressing the problem with the most suitable model
+-> story of ispc pharr's blog: the lead ICPC compiler guy was baffled and kept asking
+"what happens when the CUDA compiler fails to vectorize", not understanding that it's impossible for that to happen,
+since parallelization is *inherent* with the CUDA programming model (ian buck).
+p13n is NOT inherent with the autovectorization programming model.
+
+compilation is hard enough.
+but now we get into compilation intersect distributed.
+next section part 4 - cloud.
+jist: for a given set of paralleism schemes, it's feasible to create an analytical model to determine best parallelism strat.
+-> problem: new parallelism schemes (and concerns) keep on coming.
+the issue of automating paralleism with compilers is that most of the gains does not come from searching within your search sapce,
+but expanding your search space, along a new dimension.
+-> compiler for parellism: AutoFSDP??
+
+
+
+References:
+- https://pytorch.org/assets/pytorch2-2.pdf
+- https://docs.tinygrad.org/developer/developer/
+- https://mlsys.org/Conferences/doc/2018/146.pdf
+
+??
+- numba: https://dl.acm.org/doi/pdf/10.1145/2833157.2833162
+- futhark: https://futhark-lang.org/publications/pldi17.pdf
+- tvm: https://arxiv.org/pdf/1802.04799
+- triton
