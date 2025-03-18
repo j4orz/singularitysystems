@@ -22,6 +22,16 @@ P"Ybmmd"   ,V     M9mmmP'   `Mbmo`Mbmmd'.JMML  JMML  JMML.M9mmmP'
 
 Singularity Systems: Zero to Hero
 
+TODO: python is "growable" language (xkcd comic)
+training machine learning models is faster in pytorch than c++/rust.
+pytorch 2.0 is pure python, CUTLASS 4.0 is pure python
+-> community supported ports? i'll start with rust.
+
+golden age: massive infrastructure buildout
+-> return of the Mel programmer because abstractions are in flux.
+-> golden age: compiler engineer. Database engineer. Crypto engineer. Reduce your software 1.0 problem to software 2.0
+-> you can’t vibe code you way through classic CS problems.
+
 Researchers in artificial intelligence talk about research debt[0] with respect
 to model development. The same applies to the infrastructure that underlies these
 deep neural networks. Building deep learning compilers (and chips) is currently
@@ -49,15 +59,19 @@ evaluation of neural networks using both CPU and GPU like PyTorch 1.0.
 Implementing an interpreter before compiler is useful to pin down a unique
 semantics for the matrix calculus that will later be translated to hardware
 instructions via compilation. The first section is also useful to researchers
-by adding a procedural semantics in addition to a declarative one for tensor
-processing and autodifferention.
+and/or neural network script kiddies looking to strengthen their understanding
+of tensor processing and autodifferention.
 
 The second section covers the static compilation of neural networks like
 PyTorch 2.0.
 
+TODO: transfer stuff from pt2 here.
+
 There's also a brief appendix on how traditional compiler techniques and
 infrastructure transfer over to tensor compilers by building a compiler that maps
-C89 to RV32I. By the end of Singularity Systems, you will be better equipped to
+C89 to RV32I. TODO: mapping current problems in ml systems to traditional cs problems. mark saroufim.
+
+By the end of Singularity Systems, you will be better equipped to
 contribute to opensource projects like pytorch/jax(~100kLOC) and tinygrad(~10kLOC).
 A good next step is to head on over to the latter's bounties[9].
 
@@ -66,15 +80,14 @@ Prereqs:
 - solid systems programming (C || C++ || Rust)
 
 Syllabus:
-  1. nd-dfdx
+  1. dfdx(nd)
   2. brrr
   3. pt2
   4. cloud
   ---
 Appendix:
   A. nets
-  B. shapes
-  C. riscv
+  B. ctorisc
 
 Note: this guide is a terse "course notes" that is a top-down deductive mind-dump
       and leaves many implementation details ill-specified (like the classic

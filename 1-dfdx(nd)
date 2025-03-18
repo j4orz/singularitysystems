@@ -1,0 +1,234 @@
+       ,,      ,...    ,,                 ..                ,,..     
+     `7MM    .d' ""  `7MM               pd'               `7MM `bq   
+       MM    dM`       MM              6P                   MM   YA  
+  ,M""bMM   mMMmm ,M""bMM  `7M'   `MF'6M' `7MMpMMMb.   ,M""bMM   `Mb 
+,AP    MM    MM ,AP    MM    `VA ,V'  MN    MM    MM ,AP    MM    8M 
+8MI    MM    MM 8MI    MM      XMX    MN    MM    MM 8MI    MM    8M 
+`Mb    MM    MM `Mb    MM    ,V' VA.  YM.   MM    MM `Mb    MM   ,M9 
+ `Wbmd"MML..JMML.`Wbmd"MML..AM.   .MA. Mb .JMML  JMML.`Wbmd"MML. dM  
+                                        Yq.                    .pY   
+                                          ``                  ''     
+                                                                 
+Singularity Systems: Zero to Hero
+--------------------------------------------------------------------------------
+Syllabus:
+  1. dfdx(nd) <-- HERE
+    Part 1: multidimensional array — model.forward()
+    Part 2: backpropagation — model.backward()
+    Part 3: optimization — opt.step()
+  2. brrr
+  3. pt2
+  4. cloud
+Appendix:
+  A. c2r5
+  B. shapes
+--------------------------------------------------------------------------------
+
+Welcome to the beginning of a whirlwind tour on deep learning frameworks!
+Throughout this journey you will build an interpreter and compiler for neural
+networks line by line, from scratch. By the end of the first chapter, you will
+have a working implementation of an interpreter that provides an abstraction for
+the multidimensional array (like numpy's `ndarray` and pytorch's `tensor`) with
+autodifferentiation capabilities to make it *learn*. This interpreter is capable
+of training and inferencing the simple FFN (also refferred to as MLP) following
+(Bengio et al. 2003), covered in Neural Networks: Zero to Hero part 2. We will
+keep the implementation simple using the host language's CPU support — in the
+third chapter we will accelerate our computations using SIMD capability by the
+CPU and GPU.
+
+------------------------------------------------
+Part 1: multidimensional array — model.forward()
+------------------------------------------------
+Let's start with the multidimensional array and follow pytorch's naming convention
+by calling it tensor (and overloading its usage in physics which has invariants
+that do not hold in statistical learning). Consider the following product type
+for tensor:
+
+prod Tensor {
+    ndim: int
+    shape: int[]
+    stride: int[]
+    storage: float[]
+}
+
+where ndim is an integer, shape as well as stride are lists of integers, and
+finally, storage is list of floats. Defining the tensor this way (rather than
+naively using nested arrays) makes the aliasing of underlying data buffers quite
+natural, since  physical storage can be logically interpreted using shape and
+stride. This is desirable in deep learning since many tensor operations only
+involve modifying the shape and stride, thereby updating the "view" of the tensor.
+Consider example 1 and 2 which illustrate that operations such as reshape and
+transpose fundamentally do not add or remove elements from the tensor — they only
+move data around. TODO: not really data. but logical interpretation.
+
+Example 1:
+
+01 02 03   reshape      01 02
+04 05 06     ==>        03 04
+
+07 08 09                05 06
+10 11 12                07 08
+
+                        09 10
+                        11 12
+
+Example 2:
+
+1 2 3    transpose    1 4 7
+4 5 6      ==>        2 5 8
+7 8 9                 3 6 9
+
+Ops
+- uops: neg, exp, log, tanh
+- binops: add, sub, mul, div
+- reduceops: sum, argmax, softmax, max, min, mean, var, std, logsumexp
+- processingops: matmul, conv2d, pool2d, maxpool2d, avgpool2d,
+- nnops?: linear, sequential, layernorm, batchnorm, crossentropyloss, nllloss
+
+TODO
+- map, zip, reduce.
+- broadcasting, indexing, views
+
+TODO: why does numpy-C api only support dimension up to 6?
+
+----------------------------------------------
+Part 2: autodifferentiation — model.backward()
+----------------------------------------------
+  2a — Derivative: approximation via local linearization
+  2b — Derivative rules: TODO
+  2c — Automatic differentiation: calculus on computational graph
+
+We have built an abstraction for the multidimensional array, which makes the
+current framework more or less on par with the capabilities of numpy. But in
+order to *train* neural networks we need to add support for autodifferentiation,
+an algorithmic technique for taking derivatives of mathematical expressions,
+as opposed to a symbolic approach (such as Wolfram Alpha) or a numeric one (like
+X: TODO). That is, we will follow the footsteps of Wiltschko's torch-autograd
+(influencing PyTorch) and Johnson/Maclaurin's HIPS/autograd (influencing JAX).
+
+2a — Derivative: approximation via local linearization
+------------------------------------------------------
+The first place to start is to clarify and disambiguate the notion of a derivative
+in order to generalize the denotation we use for higher dimensions to hold a more
+precise semantics. By redefining the derivative as a linear operator L defined on
+some vector space V that you apply to a change in input to obtain a change in
+output (sometimes referred to as the Frechét derivative), it becomes very clear
+why the gradient and jacobian are defined the way they are. Clarity that is not
+achievable when defining them by fiat. (i.e. "let's *just* rearrange the partials
+in a vector/matrix").
+
+Let's begin by recalling that for some f: ℝ -> ℝ the difference of a function at
+a point x and x+δx is f(x+δx)-f(x) = δf which can be approximated by f'(x)δx plus
+some error terms. That is,
+
+f(x+δx)-f(x) = δf
+             ≈ f'(x)δx + o(δx)
+
+and if we take the difference to be an infinitesimal then it becomes a differential
+
+f(x+dx)-f(x) = df
+             = f'(x)dx
+
+and more generally we define the derivative *as* the linear operator L on vector
+space V which you apply to a change in input in order to obtain the change in
+output. That is, Δout = (lin.op)Δin. which generalizes to higher dimensions.
+While defining f'x ≜ df/dx is legal when f: ℝ -> ℝ, it's usually not clear what
+df/dx means in higher dimensions, since /: ℝ^d -> ℝ^d is not always defined.
+
+Consider df = f'(x)dx when f: ℝ^d -> ℝ. Then, given that dx ∈ ℝ and df ∈ ℝ^d,
+the linear operator f'(x) *must* be the dot product with some vector, (or
+multiplication with the vector transposed). Let's call this vector the "gradient"
+of f and as you can now probably tell, this is *why* the gradient is defined the
+way it is.
+
+Moving on, if we consider df = f'(x)dx where f: ℝ^n -> ℝ^m, then given that
+dx ∈ ℝ^n and df ∈ ℝ^m, the linear operator f'(x) *must* be expressable as a matrix
+multiplication with some matrix A ∈ ℝ^(mxn) since any linear transformation is
+a combination of scaling, shearing, rotation or reflection. TODO: intuition/explanation
+on why matrices are geometric maps. Let's call this matrix the "jacobian".
+
+Stepping back, defining the derivative this way generalizes rise over run,
+a vector of partials, and a matrix of partials into the same notion: they are
+the linear operators you apply to a change in input in order to obtain the change
+in output, and are defined the way they are out of necessity, rather than fiat.
+Let's move on to the rules of taking derivatives which gives us the capability
+to evaluate the derivatives of compound expressions.
+
+
+
+2b — Derivative rules: TODO
+-------------------------------------------------
+- sum rule
+- quotient rule
+- chain rule
+
+
+
+
+
+With the derivative and its derived rules cleared up, let's move on to automatic
+differentiation, the computational technique responsible for evaluating the derivative.
+
+
+
+
+
+2c — Automatic differentiation: calculus on computational graph
+---------------------------------------------------------------
+Approach 1: manual
+Approach 2: symbolic
+Approach 3: numeric
+Approach 4: algorithmic (forward)
+Approach 5: algorithmic (reverse) <-- backprop
+
+
+
+
+---------------------------------
+Part 3: optimization — opt.step()
+---------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-----------------------
+Citation and References
+-----------------------
+Zhang, Jeff. (Mar 2025). Matrix Calculus for Deep Learning Frameworks.
+Singularity Systems. https://github.com/j4orz/singularitysystems/blob/master/1-nd-dfdx.
+```
+@article{zhang2025nddfdx,
+  author  = "Zhang, Jeff",
+  title   = "Matrix Calculus for Deep Learning Frameworks",
+  year    = "2025",
+  month   = "Mar",
+  url     = "https://github.com/j4orz/singularitysystems/blob/master/1-nd-dfdx"
+}
+```
+
+References:
+[0]: https://numpy.org/doc/stable/dev/internals.html
+[1]: https://numpy.org/doc/stable/dev/internals.code-explanations.html
+[2]: https://numpy.org/doc/stable/reference/arrays.ndarray.html#internal-memory-layout-of-an-ndarray
+[3]: https://explained.ai/matrix-calculus/
+[4]: https://cs231n.github.io/optimization-2/
+[5]: https://colah.github.io/posts/2015-08-Backprop/
+[6]: http://neuralnetworksanddeeplearning.com/chap2.html
+[7]: https://gdalle.github.io/AutodiffTutorial/
+
+[X]: http://blog.ezyang.com/2019/05/pytorch-internals/
+[Y]: https://arxiv.org/pdf/1912.01703
+[Z]: https://docs.jax.dev/en/latest/autodidax.html
