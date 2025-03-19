@@ -12,14 +12,18 @@ Singularity Systems: Zero to Hero
 
 --------------------------------------------------------------------------------
 Syllabus:
+  0. au197
   1. dfdx(nd)
   2. brrr
   3. pt2 <-- HERE
   4. cloud
 Appendix:
   A. c2r5
-  B. shapes
 --------------------------------------------------------------------------------
+
+1. torch.compile
+2. flash attention: kernel optimization
+3. flex attention: kernel authoring
 
                 programming model        execution model
                 ----------------------------------------

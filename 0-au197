@@ -17,41 +17,67 @@ Syllabus:
   4. cloud
 Appendix:
   A. c2r5
-  B. shapes
 --------------------------------------------------------------------------------
+
+---------------------------------------------------------
+Part 1: Golden Age — Software 2.0 Infrastructure Buildout
+---------------------------------------------------------
+Welcome to the second golden age of computing. The first one started in the '40s
+when humanity discovered how to mechanize reprogrammable instructions (algorithms)
+via deterministic languages encoded with 1s and 0s. The second one started at the
+beginning of this decade when we discovered how to capture natural language via
+stochastic distributions (models) with automatic differentiation and gradient descent.
+
+- bitter lesson/scaling laws: we found AR/NTP via attention operator from transformer
+- $Bs. datacenter training runs.
+
+- all the fundamental assumptions in the design of existing computing infrastructure
+  need to be re-evaluated
+- return of the mel: (kernel authoring, avoiding optimizations)
+- instead of calling them l33t we call them cracked. same thing.
+- https://users.cs.utah.edu/~elb/folklore/mel.html
+-> tensor languages are not there yet
+
+what's old is new.
+
+golden age: massive infrastructure buildout
+
+--------------------------------------------
+Part 2: Tensor Compilers
+--------------------------------------------
+
+1.0 problem to software 2.0
+-> golden age ==> return of the Mel programmer because abstractions are in flux.
+-> you can’t vibe code your way through classic CS problems.
+
+
+curve: pytorch -> triton -> thunderkittens? -> cutlass -> cuda -> ptx -> sass
+
+
+-> we don't have good tensor languages yet.
+-> no one disagrees that ergonomics don't matter.
+-> the question is what level of expression is best for end users.
+mapping current problems to existing ones
+appendix A c2r5 is a c to risc 5 compiler.
+
 
 TODO: python is "growable" language (xkcd comic)
 training machine learning models is faster in pytorch than c++/rust.
 pytorch 2.0 is pure python, CUTLASS 4.0 is pure python
 -> community supported ports? i'll start with rust.
 
-golden age: massive infrastructure buildout
--> return of the Mel programmer because abstractions are in flux.
--> golden age: compiler engineer. Database engineer. Crypto engineer. Reduce your software 1.0 problem to software 2.0
--> you can’t vibe code you way through classic CS problems.
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+-----------------------------------------------------------------------------------
+Part 3: Singularity Systems — Zero to Hero (The Hacker's Guide to Tensor Compilers)
+-----------------------------------------------------------------------------------
 
 Researchers in artificial intelligence talk about research debt[0] with respect
-to model development. The same applies to the infrastructure that underlies these
-deep neural networks. Building deep learning compilers (and chips) is currently
-an open research problem: todays leading deep learning framework was released[1]
-less than a decade ago during my senior year of highschool, not to mention the
-2.0 release[2] with torch.compile functionality being released in 2023.
+to model development. Well, we also see this pedagogical gap for the underlying
+infrastructure that powers modern-day models. That is, building deep learning
+compilers (and chips) is currently an open research problem: todays leading deep
+learning framework was released[1] less than a decade ago during my senior year
+of highschool, not to mention the 2.0 release[2] with torch.compile functionality
+being released in 2023.
 
 At the time of writing, there are 37 symposiums in the list of NeurIPS
 proceedings[3], 36 symposiums in the list of Hot Chips proceedings[4], but only
@@ -73,6 +99,9 @@ PyTorch 2.0.
 There's also a brief appendix on how traditional compiler techniques and
 infrastructure transfer over to tensor compilers by building a compiler that maps
 C89 to RV32I. TODO: mapping current problems in ml systems to traditional cs problems.
+
+
+- software2.0: https://karpathy.medium.com/software-2-0-a64152b37c35
 
 
 [0]: https://distill.pub/2017/research-debt/

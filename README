@@ -2,7 +2,7 @@
  .M"""bgd  db                                   `7MM                      db   mm              
 ,MI    "Y                                         MM                           MM              
 `MMb.    `7MM  `7MMpMMMb.  .P"Ybmmm `7MM  `7MM    MM   ,6"Yb.  `7Mb,od8 `7MM mmMMmm `7M'   `MF'
-  `YMMNq.  MM    MM    MM :MI  I8     MM    MM    MM  8)   MM    MM' "'   MM   MM     VA   ,V  
+  `YMMNq.  MM    MM    MM :MI  I8     MM    MM    MM  8)   MM    MM ' "'   MM   MM     VA   ,V  
 .     `MM  MM    MM    MM  WmmmP"     MM    MM    MM   ,pm9MM    MM       MM   MM      VA ,V   
 Mb     dM  MM    MM    MM 8M          MM    MM    MM  8M   MM    MM       MM   MM       VVV    
 P"Ybmmd" .JMML..JMML  JMML.YMMMMMb    `Mbod"YML..JMML.`Moo9^Yo..JMML.   .JMML. `Mbmo    ,V     
@@ -23,16 +23,28 @@ P"Ybmmd"   ,V     M9mmmP'   `Mbmo`Mbmmd'.JMML  JMML  JMML.M9mmmP'
 Singularity Systems: Zero to Hero (The Hacker's Guide to Tensor Compilers)
 (by j4orz)
 
+TODO:
+- 2-brrr (use llm.c)
+- 3pt (torch.compile, flex attention, horace's stuff. circle back to c2r5 compiler)
+
 ------------------
 Course Description
 ------------------
+Singularity Systems: Zero to Hero follows up from Neural Networks: Zero to Hero.
+We take micograd: backpropagation intuition and turn it into picograd, a deep
+learning compiler.
+
 Singularity Systems bridges the missing gap in the ecosystem for low level system
 programmers and performance engineers interested in the internals of deep learning
 frameworks. The course provides the software 2.0 equivalent of SICP (interpreters)
-and the dragon book (compilers), where you will build an interpreter along the
-lines of PyTorch 1.0 and a compiler along the lines of PyTorch 2.0, line by line
-from scratch. By the end of Singularity Systems, you will be better equipped to
-contribute towards opensource projects such as pytorch and jax, both ~100kLOC.
+and dragon book (compilers), where you will build an PyTorch1-like-interpreter
+and a PyTorch2-like-compiler that is *llama-complete*, line by line from scratch.
+By the end of Singularity Systems, you will be better equipped to contribute
+towards opensource projects such as PyTorch and Jax, both ~100kLOC. The appendix
+also includes a traditional software 1.0 compiler mapping C to RISCV that is
+*quake-complete*.
+
+
 
 Prereqs
 -------
@@ -51,8 +63,7 @@ Syllabus
   3. pt2
   4. cloud
   ---Appendix
-  A. nets
-  B. ctorisc
+  A. c2r5
 
 Citation
 --------

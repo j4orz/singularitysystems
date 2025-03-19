@@ -12,6 +12,7 @@
 Singularity Systems: Zero to Hero
 --------------------------------------------------------------------------------
 Syllabus:
+  0. au197
   1. dfdx(nd) <-- HERE
     Part 1: multidimensional array — model.forward()
     Part 2: backpropagation — model.backward()
@@ -21,20 +22,19 @@ Syllabus:
   4. cloud
 Appendix:
   A. c2r5
-  B. shapes
 --------------------------------------------------------------------------------
 
-Welcome to the beginning of a whirlwind tour on deep learning frameworks!
-Throughout this journey you will build an interpreter and compiler for neural
-networks line by line, from scratch. By the end of the first chapter, you will
-have a working implementation of an interpreter that provides an abstraction for
-the multidimensional array (like numpy's `ndarray` and pytorch's `tensor`) with
-autodifferentiation capabilities to make it *learn*. This interpreter is capable
-of training and inferencing the simple FFN (also refferred to as MLP) following
-(Bengio et al. 2003), covered in Neural Networks: Zero to Hero part 2. We will
-keep the implementation simple using the host language's CPU support — in the
-third chapter we will accelerate our computations using SIMD capability by the
-CPU and GPU.
+Welcome to the beginning of a whirlwind tour within the world of deep learning
+frameworks! Throughout this journey you will build an interpreter and compiler
+for neural networks line by line, from scratch. By the end of the first chapter,
+you will have a working implementation of an interpreter that provides an
+abstraction for the multidimensional array (like numpy's `ndarray` and pytorch's
+`tensor`) with autodifferentiation capabilities to make it *learn*. This
+interpreter is capable of training and inferencing the simple FFN (also refferred
+to as MLP) following (Bengio et al. 2003), covered in Neural Networks: Zero to
+Hero part 2. We will keep the implementation simple using the host language's
+CPU support — in the third chapter we will accelerate our computations using SIMD
+capability by the CPU and GPU.
 
 ------------------------------------------------
 Part 1: multidimensional array — model.forward()
@@ -95,8 +95,7 @@ TODO: why does numpy-C api only support dimension up to 6?
 Part 2: autodifferentiation — model.backward()
 ----------------------------------------------
   2a — Derivative: approximation via local linearization
-  2b — Derivative rules: TODO
-  2c — Automatic differentiation: calculus on computational graph
+  2b — Automatic differentiation: calculus on computational graph
 
 We have built an abstraction for the multidimensional array, which makes the
 current framework more or less on par with the capabilities of numpy. But in
@@ -122,7 +121,8 @@ a point x and x+δx is f(x+δx)-f(x) = δf which can be approximated by f'(x)δx
 some error terms. That is,
 
 f(x+δx)-f(x) = δf
-             ≈ f'(x)δx + o(δx)
+             = f'(x)δx + o(δx)
+             ≈ f'(x)δx
 
 and if we take the difference to be an infinitesimal then it becomes a differential
 
@@ -131,15 +131,15 @@ f(x+dx)-f(x) = df
 
 and more generally we define the derivative *as* the linear operator L on vector
 space V which you apply to a change in input in order to obtain the change in
-output. That is, Δout = (lin.op)Δin. which generalizes to higher dimensions.
+output. That is, Δout = (lin.op)[Δin]. which generalizes to higher dimensions.
 While defining f'x ≜ df/dx is legal when f: ℝ -> ℝ, it's usually not clear what
-df/dx means in higher dimensions, since /: ℝ^d -> ℝ^d is not always defined.
+df/dx means in higher dimensions, since /: ℝ^n, R^m -> ? is not defined.
 
 Consider df = f'(x)dx when f: ℝ^d -> ℝ. Then, given that dx ∈ ℝ and df ∈ ℝ^d,
-the linear operator f'(x) *must* be the dot product with some vector, (or
-multiplication with the vector transposed). Let's call this vector the "gradient"
-of f and as you can now probably tell, this is *why* the gradient is defined the
-way it is.
+the linear operator f'(x) *must* be the dot product with some column vector,
+(multiplication with the column vector transposed). Let's call this column vector
+the "gradient" of f and as you can now probably tell, this is *why* the gradient
+is defined the way it is.
 
 Moving on, if we consider df = f'(x)dx where f: ℝ^n -> ℝ^m, then given that
 dx ∈ ℝ^n and df ∈ ℝ^m, the linear operator f'(x) *must* be expressable as a matrix
@@ -147,38 +147,50 @@ multiplication with some matrix A ∈ ℝ^(mxn) since any linear transformation 
 a combination of scaling, shearing, rotation or reflection. TODO: intuition/explanation
 on why matrices are geometric maps. Let's call this matrix the "jacobian".
 
-Stepping back, defining the derivative this way generalizes rise over run,
-a vector of partials, and a matrix of partials into the same notion: they are
-the linear operators you apply to a change in input in order to obtain the change
-in output, and are defined the way they are out of necessity, rather than fiat.
-Let's move on to the rules of taking derivatives which gives us the capability
-to evaluate the derivatives of compound expressions.
-
-
-
-2b — Derivative rules: TODO
--------------------------------------------------
+few derivations of the rules
 - sum rule
-- quotient rule
+- product/quotient rule
 - chain rule
+-> derivations are trivial when you plug in the definitions. (we are assuming the definition is correct.) drops dgdh's.
+
+    f(x) := cos(x^2)
+    sinx first, 2x second is reverse mode (inputs -> outputs)
+    2x first, sinx last is forward mode (outputs -> inputs)
 
 
+Stepping back, defining the derivative this way generalizes the rise over run with
+scalars, the gradient with vectors, and the jacobian with matrices into the same
+notion: they are the linear operators defined on vector spaces that you apply to
+a change in input in order to obtain the change in output, and are defined the
+way they are out of necessity, rather than by fiat. This also means that this
+definition extends to any vector space where a linear operator is defined, for
+instance, the space of matrices (vectorization of matrices), and the space of
+functions (calculus of variations).
+
+let's move on to automatic differentiation, the computational technique responsible
+for evaluating the derivative.
 
 
-
-With the derivative and its derived rules cleared up, let's move on to automatic
-differentiation, the computational technique responsible for evaluating the derivative.
-
-
-
-
-
-2c — Automatic differentiation: calculus on computational graph
+2b — Automatic differentiation: calculus on computational graph
 ---------------------------------------------------------------
 Approach 1: manual
+- e.g closed form derivative of logistic regression
+- problem 1: way to labor intensive for deep neural networks,
+    especially given regime of bitter lesson scaling laws large language models
+
 Approach 2: symbolic
+- problem 2: expression swell? as computational graph is flattened??
+
 Approach 3: numeric
+
+
 Approach 4: algorithmic (forward)
+
+ΣΠw
+sum of the product "just the chain rule on a graph"
+
+
+
 Approach 5: algorithmic (reverse) <-- backprop
 
 
@@ -201,23 +213,6 @@ Part 3: optimization — opt.step()
 
 
 
-
-
-
------------------------
-Citation and References
------------------------
-Zhang, Jeff. (Mar 2025). Matrix Calculus for Deep Learning Frameworks.
-Singularity Systems. https://github.com/j4orz/singularitysystems/blob/master/1-nd-dfdx.
-```
-@article{zhang2025nddfdx,
-  author  = "Zhang, Jeff",
-  title   = "Matrix Calculus for Deep Learning Frameworks",
-  year    = "2025",
-  month   = "Mar",
-  url     = "https://github.com/j4orz/singularitysystems/blob/master/1-nd-dfdx"
-}
-```
 
 References:
 [0]: https://numpy.org/doc/stable/dev/internals.html
