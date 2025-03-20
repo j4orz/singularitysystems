@@ -14,6 +14,7 @@ Singularity Systems: Zero to Hero
 Syllabus:
   0. au197
   1. dfdx(nd) <-- HERE
+    Part 0: non-linear parametric models
     Part 1: multidimensional array — model.forward()
     Part 2: backpropagation — model.backward()
     Part 3: optimization — opt.step()
@@ -36,6 +37,34 @@ to as MLP) following (Bengio et al. 2003), covered in Neural Networks: Zero to
 Hero part 2. We will keep the implementation simple using the host language's
 CPU support — in the third chapter we will accelerate our computations using SIMD
 capability by the CPU and GPU.
+
+------------------------------------
+Part 0: non-linear parametric models
+------------------------------------
+Before jumping into the implementation of the multidimensional array abstraction
+and autodifferentiation capabilitty, let's review the specification of neural
+networks with math.
+
+Recall that neural networks are the family of functions that are non-linear
+and parametric. The non-linearities that act as feature extractors differentiate
+this class from the family of linear functions such as linear and logistic
+regression, and the parametric weights and biases differentiate the class from
+other non-linear functions such as gaussian processes and kernel methods.
+
+Favoring the mathematical specification of neural networks over the biological
+inspiration, neural networks, reductively put, are a lot of logistic regressions
+(weighted sums with sigmoids) stacked together. Recall that the logistic
+regression model for binary classification recovers the bernouilli distribution
+p(Y=c|X=x;θ)~ Ber(p) by assuming p := f(x;θ) where
+
+    p(Y=1|X=x) := σ(θᵀx)
+==> p(Y=0|X=x) = 1 - σ(θᵀx) [by total law of prob]
+
+and in continuous form
+ p(Y=c|X=x) = p^c(1-p)^(1-c)
+            = σ(θᵀx)^c [1- σ(θᵀx)]^(1-c)
+
+
 
 ------------------------------------------------
 Part 1: multidimensional array — model.forward()
@@ -174,29 +203,68 @@ for evaluating the derivative.
 
 2b — Automatic differentiation: calculus on computational graph
 ---------------------------------------------------------------
+With derivatives cleared up, let's now take the derivative of models' loss
+functions to provide signal in approximating the function of best fit with respect
+to our training data. The family of functions we now train are non-linear parametric
+functions which we call "neural networks", which effectively learn an end-to-end representation with non-linear feature extractors. This is done by recursively
+composing the non-linear functions with the aim of "lifting" the representation
+of the data into more complex "motifs". A loose analogy is to conceptualize a
+neural network with multiple compositions (layers) as a function which parses the representation of the data.
+
+
+The same way we moved away from indices while talking about derivatives of
+R^n -> R (gradient) and R^n -> R^n (jacobian), we will do the same with neural networks.
+
+h1
+h2
+.
+.
+.
+hn
+
+f(x) := hn composed hN-1 ... composed h1 composed x
+
+
+
+Network design started out with manual feature engineering of $\phi: \mathbb{R}^{d_i} \to \mathbb{R}^{d_{i+1}}$, and evolved into deep learning: the construction of networks with  end-to-end representation learning of all feature extractors $\phi$.
+
+Recall that neural networks
 
 Approach 1: manual
-
-
+------------------
 
 - e.g closed form derivative of logistic regression
 - problem 1: way to labor intensive for deep neural networks,
     especially given regime of bitter lesson scaling laws large language models
 
 Approach 2: symbolic
+--------------------
 - problem 2: expression swell? as computational graph is flattened??
 
 Approach 3: numeric
+-------------------
 
 
-Approach 4: algorithmic (forward)
+
+
+Approach 4: algorithmic
+-----------------------
+TODO: jump from indices -> matrices
 
 ΣΠw
-sum of the product "just the chain rule on a graph"
+p1*p1*p1*p1 + p2*p2*p2*p2 + ... pn*pn*pn*pn
+sum over all possible products for the output in the graph
+
+since computational graphs for neural networks look like many inputs to single output (loss),
+then reverse mode is more efficient.
+
+if we needed to evaluated one input for many outputs, forward mode is more efficient.
 
 
 
-Approach 5: algorithmic (reverse) <-- backprop
+Forward Mode.
+Reverse Mode (Backpropagation).
+
 
 
 
