@@ -14,7 +14,7 @@ Singularity Systems: Zero to Hero
 Syllabus:
   0. au197
   1. dfdx(nd) <-- HERE
-    Part 0: non-linear parametric models
+    Part 0: non-linear parametric models — nn.Linear(), nn.ReLU
     Part 1: multidimensional array — model.forward()
     Part 2: backpropagation — model.backward()
     Part 3: optimization — opt.step()
@@ -38,12 +38,12 @@ Hero part 2. We will keep the implementation simple using the host language's
 CPU support — in the third chapter we will accelerate our computations using SIMD
 capability by the CPU and GPU.
 
-------------------------------------
-Part 0: non-linear parametric models
-------------------------------------
-Before jumping into the implementation of the multidimensional array abstraction
-and autodifferentiation capabilitty, let's review the specification of neural
-networks with math.
+---------------------------------------------------------
+Part 0: non-linear parametric models — nn.Linear, nn.ReLU
+---------------------------------------------------------
+Before jumping into the implementation of our deep learning framework's
+multidimensional array with autodifferentiation capability, let's review the
+mathematical specification of neural networks.
 
 Recall that neural networks are the family of functions that are non-linear
 and parametric. The non-linearities that act as feature extractors differentiate
@@ -51,18 +51,52 @@ this class from the family of linear functions such as linear and logistic
 regression, and the parametric weights and biases differentiate the class from
 other non-linear functions such as gaussian processes and kernel methods.
 
-Favoring the mathematical specification of neural networks over the biological
-inspiration, neural networks, reductively put, are a lot of logistic regressions
-(weighted sums with sigmoids) stacked together. Recall that the logistic
-regression model for binary classification recovers the bernouilli distribution
-p(Y=c|X=x;θ)~ Ber(p) by assuming p := f(x;θ) where
+Favoring the mathematical specification over the biological inspiration, neural
+networks, reductively put, are a lot of logistic regressions (weighted sums with
+sigmoids) stacked together. Recall that the logistic regression model for binary
+classification recovers the bernouilli distribution
+    P(Y=c|X=x;θ) ~ Ber(p), c={0,1} by assuming
+    p:= f(x;θ), f: ℝ^d -> [0,1]
+    P(Y=1|X=x;θ) := σ(θᵀx)
+==> P(Y=0|X=x;θ) = 1 - σ(θᵀx) [by total law of prob]
 
-    p(Y=1|X=x) := σ(θᵀx)
-==> p(Y=0|X=x) = 1 - σ(θᵀx) [by total law of prob]
+and in continuous form:
+P(Y=c|X=x) = p^c(1-p)^(1-c)
+           = σ(θᵀx)^c [1- σ(θᵀx)]^(1-c)
 
-and in continuous form
- p(Y=c|X=x) = p^c(1-p)^(1-c)
-            = σ(θᵀx)^c [1- σ(θᵀx)]^(1-c)
+We can also extend this model to multi-class classification (producing a joint
+probability distribution) by generalizing logistic regression to multinomial
+logistic regression by replacing σ(z) with softmax(z):
+    σ: ℝ -> [0,1], σ(z) := [1+exp(-x)]^-1
+    softmax: ℝ^k -> [0,1]^k, softmax(z_i) := exp(z_i) / Σ exp(z_j)
+                                                        (j=1 to k)
+
+where z is referred to as the "logits", and recovers the multinomial distribution
+    P(Y=y|X=x;θ) ~ X(?), c={0,1,...,k} by assuming
+    p:= f(x;θ), f: ℝ^d -> [0,1]^k
+    P(Y=y_i|X=x) := exp(θ_iᵀx + b_i) / Σ exp(θ_jᵀx + b_j) [for all i from 1 to k]
+                                       (j=1 to k)
+==> P(Y=y|X=x) = softmax(θx+b), where θ ∈ ℝ^{kxd}, b ∈ R^k
+
+Finally, we can extend the multinomial logistic regression by introducing many
+intermediary steps of representation learning before producing the final
+probability distribution. This effectively lifts the complexity of the motif,
+finding a more accurate basis to project the input vectors into, before applying
+the final softmax:
+    f:  ℝ^d -> [0,1]^k
+    f(x;θ) := W_L ◦ (φ ◦ W_{L-1}) ◦ ... ◦ (φ ◦ W_1) ◦ x, where θ={w,b}
+
+and each pair of linearity W and non-linearity φ is a "hidden layer" so
+    h^(1) := φ(W^{1}x+b_1)
+    h^(2) := φ(W^{2}x+b_2)
+    .
+    .
+    .
+    h^(L) := φ(W^{L}x+b_L)
+
+TODO
+- bias is the first weight w times x_1 = 1.
+- note non-linearities are functions of the form φ: ℝ -> ℝ (they don't produce probability distributions).
 
 
 
@@ -203,15 +237,6 @@ for evaluating the derivative.
 
 2b — Automatic differentiation: calculus on computational graph
 ---------------------------------------------------------------
-With derivatives cleared up, let's now take the derivative of models' loss
-functions to provide signal in approximating the function of best fit with respect
-to our training data. The family of functions we now train are non-linear parametric
-functions which we call "neural networks", which effectively learn an end-to-end representation with non-linear feature extractors. This is done by recursively
-composing the non-linear functions with the aim of "lifting" the representation
-of the data into more complex "motifs". A loose analogy is to conceptualize a
-neural network with multiple compositions (layers) as a function which parses the representation of the data.
-
-
 The same way we moved away from indices while talking about derivatives of
 R^n -> R (gradient) and R^n -> R^n (jacobian), we will do the same with neural networks.
 
@@ -288,15 +313,18 @@ Part 3: optimization — opt.step()
 
 
 References:
-[0]: https://numpy.org/doc/stable/dev/internals.html
-[1]: https://numpy.org/doc/stable/dev/internals.code-explanations.html
-[2]: https://numpy.org/doc/stable/reference/arrays.ndarray.html#internal-memory-layout-of-an-ndarray
-[3]: https://explained.ai/matrix-calculus/
-[4]: https://cs231n.github.io/optimization-2/
-[5]: https://colah.github.io/posts/2015-08-Backprop/
-[6]: http://neuralnetworksanddeeplearning.com/chap2.html
-[7]: https://gdalle.github.io/AutodiffTutorial/
+[0]: https://cs229.stanford.edu/main_notes.pdf
+[1]: https://web.stanford.edu/~jurafsky/slp3/
 
-[X]: http://blog.ezyang.com/2019/05/pytorch-internals/
-[Y]: https://arxiv.org/pdf/1912.01703
-[Z]: https://docs.jax.dev/en/latest/autodidax.html
+[2]: https://numpy.org/doc/stable/dev/internals.html
+[3]: https://numpy.org/doc/stable/dev/internals.code-explanations.html
+[4]: https://numpy.org/doc/stable/reference/arrays.ndarray.html#internal-memory-layout-of-an-ndarray
+[5]: https://explained.ai/matrix-calculus/
+[6]: https://cs231n.github.io/optimization-2/
+[7]: https://colah.github.io/posts/2015-08-Backprop/
+[8]: http://neuralnetworksanddeeplearning.com/chap2.html
+[9]: https://gdalle.github.io/AutodiffTutorial/
+
+[10]: http://blog.ezyang.com/2019/05/pytorch-internals/
+[11]: https://arxiv.org/pdf/1912.01703
+[12]: https://docs.jax.dev/en/latest/autodidax.html
