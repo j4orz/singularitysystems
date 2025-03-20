@@ -21,7 +21,8 @@ Syllabus:
   3. pt2
   4. cloud
 Appendix:
-  A. c2r5
+  A. nets
+  B. c2r5
 --------------------------------------------------------------------------------
 
 Welcome to the beginning of a whirlwind tour within the world of deep learning
@@ -173,7 +174,11 @@ for evaluating the derivative.
 
 2b — Automatic differentiation: calculus on computational graph
 ---------------------------------------------------------------
+
 Approach 1: manual
+
+
+
 - e.g closed form derivative of logistic regression
 - problem 1: way to labor intensive for deep neural networks,
     especially given regime of bitter lesson scaling laws large language models
