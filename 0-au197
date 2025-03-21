@@ -50,11 +50,8 @@ less than a decade ago during my senior year of highschool, not to mention the
 
 As a result, compiler buffs and chip architects report that the field is currently
 undergoing a Golden Age:
-
-1. A New Golden Age for Computer Architecture — Hennessy and Patterson 2017
-   -> https://www.youtube.com/watch?v=3LVeEjsn8Ts
-2. The Golden Age of Compiler Design — Chris Lattner 2021
-   -> https://www.youtube.com/watch?v=4HgShra-KnY
+1. A New Golden Age for Computer Architecture[TODO] — Hennessy and Patterson
+2. The Golden Age of Compiler Design[TODO] — Chris Lattner
 
 because of the golden age..everyone is rushing for gold. but there's a
 pedagogical gap researchers label as "research debt".
@@ -113,3 +110,7 @@ what's old is new.
 [7]: https://github.com/rui314/chibicc
 [8]: https://c9x.me/compile/
 [9]: https://docs.google.com/spreadsheets/d/1WKHbT-7KOgjEawq5h5Ic1qUWzpfAzuD_J06N1JwOCGs
+
+TODO
+- -> https://www.youtube.com/watch?v=3LVeEjsn8Ts
+- -> https://www.youtube.com/watch?v=4HgShra-KnY

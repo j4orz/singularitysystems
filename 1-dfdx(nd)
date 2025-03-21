@@ -35,8 +35,8 @@ abstraction for the multidimensional array (like numpy's `ndarray` and pytorch's
 interpreter is capable of training and inferencing the simple FFN (also refferred
 to as MLP) following (Bengio et al. 2003), covered in Neural Networks: Zero to
 Hero part 2. We will keep the implementation simple using the host language's
-CPU support — in the third chapter we will accelerate our computations using SIMD
-capability by the CPU and GPU.
+CPU support — in the second chapter we will accelerate our computations using
+SIMD provided by the CPU and GPU.
 
 ---------------------------------------------------------
 Part 0: non-linear parametric models — nn.Linear, nn.ReLU
@@ -55,7 +55,7 @@ Favoring the mathematical specification over the biological inspiration, neural
 networks, reductively put, are a lot of logistic regressions (weighted sums with
 sigmoids) stacked together. Recall that the logistic regression model for binary
 classification recovers the bernouilli distribution
-    P(Y=c|X=x;θ) ~ Ber(p), c={0,1} by assuming
+    P(Y=c|X=x;θ) ~iid Ber(p), c={0,1} by assuming
     p:= f(x;θ), f: ℝ^d -> [0,1]
     P(Y=1|X=x;θ) := σ(θᵀx)
 ==> P(Y=0|X=x;θ) = 1 - σ(θᵀx) [by total law of prob]
@@ -67,13 +67,13 @@ probability distribution) by generalizing logistic regression to multinomial
 logistic regression by replacing σ(z) with softmax(z):
     σ: ℝ -> [0,1], σ(z) := [1+exp(-x)]^-1
     softmax: ℝ^k -> [0,1]^k, softmax(z_i) := exp(z_i) / Σ exp(z_j)
-                                                        (j=1 to k)
+                                                        j=1..k
 
 where z is referred to as the "logits", and recovers the multinomial distribution
-    P(Y=y|X=x;θ) ~ X(?), c={0,1,...,k} by assuming
+    P(Y=y|X=x;θ) ~iid X(?), c={0,1,...,k} by assuming
     p:= f(x;θ), f: ℝ^d -> [0,1]^k
     P(Y=y_i|X=x) := exp(θ_iᵀx + b_i) / Σ exp(θ_jᵀx + b_j) [for all i from 1 to k]
-                                       (j=1 to k)
+                                       j=1..k
 ==> P(Y=y|X=x) = softmax(θx+b), where θ ∈ ℝ^{kxd}, b ∈ R^k
 
 Finally, we can extend the multinomial logistic regression by introducing
@@ -85,19 +85,23 @@ softmax:
 
 and each pair of linearity W and non-linearity φ is a "hidden layer" so
     h^(1) := φ(W^{1}x+b_1)
-    h^(2) := φ(W^{2}x+b_2)
+    h^(2) := φ(W^{2}h^(1)+b_2)
     .
     .
     .
-    h^(L) := φ(W^{L}x+b_L)
+    h^(L) := φ(W^{L}h^(L-1)+b_L)
+* we can omit the biases in the definition for f by prepending column vector
+x with x_0 := 1, effectively using the first row of all weight matrices as biases.
 
-Since the attention operator was discovered in (Vaswani et al. 2017), vision,
-language, audio, and in general, any domain that can be expressed with
-autoregressive sequence of tokenns are all converging onto a single network
-architecture: transformers and their attention variants. Later in part four
-we'll reproduce Llama using our deep learning framework, but for now, we'll
-prototype with a more simpler feed-forward neural network. Here is the model
-definiton and inference loop expressed with pytorch for (Bengio et al. 2003):
+Since the discovery of the attention operator in 2017 by (Vaswani et al. 2017),
+language, vision, audio and any domain that can be expressed as an autoregressive
+sequence of tokens (text/pixels/waves) — that is, an n-dimensional joint distribution:
+  p(X_1=x^1,...,X_n=x^m;θ) = Πp(x^i|x^<i)
+                             i=1..n
+are all converging onto a single network architecture: transformers and their
+attention variants. Later in part four we'll reproduce Llama using our deep
+learning framework, but for now, we'll prototype with a more simpler feed-forward
+neural network (FFN). Here is the model definiton and inference loop:
 
 ```
 """
@@ -150,13 +154,13 @@ model = [
   Linear(D, V, bias=False)
 ]
 
-C_VE = picograd.randn((V,E)) 
+C_VE = picograd.randn((V,E))
 
 # *********************INFERENCE LOOP*********************
 for _ in range(20): # 20 samples
   output, context = [], [0] * T
   while True:
-    X_1T = picograd.tensor([context]) # B=1 for inference, T=3, in [0..27] (set to 0 for init))
+    X_1T = picograd.tensor([context]) # B=1 for inference, T=3, in [0..27] (set to 0 for init)
     X_1TE = C_VE[X_1T] # using 0..27 as indices into C_VE for each B=1 example of context length T
     print(X_1TE)
     X_1cTE = X_1TE.view(-1, T*E) # B=1, TE
@@ -229,8 +233,6 @@ TODO
 - map, zip, reduce.
 - broadcasting, indexing, views
 
-TODO: why does numpy-C api only support dimension up to 6?
-
 ----------------------------------------------
 Part 2: autodifferentiation — model.backward()
 ----------------------------------------------
@@ -244,6 +246,56 @@ an algorithmic technique for taking derivatives of mathematical expressions,
 as opposed to a symbolic approach (such as Wolfram Alpha) or a numeric one (like
 X: TODO). That is, we will follow the footsteps of Wiltschko's torch-autograd
 (influencing PyTorch) and Johnson/Maclaurin's HIPS/autograd (influencing JAX).
+
+Recall the definition of a neural network:
+
+Here is the training loop for our FFN:
+```
+# random.seed(42)
+# random.shuffle(words)
+# n1, n2 = int(0.8*len(words)), int(0.9*len(words))
+X_NT, Y_N = gen_dataset(words)#[:n1])
+print(X_NT.shape, Y_N.shape)
+# Xdev, Ydev = gen_dataset(words[n1:n2])
+# Xte, Yte = gen_dataset(words[n2:])
+
+# 2. training loop
+losses, steps = [], []
+for step in range(100): #200000:
+    # 1. forward
+    # minibatch: X_NT -> X_BT
+    i_B = torch.randint(0, X_NT.shape[0], (B,))
+    X_BT, Y_B = X_NT[i_B], Y_N[i_B]
+
+    # embed: X_BT -> X_BTE
+    X_BTE = C_VE[X_BT] # embed the B examples with T tokens range that span [0..27]
+                       # using 0..27 as indices into C_VE
+    X_BcTE = X_BTE.view(-1, T * E) #. concat
+    X = X_BcTE
+
+    # X_BcTE -> X_BD -> X_BV (y_hat: logits)
+    for h in model:
+        X = h(X)
+    loss = F.cross_entropy(X, Y_B) # 5. picograd.cross_entropy
+
+    # 2. backward
+    for layer in model:
+        layer.out.retain_grad() # 6 .retain_grad()
+    for p in params:
+        p.grad = None
+    loss.backward()
+
+    # 3. update
+    for p in params:
+        p.data += -0.01 * p.grad
+
+    steps.append(step)
+    losses.append(loss.log10().item())
+    if step % 10000 == 0:
+        print(f"step: {step}/{200000}, loss {loss.item()}")
+
+plt.plot(steps, losses)
+```
 
 2a — Derivative: approximation via local linearization
 ------------------------------------------------------
