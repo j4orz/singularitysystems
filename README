@@ -23,10 +23,6 @@ P"Ybmmd"   ,V     M9mmmP'   `Mbmo`Mbmmd'.JMML  JMML  JMML.M9mmmP'
 Singularity Systems: Zero to Hero (The Hacker's Guide to Tensor Compilers)
 (by j4orz)
 
-TODO:
-- 2-brrr (use llm.c)
-- 3pt (torch.compile, flex attention, horace's stuff. circle back to c2r5 compiler)
-
 ------------------
 Course Description
 ------------------
@@ -37,14 +33,12 @@ learning compiler.
 Singularity Systems bridges the missing gap in the ecosystem for low level system
 programmers and performance engineers interested in the internals of deep learning
 frameworks. The course provides the software 2.0 equivalent of SICP (interpreters)
-and dragon book (compilers), where you will build an PyTorch1-like-interpreter
-and a PyTorch2-like-compiler that is *llama-complete*, line by line from scratch.
+and dragon book (compilers), where you will build an PyTorch1 style interpreter
+and a PyTorch2 style compiler that is *llama-complete*, line by line from scratch.
 By the end of Singularity Systems, you will be better equipped to contribute
 towards opensource projects such as PyTorch and Jax, both ~100kLOC. The appendix
 also includes a traditional software 1.0 compiler mapping C to RISCV that is
-*quake-complete*.
-
-
+*doom-complete*.
 
 Prereqs
 -------
@@ -64,7 +58,6 @@ Syllabus
   4. cloud
   ---Appendix
   A. nets
-  B. c2r5
 
 Citation
 --------

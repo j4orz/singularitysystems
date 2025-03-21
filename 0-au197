@@ -11,6 +11,8 @@ Singularity Systems: Zero to Hero
 --------------------------------------------------------------------------------
 Syllabus:
   0. au197 <-- HERE
+    Part 1: Golden Age — Software 2.0 Infrastructure Buildout
+    Part 2: Tensor Compilers — Software 2.0 Dragon Book
   1. dfdx(nd)
   2. brrr
   3. pt2
@@ -22,12 +24,65 @@ Appendix:
 ---------------------------------------------------------
 Part 1: Golden Age — Software 2.0 Infrastructure Buildout
 ---------------------------------------------------------
-Welcome to the second golden age of computing. The first one started in the '40s
+Welcome to the second golden age of computing. The first one started in the 1940s
 when humanity discovered how to mechanize reprogrammable instructions (algorithms)
-via deterministic languages encoded with 1s and 0s. The second one started at the
-beginning of this decade when we discovered how to capture natural language via
-stochastic distributions (models) with automatic differentiation and gradient descent.
+via deterministic languages encoded with 0s and 1s. The second one started in the
+2020s when we discovered how to compress sequences via stochastic distributions
+(models) with automatic differentiation and gradient descent.
 
+In transportation technology is when humanity wants to go to the moon, engineers
+reassess the design of vehicles from first principles. Given the workload of
+space travel, it's economically feasiable to start from fundamentals and design
+a rocket rather than a car or bus.
+
+The same tension applies to intelligence technology — ever since the ChatGPT
+and DeepSeek moment, engineers are reassessing the design of computers from
+first principles. All of the original assumptions that were made last century
+need to be reevaluated if the significant mode of computation is evaluating
+matrix multiplications for stochastic distributions rather than fetching data
+for discrete algorithms.
+
+Building the infrastructure that underlies powerful neural networks such as
+OpenAI's ChatGPT and DeepSeek's R1 is an *open* research problem: the deep
+learning framework that is the lingua franca for most researchers was released[1]
+less than a decade ago during my senior year of highschool, not to mention the
+2.0 release[2] with torch.compile functionality being released in 2023!
+
+As a result, compiler buffs and chip architects report that the field is currently
+undergoing a Golden Age:
+
+1. A New Golden Age for Computer Architecture — Hennessy and Patterson 2017
+   -> https://www.youtube.com/watch?v=3LVeEjsn8Ts
+2. The Golden Age of Compiler Design — Chris Lattner 2021
+   -> https://www.youtube.com/watch?v=4HgShra-KnY
+
+because of the golden age..everyone is rushing for gold. but there's a
+pedagogical gap researchers label as "research debt".
+
+Many toy autograds exist — the software 2.0 version of calculator interpreters
+capable of evaluating arithmetic. These are excellent in providing intuition for
+backpropagation (calculus on a computational graph), a very important abstraction
+to understand considering how leaky it is (think gradient initialization and
+normalization).
+
+However, there are *zero* resources that dive deeper into cutting your teeth on
+the advanced capabilities of PyTorch such as torch.compile and D(istributed)Tensor.
+Linux has xv6[6], clang has chibicc[7], and llvm has qbe[8], but pytorch is
+missing it's teaching tensor compiler!
+
+-----------------------------------------------------
+Part 2: Tensor Compilers — Software 2.0's Dragon Book
+-----------------------------------------------------
+
+
+curve: pytorch -> triton -> thunderkittens? -> cutlass -> cuda -> ptx -> sass
+-> we don't have good tensor languages yet.
+-> no one disagrees that ergonomics don't matter.
+-> the question is what level of expression is best for end users.
+mapping current problems to existing ones
+appendix A c2r5 is a c to risc 5 compiler.
+- beth got them all optimizations. 80/20: DCE, elimination... appendix available
+- we'll do the same: 
 - bitter lesson/scaling laws: we found AR/NTP via attention operator from transformer
 - $Bs. datacenter training runs.
 
@@ -40,70 +95,14 @@ stochastic distributions (models) with automatic differentiation and gradient de
 
 what's old is new.
 
-golden age: massive infrastructure buildout
-
---------------------------------------------
-Part 2: Tensor Compilers
---------------------------------------------
-
 1.0 problem to software 2.0
 -> golden age ==> return of the Mel programmer because abstractions are in flux.
 -> you can’t vibe code your way through classic CS problems.
 
 
-curve: pytorch -> triton -> thunderkittens? -> cutlass -> cuda -> ptx -> sass
-
-
--> we don't have good tensor languages yet.
--> no one disagrees that ergonomics don't matter.
--> the question is what level of expression is best for end users.
-mapping current problems to existing ones
-appendix A c2r5 is a c to risc 5 compiler.
-
-
-TODO: python is "growable" language (xkcd comic)
-training machine learning models is faster in pytorch than c++/rust.
-pytorch 2.0 is pure python, CUTLASS 4.0 is pure python
--> community supported ports? i'll start with rust.
-
-
------------------------------------------------------------------------------------
-Part 3: Singularity Systems — Zero to Hero (The Hacker's Guide to Tensor Compilers)
------------------------------------------------------------------------------------
-
-Researchers in artificial intelligence talk about research debt[0] with respect
-to model development. Well, we also see this pedagogical gap for the underlying
-infrastructure that powers modern-day models. That is, building deep learning
-compilers (and chips) is currently an open research problem: todays leading deep
-learning framework was released[1] less than a decade ago during my senior year
-of highschool, not to mention the 2.0 release[2] with torch.compile functionality
-being released in 2023.
-
-At the time of writing, there are 37 symposiums in the list of NeurIPS
-proceedings[3], 36 symposiums in the list of Hot Chips proceedings[4], but only
-6 symposiums in the list of MLSys proceedings[5]. Many toy autograds exist
-which are the software 2.0 equivalent of calculator interpreters capable of
-evaluating arithmetic. These are excellent in providing intuition for
-backpropagation (calculus on a computational graph), a very important abstraction
-to understand considering how leaky it is (think gradient initialization and
-normalization). However, there are absolutely zero resources that dive deeper
-into cutting your teeth on the advanced capabilities of PyTorch such as
-torch.compile and D(istributed)Tensor. If linux has xv6[6], clang has chibicc[7],
-and llvm has qbe[8], then pytorch is missing its equivalent. The next best thing
-is to peek behind the curtains at the actual PyTorch source which is close to
-impossible with its hundreds of thousands of lines of code.
-
-The second section covers the static compilation of neural networks like
-PyTorch 2.0.
-
-There's also a brief appendix on how traditional compiler techniques and
-infrastructure transfer over to tensor compilers by building a compiler that maps
-C89 to RV32I. TODO: mapping current problems in ml systems to traditional cs problems.
 
 
 - software2.0: https://karpathy.medium.com/software-2-0-a64152b37c35
-
-
 [0]: https://distill.pub/2017/research-debt/
 [1]: https://soumith.ch/blog/2023-12-17-pytorch-design-origins.md.html
 [2]: https://pytorch.org/assets/pytorch2-2.pdf

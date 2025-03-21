@@ -18,10 +18,8 @@ Syllabus:
   3. pt2 <-- HERE
   4. cloud
 Appendix:
-  A. nets
-  B. c2r5
+  A. c2r5
 --------------------------------------------------------------------------------
-
 1. torch.compile
 2. flash attention: kernel optimization
 3. flex attention: kernel authoring

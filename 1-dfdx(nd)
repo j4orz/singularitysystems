@@ -18,13 +18,12 @@ Syllabus:
     Part 1: multidimensional array — model.forward()
     Part 2: backpropagation — model.backward()
     Part 3: optimization — opt.step()
-    Part 4: d̶o̶o̶m̶ llama-complete
+    Part 4: v0.1.1: — d̶o̶o̶m̶llama-complete
   2. brrr
   3. pt2
   4. cloud
 Appendix:
-  A. nets
-  B. c2r5
+  A. c2r5
 --------------------------------------------------------------------------------
 
 Welcome to the beginning of a whirlwind tour within the world of deep learning
@@ -44,7 +43,7 @@ Part 0: non-linear parametric models — nn.Linear, nn.ReLU
 ---------------------------------------------------------
 Before jumping into the implementation of our deep learning framework's
 multidimensional array with autodifferentiation capability, let's review the
-mathematical specification of neural networks.
+mathematics of neural networks.
 
 Recall that neural networks are the family of functions that are non-linear
 and parametric. The non-linearities that act as feature extractors differentiate
@@ -99,6 +98,7 @@ architecture: transformers and their attention variants. Later in part four
 we'll reproduce Llama using our deep learning framework, but for now, we'll
 prototype with a more simpler feed-forward neural network. Here is the model
 definiton and inference loop expressed with pytorch for (Bengio et al. 2003):
+
 ```
 """
 model: Neural Language Models (Bengio et al. 2003) URL: https://www.jmlr.org/papers/volume3/bengio03a/bengio03a.pdf
@@ -158,7 +158,6 @@ for _ in range(20): # 20 samples
   while True:
     X_1T = picograd.tensor([context]) # B=1 for inference, T=3, in [0..27] (set to 0 for init))
     X_1TE = C_VE[X_1T] # using 0..27 as indices into C_VE for each B=1 example of context length T
-    print("moose", X_1TE.shape)
     print(X_1TE)
     X_1cTE = X_1TE.view(-1, T*E) # B=1, TE
     X = X_1cTE
@@ -314,8 +313,6 @@ for evaluating the derivative.
 
 2b — Automatic differentiation: calculus on computational graph
 ---------------------------------------------------------------
-The same way we moved away from indices while talking about derivatives of
-R^n -> R (gradient) and R^n -> R^n (jacobian), we will do the same with neural networks.
 
 Approach 1: manual
 ------------------
@@ -356,25 +353,22 @@ Reverse Mode (Backpropagation).
 
 
 
+
+
+
+
+
+
+
+
+
+
 ---------------------------------
 Part 3: optimization — opt.step()
 ---------------------------------
-
-
-
 ---------------------------------
 Part 4: d̶o̶o̶m̶ llama-complete
 ---------------------------------
-
-
-
-
-
-
-
-
-
-
 
 References:
 [0]: https://cs229.stanford.edu/main_notes.pdf
