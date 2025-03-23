@@ -18,7 +18,7 @@ Syllabus:
     Part 1: multidimensional array — model.forward()
     Part 2: backpropagation — model.backward()
     Part 3: optimization — opt.step()
-    Part 4: v0.1.1: — d̶o̶o̶m̶llama-complete
+    Part 4: attention — a(q,k,v)
   2. brrr
   3. pt2
   4. cloud
@@ -37,6 +37,10 @@ following (Bengio et al. 2003), covered in Neural Networks: Zero to Hero part 2.
 We will keep the implementation simple using the host language's CPU support and
 in the second chapter we will accelerate our computations using SIMD capability
 provided by the CPU and GPU.
+
+
+
+
 
 ---------------------------------------------------------
 Part 0: non-linear parametric models — nn.Linear, nn.ReLU
@@ -110,8 +114,8 @@ this class from the family of linear functions such as linear and logistic
 regression, and the parametric weights and biases differentiate the class from
 other non-linear functions such as gaussian processes and kernel methods. Favoring
 the mathematical specification over the biological inspiration, neural networks,
-reductively put, are a lot of logistic regressions
-(weighted sums with non-linearities) stacked together.
+reductively put, are a lot of logistic regressions (weighted sums with
+non-linearities) stacked together.
 
 ```
 """
@@ -190,13 +194,15 @@ for _ in range(20): # 20 samples
   print(''.join(output))
 ```
 
+
+
+
+
 ------------------------------------------------
 Part 1: multidimensional array — model.forward()
 ------------------------------------------------
-Let's start with the multidimensional array and follow pytorch's naming convention
-by calling it tensor (and overloading its usage in physics which has invariants
-that do not hold in statistical learning). Consider the following product type
-for tensor:
+Let's start with the multidimensional array and follow pytorch's `tensor` naming
+convention. Consider the following product type for tensor:
 
 struct Tensor {
     ndim: i32
@@ -213,7 +219,7 @@ stride. This is desirable in deep learning since many tensor operations only
 involve modifying the shape and stride, thereby updating the "view" of the tensor.
 Consider example 1 and 2 which illustrate that operations such as reshape and
 transpose fundamentally do not add or remove elements from the tensor — they only
-move data around. TODO: not really data. but logical interpretation.
+change the interpretation of data:
 
 Example 1:
 01 02 03   reshape      01 02
@@ -230,36 +236,22 @@ Example 2:
 4 5 6      ==>        2 5 8
 7 8 9                 3 6 9
 
-TODO:
-- broadcasting, indexing, views
-- map(uops), zip(binops), reduce(foldops).
-- processingops: matmul, conv2d, pool2d, maxpool2d, avgpool2d,
-- nnops?: linear, sequential, layernorm, batchnorm, crossentropyloss, nllloss
-
 We have built an abstraction for the multidimensional array, which makes the
 current framework more or less on par with the capabilities of numpy. But in
-order to train neural networks we need to add support for autodifferentiation
-in order to perform parameter estimation and recover a distribution by
-computing the derivative of a loss function with respect to function parameters
-and performing gradient descent. In part 2 we will follow the footsteps of
-Wiltschko's torch-autograd (influencing PyTorch) and Johnson/Maclaurin's
-HIPS/autograd (influencing JAX) by implementing autodiff, and in part 3 we will
-implement a few optimizers like SGD and Adam so we can fit our neural networks.
+order to train neural networks we need to recover the parameters that
+characterize the underlying generating distribution:
+  θ̂ ∈ argmin ℒ(Θ)
+    = argmin -logΠf(x_i;Θ)
+    = argmin -Σlogf(x_i;Θ)
+       
+where the loss function ℒ(Θ) is the negative log likehood of the parameters given
+the data and argmin is implemented iteratively via gradient descent:
+  θ^(t+1) := θ^t - α∇ℒ(Θ)
 
-----------------------------------------------
-Part 2: autodifferentiation — model.backward()
-----------------------------------------------
-  2a — Derivative: approximation via local linearization
-  2b — Automatic differentiation: calculus on computational graph
-
-Recall the definition of a neural network:
-loss
--regression
--classification
-
-
-
-Adding the training loop to the existing model definition and inference loop:
+In part 2 and part 3 we will add autodifferentiation and gradient descent
+support to our tensor library enabling the training of deep neural networks.
+The framework will be able to interpret the following training loop for the
+FFN from above:
 ```
 # random.seed(42)
 # random.shuffle(words)
@@ -306,6 +298,17 @@ for step in range(100): #200000:
 
 plt.plot(steps, losses)
 ```
+
+
+
+
+
+----------------------------------------------
+Part 2: autodifferentiation — model.backward()
+----------------------------------------------
+  2a — Loss Functions: ...
+  2b — Derivative: approximation via local linearization
+  2c — Automatic differentiation: calculus on computational graph
 
 2a — Derivative: approximation via local linearization
 ------------------------------------------------------
@@ -393,18 +396,7 @@ since computational graphs for neural networks look like many inputs to single o
 then reverse mode is more efficient.
 
 if we needed to evaluated one input for many outputs, forward mode is more efficient.
-Forward Mode.
-Reverse Mode (Backpropagation).
-
-
-
-
-
-
-
-
-
-
+Forward Mode. Reverse Mode (Backpropagation).
 
 
 
@@ -414,8 +406,12 @@ Reverse Mode (Backpropagation).
 Part 3: optimization — opt.step()
 ---------------------------------
 
+
+
+
+
 ---------------------------------
-Part 4: d̶o̶o̶m̶ llama-complete
+Part 4: attention — a(q,k,v)
 ---------------------------------
 Since the discovery of the attention operator in 2017 by (Vaswani et al. 2017),
 language, vision, audio and any domain that can be expressed as an autoregressive
@@ -431,14 +427,14 @@ References:
 - https://web.stanford.edu/~jurafsky/slp3/
 - https://cs229.stanford.edu/main_notes.pdf
 
-[2]: https://numpy.org/doc/stable/dev/internals.html
-[3]: https://numpy.org/doc/stable/dev/internals.code-explanations.html
-[4]: https://numpy.org/doc/stable/reference/arrays.ndarray.html#internal-memory-layout-of-an-ndarray
-[6]: https://cs231n.github.io/optimization-2/
-[7]: https://colah.github.io/posts/2015-08-Backprop/
-[8]: http://neuralnetworksanddeeplearning.com/chap2.html
-[9]: https://gdalle.github.io/AutodiffTutorial/
+https://numpy.org/doc/stable/dev/internals.html
+https://numpy.org/doc/stable/dev/internals.code-explanations.html
+https://numpy.org/doc/stable/reference/arrays.ndarray.html#internal-memory-layout-of-an-ndarray
+https://cs231n.github.io/optimization-2/
+https://colah.github.io/posts/2015-08-Backprop/
+http://neuralnetworksanddeeplearning.com/chap2.html
+https://gdalle.github.io/AutodiffTutorial/
 
-[10]: http://blog.ezyang.com/2019/05/pytorch-internals/
-[11]: https://arxiv.org/pdf/1912.01703
-[12]: https://docs.jax.dev/en/latest/autodidax.html
+http://blog.ezyang.com/2019/05/pytorch-internals/
+https://arxiv.org/pdf/1912.01703
+https://docs.jax.dev/en/latest/autodidax.html
