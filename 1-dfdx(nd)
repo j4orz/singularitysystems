@@ -31,55 +31,68 @@ frameworks! Throughout this journey you will build an interpreter and compiler
 for neural networks line by line, from scratch. By the end of the first chapter,
 you will have a working implementation of an interpreter that provides an
 abstraction for the multidimensional array (like numpy's `ndarray` and pytorch's
-`tensor`) with autodifferentiation capabilities to make it *learn*. This
-interpreter is capable of training and inferencing the simple FFN (also refferred
-to as MLP) following (Bengio et al. 2003), covered in Neural Networks: Zero to
-Hero part 2. We will keep the implementation simple using the host language's
-CPU support — in the second chapter we will accelerate our computations using
-SIMD provided by the CPU and GPU.
+`tensor`) with autodifferentiation capabilities to make it learn. This interpreter
+is capable of training and inferencing the simple FFN (also refferred to as MLP)
+following (Bengio et al. 2003), covered in Neural Networks: Zero to Hero part 2.
+We will keep the implementation simple using the host language's CPU support and
+in the second chapter we will accelerate our computations using SIMD capability
+provided by the CPU and GPU.
 
 ---------------------------------------------------------
 Part 0: non-linear parametric models — nn.Linear, nn.ReLU
 ---------------------------------------------------------
 Before jumping into the implementation of our deep learning framework's
 multidimensional array with autodifferentiation capability, let's review the
-mathematics of neural networks.
+mathematics of neural networks. We will incrementally construct a family of
+functions from logistic regression, multiclass regression, to neural networks
+which all recover probability distributions for classification.
 
-Recall that neural networks are the family of functions that are non-linear
-and parametric. The non-linearities that act as feature extractors differentiate
-this class from the family of linear functions such as linear and logistic
-regression, and the parametric weights and biases differentiate the class from
-other non-linear functions such as gaussian processes and kernel methods.
-
-Favoring the mathematical specification over the biological inspiration, neural
-networks, reductively put, are a lot of logistic regressions (weighted sums with
-sigmoids) stacked together. Recall that the logistic regression model for binary
-classification recovers the bernouilli distribution
+Recall that the logistic regression model for binary classification recovers the
+bernouilli distribution:
     P(Y=c|X=x;θ) ~iid Ber(p), c={0,1} by assuming
     p:= f(x;θ), f: ℝ^d -> [0,1]
-    P(Y=1|X=x;θ) := σ(θᵀx)
-==> P(Y=0|X=x;θ) = 1 - σ(θᵀx) [by total law of prob]
+    P(Y=1|X=x;θ) := σ(wᵀx), θ={w,b}
+==> P(Y=0|X=x;θ) = 1 - σ(wᵀx) [by total law of prob]
 ==> P(Y=c|X=x) = p^c(1-p)^(1-c) [continuous form]
-               = σ(θᵀx)^c [1- σ(θᵀx)]^(1-c)
+               = σ(wᵀx)^c [1- σ(wᵀx)]^(1-c)
 
-We can also extend this model to multi-class classification (producing a joint
-probability distribution) by generalizing logistic regression to multinomial
-logistic regression by replacing σ(z) with softmax(z):
-    σ: ℝ -> [0,1], σ(z) := [1+exp(-x)]^-1
+where we can omit the bias for f by prepending column vector x with x_0 := 1,
+effectively using w_0 as b. And since we are training from a dataset
+D={(x_i, y_i)} (i=1..n), we can evaluate the function
+f: ℝ^d -> [0,1], f(x^i;θ) := σ(wᵀx^(i)) for all n input-output pairs with a
+single matrix vector multiplication:
+    ŷ = σ(Xw)
+where:
+X ∈ ℝ^{nx(k+1)}
+w ∈ ℝ^{k+1}
+σ is applied point-wise to Xw ∈ ℝ^n.
+
+We can also extend this model to multi-class classification by generalizing
+logistic regression to softmax regression by replacing σ(z) with softmax(z):
+    σ: ℝ -> [0,1], σ(z) := 1/[1+exp(-z)]
     softmax: ℝ^k -> [0,1]^k, softmax(z_i) := exp(z_i) / Σ exp(z_j)
                                                         j=1..k
 
-where z is referred to as the "logits", and recovers the multinomial distribution
-    P(Y=y|X=x;θ) ~iid X(?), c={0,1,...,k} by assuming
+recalling that 1. ∫softmax(z) = 1 and 2. that z is referred to as the "logits"
+since sigmoid and softmax map ℝ to log odds (ln[p/(1-p)]). Generalizing sigmoid
+to softmax allows us to recover the multinomial distribution:
+    P(Y=k|X=x;θ) ~iid X(?), c={0,1,...,k} by assuming
     p:= f(x;θ), f: ℝ^d -> [0,1]^k
-    P(Y=y_i|X=x) := exp(θ_iᵀx + b_i) / Σ exp(θ_jᵀx + b_j) [for all i from 1 to k]
-                                       j=1..k
-==> P(Y=y|X=x) = softmax(θx+b), where θ ∈ ℝ^{kxd}, b ∈ R^k
+    P(Y=k_i|X=x) := exp(w^iᵀx) / Σ exp(w^jᵀx) [∀ i=1..k]
+                                 j=1..k
+==> P(Y=y|X=x) = softmax(Wx), where W ∈ ℝ^{(k+1)xd}, x ∈ ℝ^d
+
+And to evaluate f: ℝ^d -> [0,1]^k, f(x^i;θ) := softmax(Wx) for all n input-output
+pairs:
+    ŷ = softmax(XW)
+where:
+X ∈ ℝ^{nxd}
+W ∈ ℝ^{dx(k+1)}
+softmax is applied across dim=1 to XW ∈ ℝ^{nx(k+1)}
 
 Finally, we can extend the multinomial logistic regression by introducing
-intermediate steps of representation learning where the model learns a more
-accurate basis to project the input vectors into before applying the final
-softmax:
+intermediate stages of computation to project the representation of inputs
+into a basis that is more tractable when mapping to a distribution:
     f:  ℝ^d -> [0,1]^k
     f(x;θ) := W_L ◦ (φ ◦ W_{L-1}) ◦ ... ◦ (φ ◦ W_1) ◦ x, where θ={w,b}
 
@@ -90,18 +103,15 @@ and each pair of linearity W and non-linearity φ is a "hidden layer" so
     .
     .
     h^(L) := φ(W^{L}h^(L-1)+b_L)
-* we can omit the biases in the definition for f by prepending column vector
-x with x_0 := 1, effectively using the first row of all weight matrices as biases.
 
-Since the discovery of the attention operator in 2017 by (Vaswani et al. 2017),
-language, vision, audio and any domain that can be expressed as an autoregressive
-sequence of tokens (text/pixels/waves) — that is, an n-dimensional joint distribution:
-  p(X_1=x^1,...,X_n=x^m;θ) = Πp(x^i|x^<i)
-                             i=1..n
-are all converging onto a single network architecture: transformers and their
-attention variants. Later in part four we'll reproduce Llama using our deep
-learning framework, but for now, we'll prototype with a more simpler feed-forward
-neural network (FFN). Here is the model definiton and inference loop:
+Recall that neural networks are the family of functions that are non-linear
+and parametric. The non-linearities that act as feature extractors differentiate
+this class from the family of linear functions such as linear and logistic
+regression, and the parametric weights and biases differentiate the class from
+other non-linear functions such as gaussian processes and kernel methods. Favoring
+the mathematical specification over the biological inspiration, neural networks,
+reductively put, are a lot of logistic regressions
+(weighted sums with non-linearities) stacked together.
 
 ```
 """
@@ -188,11 +198,11 @@ by calling it tensor (and overloading its usage in physics which has invariants
 that do not hold in statistical learning). Consider the following product type
 for tensor:
 
-prod Tensor {
-    ndim: int
-    shape: int[]
-    stride: int[]
-    storage: float[]
+struct Tensor {
+    ndim: i32
+    shape: Vec<usize>
+    stride: Vec<usize>
+    storage: Vec<f32>
 }
 
 where ndim is an integer, shape as well as stride are lists of integers, and
@@ -206,7 +216,6 @@ transpose fundamentally do not add or remove elements from the tensor — they o
 move data around. TODO: not really data. but logical interpretation.
 
 Example 1:
-
 01 02 03   reshape      01 02
 04 05 06     ==>        03 04
 
@@ -217,21 +226,25 @@ Example 1:
                         11 12
 
 Example 2:
-
 1 2 3    transpose    1 4 7
 4 5 6      ==>        2 5 8
 7 8 9                 3 6 9
 
-Ops
-- uops: neg, exp, log, tanh
-- binops: add, sub, mul, div
-- reduceops: sum, argmax, softmax, max, min, mean, var, std, logsumexp
+TODO:
+- broadcasting, indexing, views
+- map(uops), zip(binops), reduce(foldops).
 - processingops: matmul, conv2d, pool2d, maxpool2d, avgpool2d,
 - nnops?: linear, sequential, layernorm, batchnorm, crossentropyloss, nllloss
 
-TODO
-- map, zip, reduce.
-- broadcasting, indexing, views
+We have built an abstraction for the multidimensional array, which makes the
+current framework more or less on par with the capabilities of numpy. But in
+order to train neural networks we need to add support for autodifferentiation
+in order to perform parameter estimation and recover a distribution by
+computing the derivative of a loss function with respect to function parameters
+and performing gradient descent. In part 2 we will follow the footsteps of
+Wiltschko's torch-autograd (influencing PyTorch) and Johnson/Maclaurin's
+HIPS/autograd (influencing JAX) by implementing autodiff, and in part 3 we will
+implement a few optimizers like SGD and Adam so we can fit our neural networks.
 
 ----------------------------------------------
 Part 2: autodifferentiation — model.backward()
@@ -239,17 +252,14 @@ Part 2: autodifferentiation — model.backward()
   2a — Derivative: approximation via local linearization
   2b — Automatic differentiation: calculus on computational graph
 
-We have built an abstraction for the multidimensional array, which makes the
-current framework more or less on par with the capabilities of numpy. But in
-order to *train* neural networks we need to add support for autodifferentiation,
-an algorithmic technique for taking derivatives of mathematical expressions,
-as opposed to a symbolic approach (such as Wolfram Alpha) or a numeric one (like
-X: TODO). That is, we will follow the footsteps of Wiltschko's torch-autograd
-(influencing PyTorch) and Johnson/Maclaurin's HIPS/autograd (influencing JAX).
-
 Recall the definition of a neural network:
+loss
+-regression
+-classification
 
-Here is the training loop for our FFN:
+
+
+Adding the training loop to the existing model definition and inference loop:
 ```
 # random.seed(42)
 # random.shuffle(words)
@@ -336,19 +346,8 @@ is defined the way it is.
 Moving on, if we consider df = f'(x)dx where f: ℝ^n -> ℝ^m, then given that
 dx ∈ ℝ^n and df ∈ ℝ^m, the linear operator f'(x) *must* be expressable as a matrix
 multiplication with some matrix A ∈ ℝ^(mxn) since any linear transformation is
-a combination of scaling, shearing, rotation or reflection. TODO: intuition/explanation
+a combination of scaling, shearing, rotation or reflection. TODO: intuition/explanation. and up with the nn math.
 on why matrices are geometric maps. Let's call this matrix the "jacobian".
-
-few derivations of the rules
-- sum rule
-- product/quotient rule
-- chain rule
--> derivations are trivial when you plug in the definitions. (we are assuming the definition is correct.) drops dgdh's.
-
-    f(x) := cos(x^2)
-    sinx first, 2x second is reverse mode (inputs -> outputs)
-    2x first, sinx last is forward mode (outputs -> inputs)
-
 
 Stepping back, defining the derivative this way generalizes the rise over run with
 scalars, the gradient with vectors, and the jacobian with matrices into the same
@@ -359,32 +358,31 @@ definition extends to any vector space where a linear operator is defined, for
 instance, the space of matrices (vectorization of matrices), and the space of
 functions (calculus of variations).
 
-let's move on to automatic differentiation, the computational technique responsible
-for evaluating the derivative.
-
-
 2b — Automatic differentiation: calculus on computational graph
 ---------------------------------------------------------------
+Recall that we need to evaluate the derivative of loss functions in order to
+carry out parameter estimation. The method used to compute derivatives is
+automatic differentiation — algorithmic technique as opposed to inefficient
+symbolic techniques or inaccurate numeric techniques. Given some expression graph,
+autodiff will recursively apply the chain rule for each subfunction.
 
-Approach 1: manual
-------------------
+forward mode: R^n -> R^m n times
+reverse mode: R^n -> R^m m times
 
-- e.g closed form derivative of logistic regression
-- problem 1: way to labor intensive for deep neural networks,
-    especially given regime of bitter lesson scaling laws large language models
-
-Approach 2: symbolic
---------------------
-- problem 2: expression swell? as computational graph is flattened??
-
-Approach 3: numeric
--------------------
+since all neural networks look like R^n -> R, reverse mode is the more efficient choice.
 
 
+algorithmic--
+- sum rule
+- product/quotient rule
+-> derivations are trivial when you plug in the definitions. drops dgdh's.
+-> [f(x+h)-f(x)]/h
+we covered sum rule, product rule before. now chain rule.
+chain rule
+    f(x) := cos(x^2)
+    sinx first, 2x second is reverse mode (inputs -> outputs)
+    2x first, sinx last is forward mode (outputs -> inputs)
 
-
-Approach 4: algorithmic
------------------------
 TODO: jump from indices -> matrices
 
 ΣΠw
@@ -395,9 +393,6 @@ since computational graphs for neural networks look like many inputs to single o
 then reverse mode is more efficient.
 
 if we needed to evaluated one input for many outputs, forward mode is more efficient.
-
-
-
 Forward Mode.
 Reverse Mode (Backpropagation).
 
@@ -418,18 +413,27 @@ Reverse Mode (Backpropagation).
 ---------------------------------
 Part 3: optimization — opt.step()
 ---------------------------------
+
 ---------------------------------
 Part 4: d̶o̶o̶m̶ llama-complete
 ---------------------------------
+Since the discovery of the attention operator in 2017 by (Vaswani et al. 2017),
+language, vision, audio and any domain that can be expressed as an autoregressive
+sequence of tokens (text/pixels/waves) — that is, an n-dimensional joint distribution:
+  p(X_1=x^1,...,X_n=x^m;θ) = Πp(x^i|x^<i)
+                             i=1..n
+are all converging onto a single network architecture: transformers and their
+attention variants. Later in part four we'll reproduce Llama using our deep
+learning framework, but for now, we'll prototype with a more simpler feed-forward
+neural network (FFN). Here is the model definiton and inference loop:
 
 References:
-[0]: https://cs229.stanford.edu/main_notes.pdf
-[1]: https://web.stanford.edu/~jurafsky/slp3/
+- https://web.stanford.edu/~jurafsky/slp3/
+- https://cs229.stanford.edu/main_notes.pdf
 
 [2]: https://numpy.org/doc/stable/dev/internals.html
 [3]: https://numpy.org/doc/stable/dev/internals.code-explanations.html
 [4]: https://numpy.org/doc/stable/reference/arrays.ndarray.html#internal-memory-layout-of-an-ndarray
-[5]: https://explained.ai/matrix-calculus/
 [6]: https://cs231n.github.io/optimization-2/
 [7]: https://colah.github.io/posts/2015-08-Backprop/
 [8]: http://neuralnetworksanddeeplearning.com/chap2.html
