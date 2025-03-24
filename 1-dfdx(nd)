@@ -39,7 +39,7 @@ in the second chapter we will accelerate our computations using SIMD capability
 provided by the CPU and GPU.
 
 
-
+ 
 
 
 ---------------------------------------------------------
@@ -69,7 +69,7 @@ single matrix vector multiplication:
 where:
 X ∈ ℝ^{nx(k+1)}
 w ∈ ℝ^{k+1}
-σ is applied point-wise to Xw ∈ ℝ^n.
+σ is applied pointwise to Xw ∈ ℝ^n.
 
 We can also extend this model to multi-class classification by generalizing
 logistic regression to softmax regression by replacing σ(z) with softmax(z):
@@ -238,14 +238,17 @@ Example 2:
 
 We have built an abstraction for the multidimensional array, which makes the
 current framework more or less on par with the capabilities of numpy. But in
-order to train neural networks we need to recover the parameters that
-characterize the underlying generating distribution:
+order to train neural networks we need to recover the most likely parameters
+that characterize the underlying generating distribution:
   θ̂ ∈ argmin ℒ(Θ)
-    = argmin -logΠf(x_i;Θ)
-    = argmin -Σlogf(x_i;Θ)
+    = argmin -logP(y|x;Θ) [log monotonicity]
+    = argmin -logΠp(y^i|x^i;Θ) [assuming X~iid]
+    
+    = argmin -logΠf(x^i;Θ)^(y^i)[1-f(x^i;Θ)]^(1-y^i)
        
-where the loss function ℒ(Θ) is the negative log likehood of the parameters given
-the data and argmin is implemented iteratively via gradient descent:
+where the loss function ℒ(Θ) is the cross entropy loss (negative log likehood of
+the parameters given the data) and argmin is implemented iteratively via gradient
+descent:
   θ^(t+1) := θ^t - α∇ℒ(Θ)
 
 In part 2 and part 3 we will add autodifferentiation and gradient descent
@@ -306,9 +309,8 @@ plt.plot(steps, losses)
 ----------------------------------------------
 Part 2: autodifferentiation — model.backward()
 ----------------------------------------------
-  2a — Loss Functions: ...
-  2b — Derivative: approximation via local linearization
-  2c — Automatic differentiation: calculus on computational graph
+  2a — Derivative: approximation via local linearization
+  2b — Automatic differentiation: calculus on computational graph
 
 2a — Derivative: approximation via local linearization
 ------------------------------------------------------
@@ -324,15 +326,13 @@ in a vector/matrix").
 Let's begin by recalling that for some f: ℝ -> ℝ the difference of a function at
 a point x and x+δx is f(x+δx)-f(x) = δf which can be approximated by f'(x)δx plus
 some error terms. That is,
-
-f(x+δx)-f(x) = δf
-             = f'(x)δx + o(δx)
-             ≈ f'(x)δx
+  f(x+δx)-f(x) = δf
+               = f'(x)δx + o(δx)
+               ≈ f'(x)δx
 
 and if we take the difference to be an infinitesimal then it becomes a differential
-
-f(x+dx)-f(x) = df
-             = f'(x)dx
+  f(x+dx)-f(x) = df
+               = f'(x)dx
 
 and more generally we define the derivative *as* the linear operator L on vector
 space V which you apply to a change in input in order to obtain the change in
@@ -349,8 +349,7 @@ is defined the way it is.
 Moving on, if we consider df = f'(x)dx where f: ℝ^n -> ℝ^m, then given that
 dx ∈ ℝ^n and df ∈ ℝ^m, the linear operator f'(x) *must* be expressable as a matrix
 multiplication with some matrix A ∈ ℝ^(mxn) since any linear transformation is
-a combination of scaling, shearing, rotation or reflection. TODO: intuition/explanation. and up with the nn math.
-on why matrices are geometric maps. Let's call this matrix the "jacobian".
+a combination of scaling, shearing, rotation or reflection. TODO: intuition/explanation. and up with the nn math. on why matrices are geometric maps. Let's call this matrix the "jacobian".
 
 Stepping back, defining the derivative this way generalizes the rise over run with
 scalars, the gradient with vectors, and the jacobian with matrices into the same
@@ -422,6 +421,11 @@ are all converging onto a single network architecture: transformers and their
 attention variants. Later in part four we'll reproduce Llama using our deep
 learning framework, but for now, we'll prototype with a more simpler feed-forward
 neural network (FFN). Here is the model definiton and inference loop:
+
+
+
+
+
 
 References:
 - https://web.stanford.edu/~jurafsky/slp3/

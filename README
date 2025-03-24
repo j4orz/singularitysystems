@@ -34,30 +34,36 @@ Singularity Systems bridges the missing gap in the ecosystem for low level syste
 programmers and performance engineers interested in the internals of deep learning
 frameworks. The course provides the software 2.0 equivalent of SICP (interpreters)
 and dragon book (compilers), where you will build an PyTorch1 style interpreter
-and a PyTorch2 style compiler that is *llama-complete*, line by line from scratch.
+and a PyTorch2 style compiler that is llama-complete, line by line from scratch.
 By the end of Singularity Systems, you will be better equipped to contribute
 towards opensource projects such as PyTorch and Jax, both ~100kLOC. The appendix
 also includes a traditional software 1.0 compiler mapping C to RISCV that is
-*doom-complete*.
+doom-complete.
 
 Prereqs
 -------
 - solid deep learning (gpt2 && llama2 && r1)
 - solid systems programming (C || C++ || Rust || Python*)
-
-  *: python is ok (following the footsteps of pure-python systems such as
-     PyTorch 2.0 and CUTLASS 4.0), as long as you're coming in with basic
-     computer architecture fundamentals.
+  * python is ok (following pure-python systems such as PyTorch 2.0 & CUTLASS 4.0)
 
 Syllabus
 --------
-  0. au197
   1. dfdx(nd)
-  2. brrr
-  3. pt2
-  4. cloud
+  2. au197
+  3. brrr
+  4. pt2
+  5. cloud
   ---Appendix
   A. c2r5
+
+Ch.1 implements a multidimensional array with autodifferentiation.
+Ch.2 interludes with commentary on kernel authoring vs kernel optimization.
+Ch.3 accelerates the framework with massively parallel throughput machines.
+Ch.4 replaces eager evaluation with static tensor compilation.
+Ch.5 implements distributed training.
+Ap.A implements a C89 to RV32I compiler.
+
+The course notes lean terse with formalizations, and lectures are more approachable with intuitions.
 
 Citation
 --------
