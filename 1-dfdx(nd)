@@ -19,6 +19,7 @@ Syllabus:
     Part 2: backpropagation — model.backward()
     Part 3: optimization — opt.step()
     Part 4: attention — a(q,k,v)
+    Part 5: thought — ??
   2. brrr
   3. pt2
   4. cloud
@@ -28,18 +29,13 @@ Appendix:
 
 Welcome to the beginning of a whirlwind tour within the world of deep learning
 frameworks! Throughout this journey you will build an interpreter and compiler
-for neural networks line by line, from scratch. By the end of the first chapter,
-you will have a working implementation of an interpreter that provides an
-abstraction for the multidimensional array (like numpy's `ndarray` and pytorch's
-`tensor`) with autodifferentiation capabilities to make it learn. This interpreter
-is capable of training and inferencing the simple FFN (also refferred to as MLP)
-following (Bengio et al. 2003), covered in Neural Networks: Zero to Hero part 2.
-We will keep the implementation simple using the host language's CPU support and
-in the second chapter we will accelerate our computations using SIMD capability
-provided by the CPU and GPU.
+for llama and r1 line by line, from scratch. By the end of the first chapter,
+you will have a working implementation of the multidimensional array with
+autodifferentiation capability. In the next chapter we will accelerate all
+operations using GPUs.
 
 
- 
+
 
 
 ---------------------------------------------------------
@@ -49,27 +45,26 @@ Before jumping into the implementation of our deep learning framework's
 multidimensional array with autodifferentiation capability, let's review the
 mathematics of neural networks. We will incrementally construct a family of
 functions from logistic regression, multiclass regression, to neural networks
-which all recover probability distributions for classification.
+all for the classification setting where Y⊆ℕ to prepare for part 4 and part 5
+where the pretrained models for llama and r1 are neural language models.
 
 Recall that the logistic regression model for binary classification recovers the
-bernouilli distribution:
-    P(Y=c|X=x;θ) ~iid Ber(p), c={0,1} by assuming
-    p:= f(x;θ), f: ℝ^d -> [0,1]
-    P(Y=1|X=x;θ) := σ(wᵀx), θ={w,b}
-==> P(Y=0|X=x;θ) = 1 - σ(wᵀx) [by total law of prob]
-==> P(Y=c|X=x) = p^c(1-p)^(1-c) [continuous form]
-               = σ(wᵀx)^c [1- σ(wᵀx)]^(1-c)
+bernouilli distribution
+    P: ℝ^d -> [0,1] by assuming
+    P(Y=1|X=x;θ={w,b}) := σ(wᵀx) ==> P(Y=0|X=x;θ) = 1 - σ(wᵀx)
+==> P(Y=y|X=x;θ) = ŷ^y (1-ŷ)^(1-y) [continuous form]
+                 = σ(wᵀx)^y [1-σ(wᵀx)]^(1-y)
 
-where we can omit the bias for f by prepending column vector x with x_0 := 1,
-effectively using w_0 as b. And since we are training from a dataset
-D={(x_i, y_i)} (i=1..n), we can evaluate the function
-f: ℝ^d -> [0,1], f(x^i;θ) := σ(wᵀx^(i)) for all n input-output pairs with a
-single matrix vector multiplication:
-    ŷ = σ(Xw)
+where we can omit the bias by prepending column vector x with x_0 := 1, using
+using w_0 as b. From now on we will implicitly assume that the hyperparameter
+d is d_old+1 so there is an extra row for the bias terms. And since we are
+training from a dataset D={(x_i, y_i)} (i=1..n), we can evaluate the function
+P: ℝ^d -> [0,1], P(x^i;θ={w,b}) := σ(wᵀx^(i)) for all n input-output pairs with
+a single matrix vector multiplication:
+    ŷ = σ(Xw, dim=0)
 where:
-X ∈ ℝ^{nx(k+1)}
-w ∈ ℝ^{k+1}
-σ is applied pointwise to Xw ∈ ℝ^n.
+    X ∈ ℝ^{nxd}
+    w ∈ ℝ^d
 
 We can also extend this model to multi-class classification by generalizing
 logistic regression to softmax regression by replacing σ(z) with softmax(z):
@@ -77,36 +72,34 @@ logistic regression to softmax regression by replacing σ(z) with softmax(z):
     softmax: ℝ^k -> [0,1]^k, softmax(z_i) := exp(z_i) / Σ exp(z_j)
                                                         j=1..k
 
-recalling that 1. ∫softmax(z) = 1 and 2. that z is referred to as the "logits"
+recalling that 1. ∫softmax(z) = 1 and 2. that z is referred to as the logits
 since sigmoid and softmax map ℝ to log odds (ln[p/(1-p)]). Generalizing sigmoid
 to softmax allows us to recover the multinomial distribution:
-    P(Y=k|X=x;θ) ~iid X(?), c={0,1,...,k} by assuming
-    p:= f(x;θ), f: ℝ^d -> [0,1]^k
-    P(Y=k_i|X=x) := exp(w^iᵀx) / Σ exp(w^jᵀx) [∀ i=1..k]
-                                 j=1..k
-==> P(Y=y|X=x) = softmax(Wx), where W ∈ ℝ^{(k+1)xd}, x ∈ ℝ^d
+    P: ℝ^d -> [0,1]^k by assuming
+    P(Y=i|X=x) = exp(w_iᵀx) / Σ exp(w_jᵀx)
+                              j=1..k
+==> P(Y=y|X=x) = softmax(Wx), where W ∈ ℝ^{kxd}, x ∈ ℝ^d : x_0 = 1
 
-And to evaluate f: ℝ^d -> [0,1]^k, f(x^i;θ) := softmax(Wx) for all n input-output
-pairs:
-    ŷ = softmax(XW)
+And to evaluate P: ℝ^d -> [0,1]^k, P(x^i;θ) := softmax(Wx) for all n input-output
+pairs with a single matrix multiplication:
+    ŷ = softmax(XW, dim=0)
 where:
-X ∈ ℝ^{nxd}
-W ∈ ℝ^{dx(k+1)}
-softmax is applied across dim=1 to XW ∈ ℝ^{nx(k+1)}
+    X ∈ ℝ^{nxd}
+    W ∈ ℝ^{dxk}
 
 Finally, we can extend the multinomial logistic regression by introducing
 intermediate stages of computation to project the representation of inputs
 into a basis that is more tractable when mapping to a distribution:
-    f:  ℝ^d -> [0,1]^k
-    f(x;θ) := W_L ◦ (φ ◦ W_{L-1}) ◦ ... ◦ (φ ◦ W_1) ◦ x, where θ={w,b}
+    P: ℝ^d -> [0,1]^k
+    P(x;θ={w,b}) := softmax ◦ W_L ◦ (φ ◦ W_{L-1}) ◦ ... ◦ (φ ◦ W_1) ◦ x
 
 and each pair of linearity W and non-linearity φ is a "hidden layer" so
-    h^(1) := φ(W^{1}x+b_1)
-    h^(2) := φ(W^{2}h^(1)+b_2)
+    h^(1) := φ(W^1x+b_1)
+    h^(2) := φ(W^2h^(1)+b_2)
     .
     .
     .
-    h^(L) := φ(W^{L}h^(L-1)+b_L)
+    h^(L) := φ(W^Lh^(L-1)+b_L)
 
 Recall that neural networks are the family of functions that are non-linear
 and parametric. The non-linearities that act as feature extractors differentiate
@@ -240,21 +233,41 @@ We have built an abstraction for the multidimensional array, which makes the
 current framework more or less on par with the capabilities of numpy. But in
 order to train neural networks we need to recover the most likely parameters
 that characterize the underlying generating distribution:
-  θ̂ ∈ argmin ℒ(Θ)
-    = argmin -logP(y|x;Θ) [log monotonicity]
-    = argmin -logΠp(y^i|x^i;Θ) [assuming X~iid]
-    
-    = argmin -logΠf(x^i;Θ)^(y^i)[1-f(x^i;Θ)]^(1-y^i)
-       
-where the loss function ℒ(Θ) is the cross entropy loss (negative log likehood of
-the parameters given the data) and argmin is implemented iteratively via gradient
-descent:
-  θ^(t+1) := θ^t - α∇ℒ(Θ)
+    θ̂ ∈ argmin ℒ(Θ)
+      = argmin -P(y1|x1,...yn|xn;Θ)
+      = argmin -ΠP(y^i|x^i;Θ) [assuming (X^i,Y^i)~iid]
+      = argmin -logΠP(y^i|x^i;Θ) [log monotonicity]
+      = argmin -ΣlogP(y^i|x^i;Θ) [log laws]
 
-In part 2 and part 3 we will add autodifferentiation and gradient descent
-support to our tensor library enabling the training of deep neural networks.
-The framework will be able to interpret the following training loop for the
-FFN from above:
+where argmin is implemented iteratively via gradient descent:
+    θ^(t+1) := θ^t - α∇ℒ(Θ)
+             = θ^t - α∇-ΣlogP(y^i|x^i;Θ)
+
+and so in the case of binary classification with logistic regression:
+    P: ℝ^d -> [0,1]
+    P(y^i|x^i;θ={w,b}) := ŷ^y (1-ŷ)^(1-y = σ(wᵀx)^y [1-σ(wᵀx)]^(1-y)
+==> θ̂ ∈ argmin -Σlog[σ(wᵀx)^y [1-σ(wᵀx)]^(1-y)] [by def]
+      = argmin ylogσ(wᵀx) - (1-y)[1-σ(wᵀx)]
+==> θ^(t+1) := θ^t - α∇[ ylogσ(wᵀx) - (1-y)[1-σ(wᵀx)] ]
+
+and in the case of multiclass classification with softmax regression:
+    P: ℝ^d -> [0,1]^k
+    P(y^i|x^i) = softmax(Wx), where W ∈ ℝ^{kxd}, x ∈ ℝ^d : x_0 = 1
+==> θ̂ ∈ argmin -Σlog[...] [by def]
+
+and in the case of multiclass classification with neural networks:
+    P: ℝ^d -> [0,1]^k
+    P(x;θ={w,b}) := softmax ◦ W_L ◦ (φ ◦ W_{L-1}) ◦ ... ◦ (φ ◦ W_1) ◦ x
+==> θ̂ ∈ argmin -Σlog[softmax ◦ W_L ◦ (φ ◦ W_{L-1}) ◦ ... ◦ (φ ◦ W_1) ◦ x] [by def]
+==> θ^(t+1) := θ^t - α∇-Σlog[softmax ◦ W_L ◦ (φ ◦ W_{L-1}) ◦ ... ◦ (φ ◦ W_1) ◦ x]
+
+but since |θ| where θ={w,b} are reaching the billions and trillions, deriving
+the gradient of the loss function with respect to weights and biases becomes
+intractable. So in part 2 and part 3 we will add autodifferentiation and
+gradient descent support to our tensor library enabling the training of deep
+neural networks where deriving the gradient and optimizing the network is
+abstracted for the user with a loss.backward() and an optim.step(). The framework
+will be able to interpret the following training loop for the FFN from above:
 ```
 # random.seed(42)
 # random.shuffle(words)
@@ -326,13 +339,13 @@ in a vector/matrix").
 Let's begin by recalling that for some f: ℝ -> ℝ the difference of a function at
 a point x and x+δx is f(x+δx)-f(x) = δf which can be approximated by f'(x)δx plus
 some error terms. That is,
-  f(x+δx)-f(x) = δf
-               = f'(x)δx + o(δx)
-               ≈ f'(x)δx
+    f(x+δx)-f(x) = δf
+                = f'(x)δx + o(δx)
+                ≈ f'(x)δx
 
 and if we take the difference to be an infinitesimal then it becomes a differential
-  f(x+dx)-f(x) = df
-               = f'(x)dx
+    f(x+dx)-f(x) = df
+                = f'(x)dx
 
 and more generally we define the derivative *as* the linear operator L on vector
 space V which you apply to a change in input in order to obtain the change in
