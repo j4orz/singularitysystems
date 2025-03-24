@@ -20,8 +20,7 @@ P"Ybmmd"   ,V     M9mmmP'   `Mbmo`Mbmmd'.JMML  JMML  JMML.M9mmmP'
           ,V                                                                                   
        OOb"
 
-Singularity Systems: Zero to Hero (The Hacker's Guide to Tensor Compilers)
-(by j4orz)
+Singularity Systems: Zero to Hero — The Hacker's Guide to Tensor Compilers (by j4orz)
 
 ------------------
 Course Description
@@ -42,28 +41,26 @@ doom-complete.
 
 Prereqs
 -------
-- solid deep learning (gpt2 && llama2 && r1)
+- solid deep learning (llama2 && r1)
 - solid systems programming (C || C++ || Rust || Python*)
   * python is ok (following pure-python systems such as PyTorch 2.0 & CUTLASS 4.0)
 
 Syllabus
 --------
+  0. au197
   1. dfdx(nd)
-  2. au197
-  3. brrr
-  4. pt2
-  5. cloud
+  2. brrr
+  3. pt2
+  4. cloud
   ---Appendix
   A. c2r5
 
+Ch.0 introduces the golden age of ml systems and the singularity systems course.
 Ch.1 implements a multidimensional array with autodifferentiation.
-Ch.2 interludes with commentary on kernel authoring vs kernel optimization.
-Ch.3 accelerates the framework with massively parallel throughput machines.
-Ch.4 replaces eager evaluation with static tensor compilation.
-Ch.5 implements distributed training.
+Ch.2 accelerates the framework with massively parallel throughput machines.
+Ch.3 compiles models with static tensor compilation.
+Ch.4 implements distributed training.
 Ap.A implements a C89 to RV32I compiler.
-
-The course notes lean terse with formalizations, and lectures are more approachable with intuitions.
 
 Citation
 --------

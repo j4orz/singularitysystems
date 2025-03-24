@@ -31,8 +31,8 @@ Welcome to the beginning of a whirlwind tour within the world of deep learning
 frameworks! Throughout this journey you will build an interpreter and compiler
 for llama and r1 line by line, from scratch. By the end of the first chapter,
 you will have a working implementation of the multidimensional array with
-autodifferentiation capability. In the next chapter we will accelerate all
-operations using GPUs.
+autodifferentiation capability capable of interpreting a ffn, llama, and r1.
+In the next chapter we will accelerate all three models using GPUs.
 
 
 
@@ -245,21 +245,24 @@ where argmin is implemented iteratively via gradient descent:
 
 and so in the case of binary classification with logistic regression:
     P: ℝ^d -> [0,1]
-    P(y^i|x^i;θ={w,b}) := ŷ^y (1-ŷ)^(1-y = σ(wᵀx)^y [1-σ(wᵀx)]^(1-y)
+    P(y^i|x^i;θ={w,b}) := ŷ^y (1-ŷ)^(1-y) = σ(wᵀx)^y [1-σ(wᵀx)]^(1-y)
 ==> θ̂ ∈ argmin -Σlog[σ(wᵀx)^y [1-σ(wᵀx)]^(1-y)] [by def]
       = argmin ylogσ(wᵀx) - (1-y)[1-σ(wᵀx)]
 ==> θ^(t+1) := θ^t - α∇[ ylogσ(wᵀx) - (1-y)[1-σ(wᵀx)] ]
+             = θ^t - α∇ TODO:
 
 and in the case of multiclass classification with softmax regression:
     P: ℝ^d -> [0,1]^k
     P(y^i|x^i) = softmax(Wx), where W ∈ ℝ^{kxd}, x ∈ ℝ^d : x_0 = 1
-==> θ̂ ∈ argmin -Σlog[...] [by def]
+==> θ̂ ∈ argmin -Σlog[softmax(Wx)] [by def]
+==> θ^(t+1) := θ^t - α∇[ -Σlog[softmax(Wx)] ]
+             = θ^t - α∇ TODO:
 
 and in the case of multiclass classification with neural networks:
     P: ℝ^d -> [0,1]^k
     P(x;θ={w,b}) := softmax ◦ W_L ◦ (φ ◦ W_{L-1}) ◦ ... ◦ (φ ◦ W_1) ◦ x
 ==> θ̂ ∈ argmin -Σlog[softmax ◦ W_L ◦ (φ ◦ W_{L-1}) ◦ ... ◦ (φ ◦ W_1) ◦ x] [by def]
-==> θ^(t+1) := θ^t - α∇-Σlog[softmax ◦ W_L ◦ (φ ◦ W_{L-1}) ◦ ... ◦ (φ ◦ W_1) ◦ x]
+==> θ^(t+1) := θ^t - α∇[-Σlog[softmax ◦ W_L ◦ (φ ◦ W_{L-1}) ◦ ... ◦ (φ ◦ W_1) ◦ x]]
 
 but since |θ| where θ={w,b} are reaching the billions and trillions, deriving
 the gradient of the loss function with respect to weights and biases becomes
@@ -365,6 +368,8 @@ definition extends to any vector space where a linear operator is defined, for
 instance, the space of matrices (vectorization of matrices), and the space of
 functions (calculus of variations).
 
+TODO: technically we are are taking jacobians, which all compose into a gradient.
+
 2b — Automatic differentiation: calculus on computational graph
 ---------------------------------------------------------------
 Recall that we need to evaluate the derivative of loss functions in order to
@@ -414,9 +419,9 @@ Part 3: optimization — opt.step()
 
 
 
----------------------------------
+----------------------------
 Part 4: attention — a(q,k,v)
----------------------------------
+----------------------------
 Since the discovery of the attention operator in 2017 by (Vaswani et al. 2017),
 language, vision, audio and any domain that can be expressed as an autoregressive
 sequence of tokens (text/pixels/waves) — that is, an n-dimensional joint distribution:
@@ -428,22 +433,26 @@ learning framework, but for now, we'll prototype with a more simpler feed-forwar
 neural network (FFN). Here is the model definiton and inference loop:
 
 
+----------------------------
+Part 5: thought — 
+----------------------------
 
 
 
 
-References:
-- https://web.stanford.edu/~jurafsky/slp3/
-- https://cs229.stanford.edu/main_notes.pdf
 
-https://numpy.org/doc/stable/dev/internals.html
-https://numpy.org/doc/stable/dev/internals.code-explanations.html
-https://numpy.org/doc/stable/reference/arrays.ndarray.html#internal-memory-layout-of-an-ndarray
-https://cs231n.github.io/optimization-2/
-https://colah.github.io/posts/2015-08-Backprop/
-http://neuralnetworksanddeeplearning.com/chap2.html
-https://gdalle.github.io/AutodiffTutorial/
 
-http://blog.ezyang.com/2019/05/pytorch-internals/
-https://arxiv.org/pdf/1912.01703
-https://docs.jax.dev/en/latest/autodidax.html
+References
+----------
+[0]: https://web.stanford.edu/~jurafsky/slp3/
+[1]: https://cs229.stanford.edu/main_notes.pdf
+[2]: https://arxiv.org/pdf/1912.01703
+[3]: http://blog.ezyang.com/2019/05/pytorch-internals/
+[4]: https://docs.jax.dev/en/latest/autodidax.html
+[5]: https://numpy.org/doc/stable/dev/internals.html
+[6]: https://numpy.org/doc/stable/dev/internals.code-explanations.html
+[7]: https://numpy.org/doc/stable/reference/arrays.ndarray.html#internal-memory-layout-of-an-ndarray
+[8]: https://cs231n.github.io/optimization-2/
+[9]: https://colah.github.io/posts/2015-08-Backprop/
+[10]: http://neuralnetworksanddeeplearning.com/chap2.html
+[11]: https://gdalle.github.io/AutodiffTutorial/
