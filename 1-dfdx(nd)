@@ -269,14 +269,6 @@ neural networks where deriving the gradient and optimizing the network is
 abstracted for the user with a loss.backward() and an optim.step(). The framework
 will be able to interpret the following training loop for the FFN from above:
 ```
-# random.seed(42)
-# random.shuffle(words)
-# n1, n2 = int(0.8*len(words)), int(0.9*len(words))
-X_NT, Y_N = gen_dataset(words)#[:n1])
-print(X_NT.shape, Y_N.shape)
-# Xdev, Ydev = gen_dataset(words[n1:n2])
-# Xte, Yte = gen_dataset(words[n2:])
-
 # 2. training loop
 losses, steps = [], []
 for step in range(100): #200000:
