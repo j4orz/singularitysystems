@@ -229,6 +229,8 @@ Example 2:
 4 5 6      ==>        2 5 8
 7 8 9                 3 6 9
 
+TODO: ...
+
 We have built an abstraction for the multidimensional array, which makes the
 current framework more or less on par with the capabilities of numpy. But in
 order to train neural networks we need to recover the most likely parameters
@@ -247,16 +249,21 @@ and so in the case of binary classification with logistic regression:
     P: ℝ^d -> [0,1]
     P(y^i|x^i;θ={w,b}) := ŷ^y (1-ŷ)^(1-y) = σ(wᵀx)^y [1-σ(wᵀx)]^(1-y)
 ==> θ̂ ∈ argmin -Σlog[σ(wᵀx)^y [1-σ(wᵀx)]^(1-y)] [by def]
-      = argmin ylogσ(wᵀx) - (1-y)[1-σ(wᵀx)]
-==> θ^(t+1) := θ^t - α∇[ ylogσ(wᵀx) - (1-y)[1-σ(wᵀx)] ]
-             = θ^t - α∇ TODO:
+      = argmin ylogσ(wᵀx) - (1-y)log[1-σ(wᵀx)]
+==> θ^(t+1) := θ^t - α∇[ ylogσ(wᵀx) - (1-y)log[1-σ(wᵀx)] ]
+
+    ∂ℒ/∂wi = ∂/wi [ ylogσ(wᵀx) - (1-y)log[1-σ(wᵀx)] ]
+            = - ∂/wi[ylogσ(wᵀx)] + ∂/∂wi[(1-y)log[1-σ(wᵀx)]] [∂ linear]
+            = -y/σ(wᵀx)*∂/wi[σ(wᵀx)] + -(1-y)/[1-σ(wᵀx)]*∂/∂wi[1-σ(wᵀx)] [chain rule]
+            = ∂/wi[σ(wᵀx)] * -[y/σ(wᵀx) - (1-y)/[1-σ(wᵀx)]]
+            = TODO: ...
+            = [σ(wᵀx)-y]xi
 
 and in the case of multiclass classification with softmax regression:
     P: ℝ^d -> [0,1]^k
     P(y^i|x^i) = softmax(Wx), where W ∈ ℝ^{kxd}, x ∈ ℝ^d : x_0 = 1
 ==> θ̂ ∈ argmin -Σlog[softmax(Wx)] [by def]
 ==> θ^(t+1) := θ^t - α∇[ -Σlog[softmax(Wx)] ]
-             = θ^t - α∇ TODO:
 
 and in the case of multiclass classification with neural networks:
     P: ℝ^d -> [0,1]^k
@@ -271,8 +278,9 @@ gradient descent support to our tensor library enabling the training of deep
 neural networks where deriving the gradient and optimizing the network is
 abstracted for the user with a loss.backward() and an optim.step(). The framework
 will be able to interpret the following training loop for the FFN from above:
+
 ```
-# 2. training loop
+# *********************TRAINING LOOP*********************
 losses, steps = [], []
 for step in range(100): #200000:
     # 1. forward
@@ -357,7 +365,8 @@ is defined the way it is.
 Moving on, if we consider df = f'(x)dx where f: ℝ^n -> ℝ^m, then given that
 dx ∈ ℝ^n and df ∈ ℝ^m, the linear operator f'(x) *must* be expressable as a matrix
 multiplication with some matrix A ∈ ℝ^(mxn) since any linear transformation is
-a combination of scaling, shearing, rotation or reflection. TODO: intuition/explanation. and up with the nn math. on why matrices are geometric maps. Let's call this matrix the "jacobian".
+a combination of scaling, shearing, rotation or reflection. Let's call this matrix
+the "jacobian".
 
 Stepping back, defining the derivative this way generalizes the rise over run with
 scalars, the gradient with vectors, and the jacobian with matrices into the same
@@ -368,7 +377,10 @@ definition extends to any vector space where a linear operator is defined, for
 instance, the space of matrices (vectorization of matrices), and the space of
 functions (calculus of variations).
 
-TODO: technically we are are taking jacobians, which all compose into a gradient.
+While training deep neural networks does not involve functions that map
+matrices to matrices or functions to functions, defined this way it's clear
+that many of the "grads" we take in PyTorch are actually jacobians that all
+compose into one gradient for the entire expression graph.
 
 2b — Automatic differentiation: calculus on computational graph
 ---------------------------------------------------------------
@@ -414,6 +426,10 @@ Forward Mode. Reverse Mode (Backpropagation).
 ---------------------------------
 Part 3: optimization — opt.step()
 ---------------------------------
+- GD
+- SGD
+- AdamW
+- Muon
 
 
 
@@ -431,6 +447,9 @@ are all converging onto a single network architecture: transformers and their
 attention variants. Later in part four we'll reproduce Llama using our deep
 learning framework, but for now, we'll prototype with a more simpler feed-forward
 neural network (FFN). Here is the model definiton and inference loop:
+
+
+
 
 
 ----------------------------
