@@ -16,10 +16,9 @@ Syllabus:
   1. dfdx(nd) <-- HERE
     Part 0: non-linear parametric models — nn.Linear(), nn.ReLU
     Part 1: multidimensional array — model.forward()
-    Part 2: backpropagation — model.backward()
-    Part 3: optimization — opt.step()
-    Part 4: attention — a(q,k,v)
-    Part 5: thought — ??
+    Part 2: gradient descent — loss.backward(), opt.step()
+    Part 3: attention — a(q,k,v)
+    Part 4: thought — TODO:
   2. brrr
   3. pt2
   4. cloud
@@ -49,11 +48,26 @@ all for the classification setting where Y⊆ℕ to prepare for part 4 and part 
 where the pretrained models for llama and r1 are neural language models.
 
 Recall that the logistic regression model for binary classification recovers the
-bernouilli distribution
+bernouilli distribution:
     P: ℝ^d -> [0,1] by assuming
     P(Y=1|X=x;θ={w,b}) := σ(wᵀx) ==> P(Y=0|X=x;θ) = 1 - σ(wᵀx)
 ==> P(Y=y|X=x;θ) = ŷ^y (1-ŷ)^(1-y) [continuous form]
                  = σ(wᵀx)^y [1-σ(wᵀx)]^(1-y)
+
++---+             
+| x1+---+         
+| x2+--+|w_0      
+|   |  ||         
+|   |w_1|         
+| . |  |+---->-+. 
+| . |  +-->(wᵀ |σ)
+| . |  +--->`--+' 
+|   |  |          
+|   |  |w_d       
+|   |  |          
+| xd+--+          
++---+
+Fig 1. logistic regression
 
 where we can omit the bias by prepending column vector x with x_0 := 1, using
 using w_0 as b. From now on we will implicitly assume that the hyperparameter
@@ -79,6 +93,21 @@ to softmax allows us to recover the multinomial distribution:
     P(Y=i|X=x) = exp(w_iᵀx) / Σ exp(w_jᵀx)
                               j=1..k
 ==> P(Y=y|X=x) = softmax(Wx), where W ∈ ℝ^{kxd}, x ∈ ℝ^d : x_0 = 1
+                                                                                                                                       
++---++---------------++----+                         +------------------------+
+| x1||               ||w1ᵀσ|                         |exp(w1ᵀx) / Σ exp(w_jᵀx)|
+| x2||               ||w2ᵀσ|                         |exp(w2ᵀx) / Σ exp(w_jᵀx)|
+|   ||               ||    |                         |                        |
+|   ||               ||    |                         |                        |
+| . ||               || .  |    +---------------+    | .                      |
+| . ||       W       || .  |--->|g(z):=softmax(z|--->| .                      |
+| . ||               || .  |    +---------------+    | .                      |
+|   ||               ||    |                         |                        |
+|   ||               ||    |                         |                        |
+|   ||               ||    |                         |                        |
+| xd||               ||wdᵀσ|                         |exp(wdᵀx) / Σ exp(w_jᵀx)|
++---++---------------++----+                         +------------------------+
+Fig 2. softmax regression
 
 And to evaluate P: ℝ^d -> [0,1]^k, P(x^i;θ) := softmax(Wx) for all n input-output
 pairs with a single matrix multiplication:
@@ -100,6 +129,31 @@ and each pair of linearity W and non-linearity φ is a "hidden layer" so
     .
     .
     h^(L) := φ(W^Lh^(L-1)+b_L)
+
+                                                                               +------------------------+
+                                                                               |exp(w1ᵀx) / Σ exp(w_jᵀx)|
+                                                                               |exp(w2ᵀx) / Σ exp(w_jᵀx)|
+                                                                               |                        |
+                      +---++---------------++-------+                          |                        |
+                      | a1||               ||φ(w1ᵀσ)|     +---------------+    | .                      |
+                      | a2||               ||φ(w2ᵀσ)| --->|g(z):=softmax(z|--->| .                      |
+                      |   ||               ||       |     +---------------+    | .                      |
+  +-------------------+---++----+          ||       |                          |                        |
+ ++----------------------------+|          || .     |                          |                        |
+++--++---------------++-------+||  WL      || .     |                          |                        |
+| x1||               ||φ(w1ᵀσ)|||          || .     |                          |exp(wdᵀx) / Σ exp(w_jᵀx)|
+| x2||               ||φ(w2ᵀσ)|||          ||       |                          +------------------------+
+|   ||               ||       |||  *       ||       |
+|   ||               ||       ||| *        ||       |
+| . ||               || .     |||*         ||φ(wdᵀσ)|
+| . ||       W1      || .     ||+----------++-------+
+| . ||               || .     |||
+|   ||               ||       |||
+|   ||               ||       |||
+|   ||               ||       |++
+| xd++               ++φ(wdᵀσ)++
++---++---------------++-------+
+Fig 3. neural network
 
 Recall that neural networks are the family of functions that are non-linear
 and parametric. The non-linearities that act as feature extractors differentiate
@@ -322,22 +376,26 @@ plt.plot(steps, losses)
 
 
 
-----------------------------------------------
-Part 2: autodifferentiation — model.backward()
-----------------------------------------------
+-------------------------------------------------------
+Part 2: gradient descent — model.backward(), opt.step()
+-------------------------------------------------------
   2a — Derivative: approximation via local linearization
   2b — Automatic differentiation: calculus on computational graph
+  2c — Gradient descent: non-convex optimization
 
 2a — Derivative: approximation via local linearization
 ------------------------------------------------------
 The first place to start is to clarify and disambiguate the notion of a derivative
 in order to generalize the denotation we use for higher dimensions to hold a more
-precise semantics. By redefining the derivative as a linear operator L defined on
-some vector space V that you apply to a change in input to obtain a change in
-output (sometimes referred to as the Frechét derivative), it becomes very clear
-why the gradient and jacobian are defined the way they are. Clarity that is not
-achievable when defining them by fiat. (i.e. "let's *just* rearrange the partials
-in a vector/matrix").
+precise semantics. At the end of part 2a you will have a clear understanding
+why the gradient and jacobian are defined the way they are, and how what most
+people refer to as "gradients" with pytorch are really jacobians.
+
+By redefining the derivative as a linear operator L defined on some vector space
+V that you apply to a change in input to obtain a change in output (sometimes
+referred to as the Frechét derivative), it becomes very clear why the gradient
+and jacobian are defined the way they are. Clarity that is not achievable when
+defining them by fiat. (i.e. "let's *just* rearrange the partials in a vector/matrix").
 
 Let's begin by recalling that for some f: ℝ -> ℝ the difference of a function at
 a point x and x+δx is f(x+δx)-f(x) = δf which can be approximated by f'(x)δx plus
@@ -384,30 +442,25 @@ compose into one gradient for the entire expression graph.
 
 2b — Automatic differentiation: calculus on computational graph
 ---------------------------------------------------------------
-Recall that we need to evaluate the derivative of loss functions in order to
-carry out parameter estimation. The method used to compute derivatives is
-automatic differentiation — algorithmic technique as opposed to inefficient
-symbolic techniques or inaccurate numeric techniques. Given some expression graph,
-autodiff will recursively apply the chain rule for each subfunction.
+Recall that we need to evaluate the derivative of a neural network's loss
+function in order to train it with parameter estimation. The method used to
+compute derivatives is automatic differentiation — an algorithmic technique as
+opposed to symbolic techniques that are inefficient or numeric ones that are
+inaccurate. Given some expression graph that represents a neural network
+f: ℝ^d_0 -> ℝ, autodiff will recursively apply the chain rule for each
+subexpression h: ℝ^d_i -> ℝ^d_j.
+
+sum rule, product/quotient rule, chain rule
+-> derivations are trivial when you plug in the definitions. drops dgdh's.
+-> [f(x+h)-f(x)]/h
 
 forward mode: R^n -> R^m n times
 reverse mode: R^n -> R^m m times
-
 since all neural networks look like R^n -> R, reverse mode is the more efficient choice.
-
-
-algorithmic--
-- sum rule
-- product/quotient rule
--> derivations are trivial when you plug in the definitions. drops dgdh's.
--> [f(x+h)-f(x)]/h
-we covered sum rule, product rule before. now chain rule.
 chain rule
     f(x) := cos(x^2)
     sinx first, 2x second is reverse mode (inputs -> outputs)
     2x first, sinx last is forward mode (outputs -> inputs)
-
-TODO: jump from indices -> matrices
 
 ΣΠw
 p1*p1*p1*p1 + p2*p2*p2*p2 + ... pn*pn*pn*pn
@@ -420,24 +473,17 @@ if we needed to evaluated one input for many outputs, forward mode is more effic
 Forward Mode. Reverse Mode (Backpropagation).
 
 
-
-
-
----------------------------------
-Part 3: optimization — opt.step()
----------------------------------
-- GD
-- SGD
-- AdamW
-- Muon
+2c — Gradient descent: non-convex optimization
+----------------------------------------------
+- GD, SGD, AdamW, Muon
 
 
 
 
 
-----------------------------
-Part 4: attention — a(q,k,v)
-----------------------------
+----------------------------------
+Part 3: attention — a(q,k,v) TODO:
+----------------------------------
 Since the discovery of the attention operator in 2017 by (Vaswani et al. 2017),
 language, vision, audio and any domain that can be expressed as an autoregressive
 sequence of tokens (text/pixels/waves) — that is, an n-dimensional joint distribution:
@@ -453,7 +499,7 @@ neural network (FFN). Here is the model definiton and inference loop:
 
 
 ----------------------------
-Part 5: thought — 
+Part 4: thought — TODO:
 ----------------------------
 
 
@@ -473,5 +519,4 @@ References
 [7]: https://numpy.org/doc/stable/reference/arrays.ndarray.html#internal-memory-layout-of-an-ndarray
 [8]: https://cs231n.github.io/optimization-2/
 [9]: https://colah.github.io/posts/2015-08-Backprop/
-[10]: http://neuralnetworksanddeeplearning.com/chap2.html
-[11]: https://gdalle.github.io/AutodiffTutorial/
+[10]: https://gdalle.github.io/AutodiffTutorial/
