@@ -1,4 +1,4 @@
-       ,,      ,...    ,,                 ..                ,,..     
+od       ,,      ,...    ,,                 ..                ,,..     
      `7MM    .d' ""  `7MM               pd'               `7MM `bq   
        MM    dM`       MM              6P                   MM   YA  
   ,M""bMM   mMMmm ,M""bMM  `7M'   `MF'6M' `7MMpMMMb.   ,M""bMM   `Mb 
@@ -21,7 +21,7 @@ Syllabus:
     Part 4: thought — ??
   2. brrr
   3. pt2
-  4. cloud
+  4. datacenter
 Appendix:
   A. c2r5
 --------------------------------------------------------------------------------
@@ -521,12 +521,36 @@ TODO: reverse mode: R^n -> R^m m (number of outputs) forward mode: R^n -> R^m n 
 Regardless of whether autodifferentiation is implemented with forward or reverse-mode,
 the end computation is the same: we are summing over all possible products of paths.
 
+TODO: autodifferentiation through a graph representing a neural network
+
 2c — Gradient descent: non-convex optimization
 ----------------------------------------------
 nn training (non-convex) TODO:
 - initialization random
 - initialization to 0 mean and unit variance
 - GD, SGD, AdamW, Muon
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 ----------------------------------
