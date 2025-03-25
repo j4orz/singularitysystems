@@ -94,19 +94,19 @@ to softmax allows us to recover the multinomial distribution:
                               j=1..k
 ==> P(Y=y|X=x) = softmax(Wx), where W ∈ ℝ^{kxd}, x ∈ ℝ^d : x_0 = 1
                                                                                                                                        
-+---++---------------++----+                         +------------------------+
-| x1||               ||w1ᵀσ|                         |exp(w1ᵀx) / Σ exp(w_jᵀx)|
-| x2||               ||w2ᵀσ|                         |exp(w2ᵀx) / Σ exp(w_jᵀx)|
-|   ||               ||    |                         |                        |
-|   ||               ||    |                         |                        |
-| . ||               || .  |    +---------------+    | .                      |
-| . ||       W       || .  |--->|g(z):=softmax(z|--->| .                      |
-| . ||               || .  |    +---------------+    | .                      |
-|   ||               ||    |                         |                        |
-|   ||               ||    |                         |                        |
-|   ||               ||    |                         |                        |
-| xd||               ||wdᵀσ|                         |exp(wdᵀx) / Σ exp(w_jᵀx)|
-+---++---------------++----+                         +------------------------+
++---++---------------++----+                          +------------------------+
+| x1||               ||w1ᵀσ|                          |exp(w1ᵀx) / Σ exp(w_jᵀx)|
+| x2||               ||w2ᵀσ|                          |exp(w2ᵀx) / Σ exp(w_jᵀx)|
+|   ||               ||    |                          |                        |
+|   ||               ||    |                          |                        |
+| . ||               || .  |    +----------------+    | .                      |
+| . ||       W       || .  |--->|g(z):=softmax(z)|--->| .                      |
+| . ||               || .  |    +----------------+    | .                      |
+|   ||               ||    |                          |                        |
+|   ||               ||    |                          |                        |
+|   ||               ||    |                          |                        |
+| xd||               ||wdᵀσ|                          |exp(wdᵀx) / Σ exp(w_jᵀx)|
++---++---------------++----+                          +------------------------+
 Fig 2. softmax regression
 
 And to evaluate P: ℝ^d -> [0,1]^k, P(x^i;θ) := softmax(Wx) for all n input-output
@@ -135,9 +135,9 @@ and each pair of linearity W and non-linearity φ is a "hidden layer" so
                                                                                |exp(w2ᵀx) / Σ exp(w_jᵀx)|
                                                                                |                        |
                       +---++---------------++-------+                          |                        |
-                      | a1||               ||φ(w1ᵀσ)|     +---------------+    | .                      |
-                      | a2||               ||φ(w2ᵀσ)| --->|g(z):=softmax(z|--->| .                      |
-                      |   ||               ||       |     +---------------+    | .                      |
+                      | a1||               ||φ(w1ᵀσ)|    +----------------+    | .                      |
+                      | a2||               ||φ(w2ᵀσ)|--->|g(z):=softmax(z)|--->| .                      |
+                      |   ||               ||       |    +----------------+    | .                      |
   +-------------------+---++----+          ||       |                          |                        |
  ++----------------------------+|          || .     |                          |                        |
 ++--++---------------++-------+||  WL      || .     |                          |                        |
@@ -472,13 +472,9 @@ then reverse mode is more efficient.
 if we needed to evaluated one input for many outputs, forward mode is more efficient.
 Forward Mode. Reverse Mode (Backpropagation).
 
-
 2c — Gradient descent: non-convex optimization
 ----------------------------------------------
 - GD, SGD, AdamW, Muon
-
-
-
 
 
 ----------------------------------
