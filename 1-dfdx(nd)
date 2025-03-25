@@ -18,7 +18,7 @@ Syllabus:
     Part 1: multidimensional array — model.forward()
     Part 2: gradient descent — loss.backward(), opt.step()
     Part 3: attention — a(q,k,v)
-    Part 4: thought — TODO:
+    Part 4: thought — ??
   2. brrr
   3. pt2
   4. cloud
@@ -283,7 +283,7 @@ Example 2:
 4 5 6      ==>        2 5 8
 7 8 9                 3 6 9
 
-TODO: ...
+TODO: rest of ndarray owl.
 
 We have built an abstraction for the multidimensional array, which makes the
 current framework more or less on par with the capabilities of numpy. But in
@@ -437,12 +437,12 @@ functions (calculus of variations).
 
 While training deep neural networks does not involve functions that map
 matrices to matrices or functions to functions, defined this way it's clear
-that many of the "grads" we take in PyTorch are actually jacobians that all
+that many of the "grads" we take in pytorch are actually jacobians that all
 compose into one gradient for the entire expression graph.
 
 2b — Automatic differentiation: calculus on computational graph
 ---------------------------------------------------------------
-Recall that we need to evaluate the derivative of a neural network's loss
+Recall that we need to evaluate the gradient of a neural network's loss
 function in order to train it with parameter estimation. The method used to
 compute derivatives is automatic differentiation — an algorithmic technique as
 opposed to symbolic techniques that are inefficient or numeric ones that are
@@ -450,30 +450,82 @@ inaccurate. Given some expression graph that represents a neural network
 f: ℝ^d_0 -> ℝ, autodiff will recursively apply the chain rule for each
 subexpression h: ℝ^d_i -> ℝ^d_j.
 
-sum rule, product/quotient rule, chain rule
--> derivations are trivial when you plug in the definitions. drops dgdh's.
--> [f(x+h)-f(x)]/h
+c = a*b (1)
+d = e+f (2)
+g = c*d (3)
 
-forward mode: R^n -> R^m n times
-reverse mode: R^n -> R^m m times
-since all neural networks look like R^n -> R, reverse mode is the more efficient choice.
-chain rule
-    f(x) := cos(x^2)
-    sinx first, 2x second is reverse mode (inputs -> outputs)
-    2x first, sinx last is forward mode (outputs -> inputs)
+ .-.
+( a <---+
+ `-'    |   * .-. (1)
+ .-.    +----( c <---+
+( b )<--+     `-'    |
+ `-'                 |    * .-. (3)
+ .-.                 +-----( g )
+( e )<--+   / .-. (2)|      `-'
+ `-'    +----( d )<--+
+ .-.    |     `-'
+( f )<--+
+ `-'
+Fig 4. expression graph
 
-ΣΠw
-p1*p1*p1*p1 + p2*p2*p2*p2 + ... pn*pn*pn*pn
-sum over all possible products for the output in the graph
+Notice in figure 4 that even though evaluation of the expression is denoted from
+left to right, the edges of the graph form a directed acyclic graph (tree) rooted
+at the output of the expression which simplifies graph modification.
 
-since computational graphs for neural networks look like many inputs to single output (loss),
-then reverse mode is more efficient.
+Interpreting each step of computation (1, 2, 3) is referred to as the
+"forward pass" and constructs the graph in memory which either creates a new tree
+amongst a forest (2) or roots the forest into a single tree (3).
 
-if we needed to evaluated one input for many outputs, forward mode is more efficient.
-Forward Mode. Reverse Mode (Backpropagation).
+Evaluating the derivative of the output with respect to all inputs is referred
+to as the "backward pass" — as opposed to "second forward pass" because deep
+learning frameworks implement reverse-mode differentiation as opposed to
+forward-mode — and recursively applies the chain rule to evaluate all partials.
+
+The difference between forward-mode and reverse-mode differentiation is the
+direction you step through the graph which ends up influencing speed — stepping
+inside out is traversing the graph forwards, and stepping outside in is traversing
+the graph backwards. Consider the applicaiton of the chain rule when evaluating
+the f'(x) for the function f(x) := cos(x^2). Which subexpression do you derive
+first? Evaluating d/dx[cos(x)] = sinx first is reverse mode, and evaluating
+d/dx[x^2] = 2x first is forward mode.
+
+c = a*b (1)
+d = e+f (2)
+g = c*d (3)
+∂g/∂g = 1 (4)
+∂g/∂c = d (5) [product rule]
+∂g/∂d = c (6) [product rule]
+
+∂c/∂a = b(7) [product rule]
+∂c/∂b = a(8) [product rule]
+
+∂d/e = 1 (9) [sum rule]
+∂d/f = 1 (10) [sum rule]
+
+
+ .-. (7)
+( a <---+
+ `-'    |   * .-. (1) (5)
+ .-.    +----( c <---+
+( b )<--+     `-'    |
+ `-' (8)             |    * .-. (4)
+ .-. (9)             +-----( g )
+( e )<--+   / .-. (2)|(6)   `-'
+ `-'    +----( d )<--+
+ .-.    |     `-'
+( f )<--+
+ `-'(10)
+Fig 4. expression graph
+
+TODO: reverse mode: R^n -> R^m m (number of outputs) forward mode: R^n -> R^m n (number of inputs)
+Regardless of whether autodifferentiation is implemented with forward or reverse-mode,
+the end computation is the same: we are summing over all possible products of paths.
 
 2c — Gradient descent: non-convex optimization
 ----------------------------------------------
+nn training (non-convex) TODO:
+- initialization random
+- initialization to 0 mean and unit variance
 - GD, SGD, AdamW, Muon
 
 
@@ -507,12 +559,13 @@ References
 ----------
 [0]: https://web.stanford.edu/~jurafsky/slp3/
 [1]: https://cs229.stanford.edu/main_notes.pdf
-[2]: https://arxiv.org/pdf/1912.01703
-[3]: http://blog.ezyang.com/2019/05/pytorch-internals/
-[4]: https://docs.jax.dev/en/latest/autodidax.html
-[5]: https://numpy.org/doc/stable/dev/internals.html
-[6]: https://numpy.org/doc/stable/dev/internals.code-explanations.html
-[7]: https://numpy.org/doc/stable/reference/arrays.ndarray.html#internal-memory-layout-of-an-ndarray
-[8]: https://cs231n.github.io/optimization-2/
-[9]: https://colah.github.io/posts/2015-08-Backprop/
-[10]: https://gdalle.github.io/AutodiffTutorial/
+[2]: https://www.sscardapane.it/alice-book/
+[3]: https://arxiv.org/pdf/1912.01703
+[4]: http://blog.ezyang.com/2019/05/pytorch-internals/
+[5]: https://docs.jax.dev/en/latest/autodidax.html
+[6]: https://numpy.org/doc/stable/dev/internals.html
+[7]: https://numpy.org/doc/stable/dev/internals.code-explanations.html
+[8]: https://numpy.org/doc/stable/reference/arrays.ndarray.html#internal-memory-layout-of-an-ndarray
+[9]: https://cs231n.github.io/optimization-2/
+[10]: https://colah.github.io/posts/2015-08-Backprop/
+[11]: https://gdalle.github.io/AutodiffTutorial/
