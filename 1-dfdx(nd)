@@ -1,4 +1,4 @@
-od       ,,      ,...    ,,                 ..                ,,..     
+       ,,      ,...    ,,                 ..                ,,..     
      `7MM    .d' ""  `7MM               pd'               `7MM `bq   
        MM    dM`       MM              6P                   MM   YA  
   ,M""bMM   mMMmm ,M""bMM  `7M'   `MF'6M' `7MMpMMMb.   ,M""bMM   `Mb 
@@ -120,7 +120,7 @@ Finally, we can extend the multinomial logistic regression by introducing
 intermediate stages of computation to project the representation of inputs
 into a basis that is more tractable when mapping to a distribution:
     P: ℝ^d -> [0,1]^k
-    P(x;θ={w,b}) := softmax ◦ W_L ◦ (φ ◦ W_{L-1}) ◦ ... ◦ (φ ◦ W_1) ◦ x
+    P(x;θ={w,b}) := (softmax ◦ W_L ◦ (φ ◦ W_{L-1}) ◦ ... ◦ (φ ◦ W_1))(x)
 
 and each pair of linearity W and non-linearity φ is a "hidden layer" so
     h^(1) := φ(W^1x+b_1)
@@ -321,9 +321,9 @@ and in the case of multiclass classification with softmax regression:
 
 and in the case of multiclass classification with neural networks:
     P: ℝ^d -> [0,1]^k
-    P(x;θ={w,b}) := softmax ◦ W_L ◦ (φ ◦ W_{L-1}) ◦ ... ◦ (φ ◦ W_1) ◦ x
-==> θ̂ ∈ argmin -Σlog[softmax ◦ W_L ◦ (φ ◦ W_{L-1}) ◦ ... ◦ (φ ◦ W_1) ◦ x] [by def]
-==> θ^(t+1) := θ^t - α∇[-Σlog[softmax ◦ W_L ◦ (φ ◦ W_{L-1}) ◦ ... ◦ (φ ◦ W_1) ◦ x]]
+    P(x;θ={w,b}) := (softmax ◦ W_L ◦ (φ ◦ W_{L-1}) ◦ ... ◦ (φ ◦ W_1))(x)
+==> θ̂ ∈ argmin -Σlog[(softmax ◦ W_L ◦ (φ ◦ W_{L-1}) ◦ ... ◦ (φ ◦ W_1))(x)] [by def]
+==> θ^(t+1) := θ^t - α∇[-Σlog[(softmax ◦ W_L ◦ (φ ◦ W_{L-1}) ◦ ... ◦ (φ ◦ W_1))(x)]]
 
 but since |θ| where θ={w,b} are reaching the billions and trillions, deriving
 the gradient of the loss function with respect to weights and biases becomes
@@ -482,12 +482,16 @@ learning frameworks implement reverse-mode differentiation as opposed to
 forward-mode — and recursively applies the chain rule to evaluate all partials.
 
 The difference between forward-mode and reverse-mode differentiation is the
-direction you step through the graph which ends up influencing speed — stepping
-inside out is traversing the graph forwards, and stepping outside in is traversing
-the graph backwards. Consider the applicaiton of the chain rule when evaluating
-the f'(x) for the function f(x) := cos(x^2). Which subexpression do you derive
-first? Evaluating d/dx[cos(x)] = sinx first is reverse mode, and evaluating
-d/dx[x^2] = 2x first is forward mode.
+direction you step through the graph which can end up influencing speed depending
+on the shape of the function. Stepping from inputs to outputs is considered a
+forward traversal, and the opposite is considered to be a backward traversal.
+For instance, consider the applicaiton of the chain rule when evaluating the
+f'(x) for f(x) := cos(x^2). Which subexpression do you derive first? Evaluating
+d/dx[cos(x)] = sinx first is reverse mode, and evaluating d/dx[x^2] = 2x first
+is forward mode. With neural networks, most expression graphs represent functions
+of the form f: ℝ^n -> ℝ, and so the default traversal for all deep learning
+frameworks is reverse mode. However, regardless of the order of traversal, the
+effective computation is the same: a summation over all possible products of paths.
 
 c = a*b (1)
 d = e+f (2)
@@ -502,7 +506,6 @@ g = c*d (3)
 ∂d/e = 1 (9) [sum rule]
 ∂d/f = 1 (10) [sum rule]
 
-
  .-. (7)
 ( a <---+
  `-'    |   * .-. (1) (5)
@@ -516,10 +519,6 @@ g = c*d (3)
 ( f )<--+
  `-'(10)
 Fig 4. expression graph
-
-TODO: reverse mode: R^n -> R^m m (number of outputs) forward mode: R^n -> R^m n (number of inputs)
-Regardless of whether autodifferentiation is implemented with forward or reverse-mode,
-the end computation is the same: we are summing over all possible products of paths.
 
 TODO: autodifferentiation through a graph representing a neural network
 
