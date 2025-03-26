@@ -43,9 +43,9 @@ Part 0: non-linear parametric models — nn.Linear, nn.ReLU
 Before jumping into the implementation of our deep learning framework's
 multidimensional array with autodifferentiation capability, let's review the
 mathematics of neural networks. We will incrementally construct a family of
-functions from logistic regression, multiclass regression, to neural networks
-all for the classification setting where Y⊆ℕ to prepare for part 4 and part 5
-where the pretrained models for llama and r1 are neural language models.
+functions from logistic regression, multiclass regression, feedforward
+neural networks, attention and chain of thought variants, all for the
+classification setting where Y⊆ℕ.
 
 Recall that the logistic regression model for binary classification recovers the
 bernouilli distribution:
@@ -495,8 +495,9 @@ frameworks is reverse mode.
 
 However, regardless of the order of traversal, the effective computation is the
 same: a summation over all possible products of paths. The base case starts
-with ∂f/∂f = 1, and then recursively applies the chain rule for each subexpression
-in order to evaluate all partials. Stepping through the backward for the same
+with ∂f/∂f = 1, propagating the local dout/din, and recursively applies the chain
+rule for each subexpression. This is why reverse-mode differentiation is also
+referred to as "backpropagation". Stepping through the backward for the same
 function f as above where d denotes the global derivative and ∂ denotes the local
 derivative.
 
@@ -546,13 +547,13 @@ dg/df = ∂g/∂g*∂g/∂d*∂d/∂f [chain rule]
  `-'(10)
 Fig 4. expression graph
 
-What's amazing is that autodifferentiation allows the user to implicitly
-construct the expression graph by specifying the forward pass, and the backward
-pass is abstracted away with an output.backward(). Let's now step through the
-forward pass and backward pass of a neural network
+What's delightful from a user experience point of view is that autodifferentiation
+allows the user to implicitly construct the expression graph by specifying the
+forward pass, and the backward pass is abstracted away with an output.backward().
+Let's now step through the forward pass and backward pass of a neural network
 f(x;θ={w,b}) := (softmax ◦ W_L ◦ (φ ◦ W_{L-1}) ◦ ... ◦ (φ ◦ W_1))(x)
 
-
+TODO: jvp product?
 
 
 
