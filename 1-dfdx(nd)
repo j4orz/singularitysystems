@@ -283,7 +283,8 @@ Example 2:
 4 5 6      ==>        2 5 8
 7 8 9                 3 6 9
 
-TODO: rest of ndarray owl.
+TODO:
+- binops (zip), uops(map), reduceops(), viewops, matmul.
 
 We have built an abstraction for the multidimensional array, which makes the
 current framework more or less on par with the capabilities of numpy. But in
@@ -379,68 +380,13 @@ plt.plot(steps, losses)
 -------------------------------------------------------
 Part 2: gradient descent — model.backward(), opt.step()
 -------------------------------------------------------
-  2a — Derivative: approximation via local linearization
-  2b — Automatic differentiation: calculus on computational graph
-  2c — Gradient descent: non-convex optimization
+  2a — Automatic differentiation: calculus on computational graph
+  2b — Derivative: approximation via local linearization
+  2c — Derivative rules: backward methods
+  2d — Advanced AD: jacobian-vector and vector-jacobian products
+  2d — Gradient descent: non-convex optimization
 
-2a — Derivative: approximation via local linearization
-------------------------------------------------------
-The first place to start is to clarify and disambiguate the notion of a derivative
-in order to generalize the denotation we use for higher dimensions to hold a more
-precise semantics. At the end of part 2a you will have a clear understanding
-why the gradient and jacobian are defined the way they are, and how what most
-people refer to as "gradients" with pytorch are really jacobians.
-
-By redefining the derivative as a linear operator L defined on some vector space
-V that you apply to a change in input to obtain a change in output (sometimes
-referred to as the Frechét derivative), it becomes very clear why the gradient
-and jacobian are defined the way they are. Clarity that is not achievable when
-defining them by fiat. (i.e. "let's *just* rearrange the partials in a vector/matrix").
-
-Let's begin by recalling that for some f: ℝ -> ℝ the difference of a function at
-a point x and x+δx is f(x+δx)-f(x) = δf which can be approximated by f'(x)δx plus
-some error terms. That is,
-    f(x+δx)-f(x) = δf
-                = f'(x)δx + o(δx)
-                ≈ f'(x)δx
-
-and if we take the difference to be an infinitesimal then it becomes a differential
-    f(x+dx)-f(x) = df
-                = f'(x)dx
-
-and more generally we define the derivative *as* the linear operator L on vector
-space V which you apply to a change in input in order to obtain the change in
-output. That is, Δout = (lin.op)[Δin]. which generalizes to higher dimensions.
-While defining f'x ≜ df/dx is legal when f: ℝ -> ℝ, it's usually not clear what
-df/dx means in higher dimensions, since /: ℝ^n, R^m -> ? is not defined.
-
-Consider df = f'(x)dx when f: ℝ^d -> ℝ. Then, given that dx ∈ ℝ and df ∈ ℝ^d,
-the linear operator f'(x) *must* be the dot product with some column vector,
-(multiplication with the column vector transposed). Let's call this column vector
-the "gradient" of f and as you can now probably tell, this is *why* the gradient
-is defined the way it is.
-
-Moving on, if we consider df = f'(x)dx where f: ℝ^n -> ℝ^m, then given that
-dx ∈ ℝ^n and df ∈ ℝ^m, the linear operator f'(x) *must* be expressable as a matrix
-multiplication with some matrix A ∈ ℝ^(mxn) since any linear transformation is
-a combination of scaling, shearing, rotation or reflection. Let's call this matrix
-the "jacobian".
-
-Stepping back, defining the derivative this way generalizes the rise over run with
-scalars, the gradient with vectors, and the jacobian with matrices into the same
-notion: they are the linear operators defined on vector spaces that you apply to
-a change in input in order to obtain the change in output, and are defined the
-way they are out of necessity, rather than by fiat. This also means that this
-definition extends to any vector space where a linear operator is defined, for
-instance, the space of matrices (vectorization of matrices), and the space of
-functions (calculus of variations).
-
-While training deep neural networks does not involve functions that map
-matrices to matrices or functions to functions, defined this way it's clear
-that many of the "grads" we take in pytorch are actually jacobians that all
-compose into one gradient for the entire expression graph.
-
-2b — Automatic differentiation: calculus on computational graph
+2a — Automatic differentiation: calculus on computational graph
 ---------------------------------------------------------------
 Recall that we need to evaluate the gradient of a neural network's loss
 function in order to train it with parameter estimation. The method used to
@@ -499,7 +445,7 @@ with ∂f/∂f = 1, propagating the local dout/din, and recursively applies the 
 rule for each subexpression. This is why reverse-mode differentiation is also
 referred to as "backpropagation". Stepping through the backward for the same
 function f as above where d denotes the global derivative and ∂ denotes the local
-derivative.
+derivative (overloading ∂'s classic usage for partial derivative)
 
 ---forward
 c = a*b (1)
@@ -540,62 +486,149 @@ dg/df = ∂g/∂g*∂g/∂d*∂d/∂f [chain rule]
 ( b )<--+     `-'    |
  `-' (8)             |    * .-. (4)
  .-. (9)             +-----( g )
-( e )<--+   / .-. (2)|(6)   `-'
+( e )<--+   + .-. (2)|(6)   `-'
  `-'    +----( d )<--+
  .-.    |     `-'
 ( f )<--+
  `-'(10)
-Fig 4. expression graph
 
 What's delightful from a user experience point of view is that autodifferentiation
 allows the user to implicitly construct the expression graph by specifying the
 forward pass, and the backward pass is abstracted away with an output.backward().
-Let's now step through the forward pass and backward pass of a neural network
-f(x;θ={w,b}) := (softmax ◦ W_L ◦ (φ ◦ W_{L-1}) ◦ ... ◦ (φ ◦ W_1))(x)
 
-TODO: jvp product?
+TODO: show expression graph for a neural network.
+TODO: let's now revisit the definition of the derivative (2b) and rederive a few derivative rules (2c)
+- +(tensor, tensor)
+- @(tensor, tensor)
+- tanh(tensor)
+
+2b — Derivative: approximation via local linearization
+------------------------------------------------------
+The first place to start is to clarify and disambiguate the notion of a derivative
+in order to generalize the denotation we use for higher dimensions to hold a more
+precise semantics. At the end of part 2a you will have a clear understanding
+why the gradient and jacobian are defined the way they are, and how what most
+people refer to as "gradients" with pytorch are really jacobians.
+
+By redefining the derivative as a linear operator L defined on some vector space
+V that you apply to a change in input to obtain a change in output (sometimes
+referred to as the Frechét derivative), it becomes very clear why the gradient
+and jacobian are defined the way they are. Clarity that is not achievable when
+defining them by fiat. (i.e. "let's *just* rearrange the partials in a vector/matrix").
+
+Let's begin by recalling that for some f: ℝ -> ℝ the difference of a function at
+a point x and x+δx is f(x+δx)-f(x) = δf which can be approximated by f'(x)δx plus
+some error terms. That is,
+    f(x+δx)-f(x) = δf
+                 = f'(x)δx + o(δx)
+                 ≈ f'(x)δx
+
+and if we take the difference to be an infinitesimal then it becomes a differential
+    f(x+dx)-f(x) = df
+                 = f'(x)dx
+
+and more generally we define the derivative *as* the linear operator L on vector
+space V which you apply to a change in input in order to obtain the change in
+output. That is, Δout = (lin.op)[Δin]. which generalizes to higher dimensions.
+While defining f'x ≜ df/dx is legal when f: ℝ -> ℝ, it's usually not clear what
+df/dx means in higher dimensions, since /: ℝ^n, R^m -> ? is not defined.
+
+Consider df = f'(x)dx when f: ℝ^d -> ℝ. Then, given that dx ∈ ℝ and df ∈ ℝ^d,
+the linear operator f'(x) *must* be the dot product with some column vector,
+(multiplication with the column vector transposed). Let's call this column vector
+the "gradient" of f and as you can now probably tell, this is *why* the gradient
+is defined the way it is.
+
+Moving on, if we consider df = f'(x)dx where f: ℝ^n -> ℝ^m, then given that
+dx ∈ ℝ^n and df ∈ ℝ^m, the linear operator f'(x) *must* be expressable as a matrix
+multiplication with some matrix A ∈ ℝ^(mxn) since any linear transformation is
+a combination of scaling, shearing, rotation or reflection. Let's call this matrix
+the "jacobian".
+
+Stepping back, defining the derivative this way generalizes the rise over run with
+scalars, the gradient with vectors, and the jacobian with matrices into the same
+notion: they are the linear operators defined on vector spaces that you apply to
+a change in input in order to obtain the change in output, and are defined the
+way they are out of necessity, rather than by fiat.
+
+This also means that this definition extends to any vector space where a linear
+operator is defined, for instance, the space of matrices (vectorization of matrices),
+and the space of functions (calculus of variations). Moreover, this generalization
+makes the definition coordinate system independant.
+
+While training deep neural networks do not involve functions that map
+matrices to matrices or functions to functions, defined this way it's clear
+that many of the "grads" we take in pytorch are actually jacobians that all
+compose into one single gradient for the entire expression graph which represents
+some function f: ℝ^n -> ℝ.
+
+TODO: derivation of derivative rules. so we don't have to use limiting definition each time.
+
+2c — Derivative rules: backward methods
+---------------------------------------
+
+def type(shape) of f'(x)
+def component-wise of f'(x)
+for each:
+- f: ℝ^n -> ℝ
+- f: ℝ^n -> ℝ^m
+- f: ℝ^(nxm) -> ℝ
+- f: ℝ^(nxm), ℝ^(mxp) -> ℝ^(nxp)
+
+Sum rule
+--------
+f: V -> V
+f(x) := g(x) + h(x)
+==>      df = dg + dh
+    f'(x)dx = g'(x)dx + h'(x)dx   [by def]
+      f'(x) = g'(x) + h'(x)       [/ dx]
+
+Product rule
+------------
+f: V -> V
+f(x) := g(x)h(x)
+==> df = f(x+dx)-f(x)
+       = g(x+dx)h(x+dx)-g(x)h(x)                        [by def of f]
+       = [g(x)+g'(x)dx][h(x)+h'(x)dx]-g(x)h(x)          [by def of i(x+dx)=i(x)+i'(x)]
+       = g(x)h(x)                                       [expand product]
+         + g(x)h'(x)dx
+         + h(x)g'(x)dx
+         + g'(x)h'(x)(dx)^2
+       - g(x)h(x)
+       = g(x)h'(x)dx + h(x)g'(x)dx + g'(x)h'(x)(dx)^2   [g(x)h(x) cancels]
+       = g(x)h'(x)dx + h(x)g'(x)dx                      [g'(x)h'(x)(dx)^2 -> 0]
+       = [g(x)h'(x) + h(x)g'(x)]dx
+       = f'(x)dx
+
+Chain rule
+----------
+f: V -> V
+f(x) := g[h(x)]
+==> df = f(x+dx)-f(x)
+       = g[h(x+dx)]-g[h(x)]
+       = g[h(x)+h'(x)dx]-g[h(x)]                  [by def of h(x+dx)=h(x)+h'(x)]
+       = g'[h(x)]h'(x)dx                          [g(x+dx)-g(x) = dg = g'(x)dx
+                                                   where x=h'(x)dx]
 
 
-
-
-
-
-
-
+2d — Advanced AD: jacobian-vector and vector-jacobian products
+--------------------------------------------------------------
 
 2c — Gradient descent: non-convex optimization
 ----------------------------------------------
-nn training (non-convex) TODO:
-- initialization random
-- initialization to 0 mean and unit variance
-- GD, SGD, AdamW, Muon
+Finally, recall evaluating the derivative of the computational graph's output
+with respect to all inputs is used to implement argmin ℒ(Θ) by iteratively
+adjusting θ̂ via gradient descent:
+    θ^(t+1) := θ^t - α∇ℒ(Θ)
+             = θ^t - α∇-ΣlogP(y^i|x^i;Θ)
 
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-----------------------------------
-Part 3: attention — a(q,k,v) TODO:
-----------------------------------
+----------------------------
+Part 3: attention — a(q,k,v)
+----------------------------
 Since the discovery of the attention operator in 2017 by (Vaswani et al. 2017),
 language, vision, audio and any domain that can be expressed as an autoregressive
 sequence of tokens (text/pixels/waves) — that is, an n-dimensional joint distribution:
@@ -608,11 +641,17 @@ neural network (FFN). Here is the model definiton and inference loop:
 
 
 
+------------------------
+Part 4: assistant — RLHF
+------------------------
+reinforcement learning from human rewards
 
 
-----------------------------
-Part 4: thought — TODO:
-----------------------------
+
+-----------------------
+Part 5: reasoner — GRPO
+-----------------------
+reinforcement learning from automated rewards
 
 
 
@@ -631,5 +670,9 @@ References
 [7]: https://numpy.org/doc/stable/dev/internals.code-explanations.html
 [8]: https://numpy.org/doc/stable/reference/arrays.ndarray.html#internal-memory-layout-of-an-ndarray
 [9]: https://cs231n.github.io/optimization-2/
-[10]: https://colah.github.io/posts/2015-08-Backprop/
-[11]: https://gdalle.github.io/AutodiffTutorial/
+[10]: https://ocw.mit.edu/courses/18-s096-matrix-calculus-for-machine-learning-and-beyond-january-iap-2023/
+[11]: http://www.incompleteideas.net/book/RLbook2020.pdf
+[12]: https://arxiv.org/pdf/2312.16730
+[13]: https://arxiv.org/abs/2412.05265
+[14]: https://spinningup.openai.com/en/latest/
+[15]: https://rlhfbook.com/
