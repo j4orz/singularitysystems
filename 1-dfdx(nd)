@@ -11,7 +11,7 @@
                                                                  
 Singularity Systems: Zero to Hero
 --------------------------------------------------------------------------------
-Syllabus:
+Contents:
   0. au197
   1. dfdx(nd) <-- HERE
     Part 0: non-linear parametric models — nn.Linear(), nn.ReLU
@@ -35,7 +35,7 @@ In the next chapter we will accelerate all three models using GPUs.
 
 
 
-
+`
 
 ---------------------------------------------------------
 Part 0: non-linear parametric models — nn.Linear, nn.ReLU
@@ -93,7 +93,7 @@ to softmax allows us to recover the multinomial distribution:
     P(Y=i|X=x) = exp(w_iᵀx) / Σ exp(w_jᵀx)
                               j=1..k
 ==> P(Y=y|X=x) = softmax(Wx), where W ∈ ℝ^{kxd}, x ∈ ℝ^d : x_0 = 1
-                                                                                                                                       
+
 +---++---------------++----+                          +------------------------+
 | x1||               ||w1ᵀσ|                          |exp(w1ᵀx) / Σ exp(w_jᵀx)|
 | x2||               ||w2ᵀσ|                          |exp(w2ᵀx) / Σ exp(w_jᵀx)|
@@ -534,35 +534,54 @@ While defining f'x ≜ df/dx is legal when f: ℝ -> ℝ, it's usually not clear
 df/dx means in higher dimensions, since /: ℝ^n, R^m -> ? is not defined.
 
 Consider df = f'(x)dx when f: ℝ^d -> ℝ. Then, given that dx ∈ ℝ and df ∈ ℝ^d,
-the linear operator f'(x) *must* be the dot product with some column vector,
-(multiplication with the column vector transposed). Let's call this column vector
-the "gradient" of f and as you can now probably tell, this is *why* the gradient
-is defined the way it is.
+the linear operator f'(x) *must* (formalized by the Riecz-Frchét Representation
+Theorem) be the dot product with some column vector, (multiplication with the
+column vector transposed). Let's call this column vector the "gradient" of f,
+where the component-wise definition with indices is:
+    ∇f ∈ ℝ^d, f'(x) = ∇fᵀx
+    ∇f_i ≜ ∂f/∂x_i ∀ i ∈ [0..d]
+and all together, we use f'(x) to linearize df:
+    f(x+dx)-f(x) = df
+                 = f'(x)dx
+                 = ∇fᵀdx
 
-Moving on, if we consider df = f'(x)dx where f: ℝ^n -> ℝ^m, then given that
-dx ∈ ℝ^n and df ∈ ℝ^m, the linear operator f'(x) *must* be expressable as a matrix
-multiplication with some matrix A ∈ ℝ^(mxn) since any linear transformation is
-a combination of scaling, shearing, rotation or reflection. Let's call this matrix
-the "jacobian".
+Moving on, consider df = f'(x)dx where f is a matrix vector multiplication.
+That is:
+    f: ℝ^m -> ℝ^n
+    f(x) := [f1(x), f2(x), ..., fn(x)]
+    fi(x;A) ≜ ΣAij*xj
+so f(x) := Ax
+
+Then given that dx ∈ ℝ^m and df ∈ ℝ^n, the linear operator f'(x) *must*
+(formalized by the Riecz-Frchét Representation Theorem once again) expressable
+as a matrix multiplication with some matrix A ∈ ℝ^(mxn). Let's call this matrix
+the "jacobian", where the component-wise definition with indices is the following:
+    Jf ∈ ℝ^(nxm), f'(x) = Jdx
+    Jfij ≜ ∂fi/∂xj ∀ i ∈ [0..n], j ∈ [0..m]
+and all together, we use f'(x) to linearize df:
+    f(x+dx)-f(x) = df
+                 = f'(x)dx
+                 = Jdx
 
 Stepping back, defining the derivative this way generalizes the rise over run with
 scalars, the gradient with vectors, and the jacobian with matrices into the same
 notion: they are the linear operators defined on vector spaces that you apply to
-a change in input in order to obtain the change in output, and are defined the
-way they are out of necessity, rather than by fiat.
+a change in input in order to obtain the change in output, and the types/shapes
+are defined the way they are out of necessity, rather than by fiat. Moreover,
+this also sharpens the semantics of the denotation in higher dimensions given
+that df/dx is often ill-defined. i.e. while df/dx makes sense when df, dx ∈ ℝ^n,
+dividing tensors with mismatched shapes becomes nonsensical.
 
 This also means that this definition extends to any vector space where a linear
-operator is defined, for instance, the space of matrices (vectorization of matrices),
-and the space of functions (calculus of variations). Moreover, this generalization
-makes the definition coordinate system independant.
+operator is defined, for instance, the space of matrices (vectorization of
+matrices), and the space of functions (calculus of variations). Moreover, this
+generalization makes the definition coordinate system independant.
 
 While training deep neural networks do not involve functions that map
 matrices to matrices or functions to functions, defined this way it's clear
 that many of the "grads" we take in pytorch are actually jacobians that all
 compose into one single gradient for the entire expression graph which represents
 some function f: ℝ^n -> ℝ.
-
-TODO: derivation of derivative rules. so we don't have to use limiting definition each time.
 
 2c — Derivative rules: backward methods
 ---------------------------------------
