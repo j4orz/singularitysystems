@@ -1,19 +1,19 @@
-           ,,                                     ,,                      ,,                   
- .M"""bgd  db                                   `7MM                      db   mm              
-,MI    "Y                                         MM                           MM              
+           ,,                                     ,,                      ,,
+ .M"""bgd  db                                   `7MM                      db   mm
+,MI    "Y                                         MM                           MM
 `MMb.    `7MM  `7MMpMMMb.  .P"Ybmmm `7MM  `7MM    MM   ,6"Yb.  `7Mb,od8 `7MM mmMMmm `7M'   `MF'
-  `YMMNq.  MM    MM    MM :MI  I8     MM    MM    MM  8)   MM    MM ' "'  MM   MM     VA   ,V  
-.     `MM  MM    MM    MM  WmmmP"     MM    MM    MM   ,pm9MM    MM       MM   MM      VA ,V   
-Mb     dM  MM    MM    MM 8M          MM    MM    MM  8M   MM    MM       MM   MM       VVV    
-P"Ybmmd" .JMML..JMML  JMML.YMMMMMb    `Mbod"YML..JMML.`Moo9^Yo..JMML.   .JMML. `Mbmo    ,V     
-                          6'     dP                                                    ,V      
-                          Ybmmmd'                                                   OOb"       
-                                                                                               
-                                                                                               
- .M"""bgd                   mm                                                                 
-,MI    "Y                   MM                                                                 
-`MMb.  `7M'   `MF',pP"Ybd mmMMmm .gP"Ya `7MMpMMMb.pMMMb.  ,pP"Ybd                              
-  `YMMNq.VA   ,V  8I   `"   MM  ,M'   Yb  MM    MM    MM  8I   `"                              
+  `YMMNq.  MM    MM    MM :MI  I8     MM    MM    MM  8)   MM    MM ' "'  MM   MM     VA   ,V
+.     `MM  MM    MM    MM  WmmmP"     MM    MM    MM   ,pm9MM    MM       MM   MM      VA ,V
+Mb     dM  MM    MM    MM 8M          MM    MM    MM  8M   MM    MM       MM   MM       VVV
+P"Ybmmd" .JMML..JMML  JMML.YMMMMMb    `Mbod"YML..JMML.`Moo9^Yo..JMML.   .JMML. `Mbmo    ,V
+                          6'     dP                                                    ,V
+                          Ybmmmd'                                                   OOb"
+
+
+ .M"""bgd                   mm
+,MI    "Y                   MM
+`MMb.  `7M'   `MF',pP"Ybd mmMMmm .gP"Ya `7MMpMMMb.pMMMb.  ,pP"Ybd
+  `YMMNq.VA   ,V  8I   `"   MM  ,M'   Yb  MM    MM    MM  8I   `"
 .     `MM VA ,V   `YMMMa.   MM  8M""""""  MM    MM    MM  `YMMMa.                              
 Mb     dM  VVV    L.   I8   MM  YM.    ,  MM    MM    MM  L.   I8                              
 P"Ybmmd"   ,V     M9mmmP'   `Mbmo`Mbmmd'.JMML  JMML  JMML.M9mmmP'
@@ -44,7 +44,7 @@ traditional software 1.0 compiler mapping C to RISCV that is doom-complete.
 
 Prereqs
 -------
-- solid deep learning (llama2 && r1)
+- solid machine learning (DL/RL) (llama && r1)
 - solid systems programming (C || C++ || Rust || Python*)
   * python is ok (following pure-python systems like PyTorch 2.0 & CUTLASS 4.0)
 
@@ -54,7 +54,7 @@ Syllabus
   1. dfdx(nd)
   2. brrr
   3. pt2
-  4. datacenter
+  4. use1az2
   ---Appendix
   A. c2r5
 
@@ -67,13 +67,9 @@ Ap.A implements a C89 to RV32I compiler.
 
 Citation
 --------
-j4orz (2025) Singularity Systems. https://github.com/j4orz/singularitysystems
-OR
-```
 @article{j4orz2025singsys,
   author  = "j4orz",
   title   = "Singularity Systems: Zero to Hero (The Hacker's Guide to Tensor Compilers)",
   year    = "2025",
   url     = "https://github.com/j4orz/singularitysystems"
 }
-```
