@@ -28,19 +28,21 @@ Singularity Systems: Zero to Hero — The Hacker's Guide to Tensor Compilers (by
 Course Description
 ------------------
 Singularity Systems: Zero to Hero follows up from Neural Networks: Zero to Hero.
-We turn micograd/autodidax, both toy backpropagation engines into picograd, a
-full blown deep learning framework with support for tensor compilation and
-distributed training.
+We turn the toy backpropagation engine micrograd into picograd: a deep learning
+framework with .compile(model) support.
 
 Singularity Systems bridges the missing gap in the ecosystem for low level system
 programmers and performance engineers interested in the internals of deep learning
 frameworks. The course provides the software 2.0 equivalent of SICP (interpreters)
-and dragon book (compilers), where you will build a PyTorch1-like interpreter
-in chapters 1-2 and a PyTorch2-like compiler in chapters 3-4. Both will be
-llama-complete and implemented line by line from scratch. By the end of
-Singularity Systems, you will be better equipped to contribute towards opensource
-projects such as PyTorch and Jax, both ~100kLOC. The appendix also includes a
-traditional software 1.0 compiler mapping C to RISCV that is doom-complete.
+and dragon book (compilers), where you will build a PT1 "eager" interpreter
+throughout chapters 1-2 and a PT2 "graph" compiler throughout chapters 3-4, line
+by line from scratch. Along the way, we will make detours to compare and contrast
+the design decisions and tradeoffs PyTorch has made versus other frameworks such
+as Jax and Tinygrad.
+
+By the end of Singularity Systems, you will be better equipped to contribute
+towards larger deep learning frameworks. The appendix also includes sections
+on traditional compiler construction, gpu DSLs, and ...
 
 Prereqs
 -------
@@ -57,10 +59,12 @@ Syllabus
   4. use1az2
   ---Appendix
   A. c2r5
+  B. trs
+  C. licurs
 
 Ch.0 introduces the golden age of systems ml and the singularity systems course.
 Ch.1 implements a multidimensional array with autodifferentiation.
-Ch.2 accelerates the framework with massively parallel throughput machines.
+Ch.2 accelerates the framework with massively parallel processors.
 Ch.3 compiles models with static tensor compilation.
 Ch.4 implements distributed training for datacenters.
 Ap.A implements a C89 to RV32I compiler.

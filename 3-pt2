@@ -1,0 +1,65 @@
+            mm            
+            MM            
+`7MMpdMAo.mmMMmm  pd*"*b. 
+  MM   `Wb  MM   (O)   j8 
+  MM    M8  MM       ,;j9 
+  MM   ,AP  MM    ,-='    
+  MMbmmd'   `MbmoAmmmmmmm 
+  MM                      
+.JMML.
+
+Singularity Systems: Zero to Hero
+
+--------------------------------------------------------------------------------
+Contents:
+  0. au197
+  1. dfdx(nd)
+  2. brrr
+  3. pt2 <-- HERE
+    Part 0: DLPL — Deep Learning F̶r̶a̶m̶e̶w̶o̶r̶k̶s̶ Programming Languages
+    Part 1: Frontend — Graph Capture
+    Part 2: Backend — Optimization & Generation
+  4. cloud
+Appendix:
+  A. c2r5 — Traditional Compiler Construction
+  B. trs — Kernel Programming Language
+  C. licurs — 
+--------------------------------------------------------------------------------
+
+-------------------------------------------------------------
+Part 0: DLPL — Deep Learning F̶r̶a̶m̶e̶w̶o̶r̶k̶s̶ Programming Languages
+-------------------------------------------------------------
+Can we build systems that treat numerics, derivatives and parallelism as first-class features, without sacrificing traditional programming ideas and wisdom? This is the foundational question which languages over the coming decade will have to answer.
+
+--------------------------------
+Part 1: Frontend — Graph Capture
+--------------------------------
+  1a - foo: torch.jit.trace
+  1b — bar: torch.fx.symbolic_trace
+  1c — Dynamic Bytecode Transformation: TorchDynamo
+
+
+
+
+
+References:
+productivity-performance-pareto
+- DLPL: https://math.mit.edu/~edelman/publications/on_machine_learning.pdf
+- graph-graph: TF1/caffe/theano https://arxiv.org/abs/1605.08695, https://dl.acm.org/doi/abs/10.1145/2647868.2654889, https://arxiv.org/abs/1605.02688
+- eager-eager: Chainer/PT1/TF2 https://arxiv.org/abs/1908.00213, https://arxiv.org/pdf/1912.01703, https://arxiv.org/abs/1903.01855
+- eager-graph (compiler):
+  - PT2 https://arxiv.org/abs/2002.03794, https://dl.acm.org/doi/pdf/10.1145/3620665.3640366, https://www.youtube.com/watch?v=WxYEoTLgdLo
+  - TVM: https://arxiv.org/abs/1802.04799
+
+frontend: graph capture
+1. jit.trace
+2. fx.trace? symbolic tracing
+- https://mlsys.org/Conferences/doc/2018/146.pdf
+3. dynamic bytecode transforms
+- https://arxiv.org/abs/2112.08429
+- https://pytorch.org/docs/stable/torch.compiler_dynamo_overview.html
+- https://pytorch.org/docs/stable/torch.compiler_dynamo_deepdive.html
+- https://www.youtube.com/watch?v=egZB5Uxki0I
+- https://www.youtube.com/watch?v=5FNHwPIyHr8
+
+backend: codegen?

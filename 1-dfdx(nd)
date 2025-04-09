@@ -24,6 +24,8 @@ Contents:
   4. datacenter
 Appendix:
   A. c2r5
+  B. trs
+  C. licurs
 --------------------------------------------------------------------------------
 
 Welcome to the beginning of a whirlwind tour within the world of deep learning
@@ -35,7 +37,7 @@ In the next chapter we will accelerate all three models using GPUs.
 
 
 
-`
+
 
 ---------------------------------------------------------
 Part 0: non-linear parametric models — nn.Linear, nn.ReLU
@@ -459,8 +461,15 @@ respect to f. To make the deep learning context clearer, we will use W instead
 of A:
   fi(W,x) ≜ ΣWij*xj
     f(x) := [f1(x), f2(x), ..., fn(x)]
-but we can just promote x to be a matrix too. Finally, consider f'(x) when f: ℝ^(nxm), ℝ^(mxp) -> ℝ^(nxp)
+but we can just promote x to be a matrix too. Finally, consider f'(x) when
+f: ℝ^(nxm), ℝ^(mxp) -> ℝ^(nxp)
 
+ℒ: ℝ^d0 -> ℝ ∋ ℒ(Z) where Z := X @ Y
+==> dℒ = dℒ/dZ : dZ                             [by Riecz. Representation Theorem]
+       = dℒ/dZ : (dX@Y + X@dY)                  [by product rule on dZ]
+       = dℒ/dZ : (dX@Y) + dℒ/dZ : (X@dY)        [: linear]
+       = (dℒ/dZ@Yᵀ) : dX + (Xᵀ@dℒ/dZ) : dY      [by TODO...circularity of trace]                              
+==> dℒ/dX = dℒ/dZ@Yᵀ ∧ dℒ/dY = Xᵀ@dℒ/dZ
 
 
 
@@ -692,18 +701,17 @@ reinforcement learning from automated rewards
 References
 ----------
 [0]: https://web.stanford.edu/~jurafsky/slp3/
-[1]: https://cs229.stanford.edu/main_notes.pdf
-[2]: https://www.sscardapane.it/alice-book/
-[3]: https://arxiv.org/pdf/1912.01703
-[4]: http://blog.ezyang.com/2019/05/pytorch-internals/
-[5]: https://docs.jax.dev/en/latest/autodidax.html
-[6]: https://numpy.org/doc/stable/dev/internals.html
-[7]: https://numpy.org/doc/stable/dev/internals.code-explanations.html
-[8]: https://numpy.org/doc/stable/reference/arrays.ndarray.html#internal-memory-layout-of-an-ndarray
-[9]: https://cs231n.github.io/optimization-2/
-[10]: https://ocw.mit.edu/courses/18-s096-matrix-calculus-for-machine-learning-and-beyond-january-iap-2023/
-[11]: http://www.incompleteideas.net/book/RLbook2020.pdf
-[12]: https://arxiv.org/pdf/2312.16730
-[13]: https://arxiv.org/abs/2412.05265
-[14]: https://spinningup.openai.com/en/latest/
-[15]: https://rlhfbook.com/
+[1]: https://arxiv.org/pdf/1912.01703
+[2]: http://blog.ezyang.com/2019/05/pytorch-internals/
+[3]: https://docs.jax.dev/en/latest/autodidax.html
+[4]: https://numpy.org/doc/stable/dev/internals.html
+[5]: https://numpy.org/doc/stable/reference/arrays.ndarray.html#internal-memory-layout-of-an-ndarray
+[6]: https://ocw.mit.edu/courses/18-s096-matrix-calculus-for-machine-learning-and-beyond-january-iap-2023/
+[7]: https://indico.ijclab.in2p3.fr/event/2914/contributions/6483/subcontributions/180/attachments/6060/7185/automl-short.pdf
+[8]: https://blog.x.com/engineering/en_us/topics/infrastructure/2015/autograd-for-torch
+[9]: https://openreview.net/pdf?id=BJJsrmfCZ
+[10]: http://www.incompleteideas.net/book/RLbook2020.pdf
+[11]: https://arxiv.org/pdf/2312.16730
+[12]: https://arxiv.org/abs/2412.05265
+[13]: https://spinningup.openai.com/en/latest/
+[14]: https://rlhfbook.com/
