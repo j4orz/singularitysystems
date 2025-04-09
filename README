@@ -38,11 +38,8 @@ and dragon book (compilers), where you will build a PT1 "eager" interpreter
 throughout chapters 1-2 and a PT2 "graph" compiler throughout chapters 3-4, line
 by line from scratch. Along the way, we will make detours to compare and contrast
 the design decisions and tradeoffs PyTorch has made versus other frameworks such
-as Jax and Tinygrad.
-
-By the end of Singularity Systems, you will be better equipped to contribute
-towards larger deep learning frameworks. The appendix also includes sections
-on traditional compiler construction, gpu DSLs, and ...
+as Jax and Tinygrad. By the end of Singularity Systems, you will be better
+equipped to contribute to production-level deep learning frameworks.
 
 Prereqs
 -------
@@ -58,16 +55,19 @@ Syllabus
   3. pt2
   4. use1az2
   ---Appendix
-  A. c2r5 — Traditional Compiler Construction
-  B. trs — Kernel DS(Language)
+  A. c2r5
+  B. trs
   C. licurs
 
-Ch.0 introduces the golden age of systems ml and the singularity systems course.
+Ch.0 introduces the golden age of systems ml and the course.
 Ch.1 implements a multidimensional array with autodifferentiation.
 Ch.2 accelerates the framework with massively parallel processors.
 Ch.3 compiles models with static tensor compilation.
 Ch.4 implements distributed training for datacenters.
-Ap.A implements a C89 to RV32I compiler.
+Ap.A reviews traditional compiler construction.
+Ap.B reviews gpu domain specific languages.
+Ap.C
+* lecture videos do not cover appendices.
 
 Citation
 --------

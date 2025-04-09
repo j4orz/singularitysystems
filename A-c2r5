@@ -1,0 +1,74 @@
+ ,6"Yb.        ,p6"bo  pd*"*b. `7Mb,od8 M****** 
+8)   MM       6M'  OO (O)   j8   MM' "'.M       
+ ,pm9MM mmmmm 8M          ,;j9   MM    |bMMAg.  
+8M   MM       YM.    , ,-='      MM         `Mb 
+`Moo9^Yo.      YMbmd' Ammmmmmm .JMML.        jM 
+                                       (O)  ,M9 
+                                        6mmm9
+
+Singularity Systems: Zero to Hero
+--------------------------------------------------------------------------------
+Contents:
+  0. au197
+  1. dfdx(nd)
+  2. brrr
+  3. pt2
+  4. cloud
+Appendix:
+  A. c2r5 <-- HERE
+    Part 0: evaluation speedrun — interpreter
+    Part 1: compilation frontend — parser
+    Part 2: compilation middlend — optimizer
+    Part 3: compilation backend — generator
+  B. trs
+  C. licurs
+--------------------------------------------------------------------------------
+
+---------------------------
+Part 0: evaluation speedrun
+---------------------------
+  0a — arithmetic
+  0b — bindings, functions
+  0c — control flow
+  0d — heap
+
+Programming languages have a dual nature to them. On one hand, logicians treat
+them as mathematical objects whose semantics (a function from programs to values)
+are amenable to formalization. e.g. SML, Scheme, WASM. On the other, engineers
+treat them as tools for their trade whose purpose is to build applications.
+eg: Python, Javascript, and Ruby.
+
+Starting the study of the principles of programming languages with definitional
+interpreters is convenient as it allows us to operationalize a common core of
+semantics without worrying about the semantic chasm that lies between syntax and
+the electrons. Rather than use the chip's implementation with microcode as the
+interprter, we will build our own interpreter in software. In the development of
+our C0 interpreter, we won't smoke test it with too many programs, since 1. the
+focus here is on principles of programming languages and 2. there is close to no
+real usage of C0 outside CMU. In the next document, we will add the complexity
+of the semantic chasm back in by implementing a compiler for C89, targeting RV32I.
+
+The data an interpreter (and compiler) uses to represent a program is abstract
+syntax, in contrast to the concrete syntax — this distinction was introduced in
+Landin's infamous paper: Next 700 Programming Languages. Parsing maps this
+concrete syntax to abstract syntax, and evaluating maps the abstract syntax to a
+value. If you take a step back, a parser and evaluator are adjoint functors to
+one another, just like probability and statistics. A parser is a function that
+maps information to data (abstract syntax), and an evaluator is a function that
+maps data back to information. Coloquially, a parser lifts the representation
+and the evaluator lowers it. Most of the time, the abstract syntax is
+represented with a tree.
+
+0a — arithmetic
+---------------
+
+
+References
+----------
+[0]: https://papl.cs.brown.edu/
+[1]: https://cs.brown.edu/courses/cs173/2012/book/
+[2]: https://www.plai.org/
+[3]: https://mitpress.mit.edu/9780262047760/essentials-of-compilation/
+[4]: https://github.com/rambhawan/Computer-Compiler-Lang/blob/master/Advanced%20Compiler%20Design%20and%20Implementation.pdf
+[5]: https://cs.au.dk/~amoeller/spa/
+[6]: https://link.springer.com/book/10.1007/978-3-030-80515-9
