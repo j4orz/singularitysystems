@@ -29,7 +29,30 @@ Appendix:
 -------------------------------------------------------------
 Part 0: DLPL — Deep Learning F̶r̶a̶m̶e̶w̶o̶r̶k̶s̶ Programming Languages
 -------------------------------------------------------------
-Can we build systems that treat numerics, derivatives and parallelism as first-class features, without sacrificing traditional programming ideas and wisdom? This is the foundational question which languages over the coming decade will have to answer.
+For the past decade ever since deep learning has entered the zeitgeist of the
+academic community[0] and public consciousness[1], frameworks have been
+researching for the right programming model to express deep neural networks. In
+terms of user and execution models, the industry started with TF1's graph-graph
+approach, and settled on PT1's eager-eager approach. Given that
+
+  1. host-device execution is asynchronous and
+  2. most of wall clock time on training and inference was spent on matmul FLOPS
+
+as long as Python could schedule workloads so as to saturate the GPU's work queue,
+then PT1's eager-eager approach was a zero cost abstraction. That is, there is no
+other optimizations to make given that NVIDIA's best of the best were hand tuning
+their vendor libraries such as cuBLAS and cuDNN.
+
+However, the attention operator which unlocked the success of large autoregressive
+models have precipated a change in the underlying hardware such as tensor cores,
+tensor memory access, and more (TODO). While the good news is that pure tensor
+contractions become faster, the overall wall clock time is dominated by slower
+operations. This is the primary motivation for PT2's[2] eager-graph approach.
+With fusing, unrolling, TODO.... there is room left on the table for compiler
+optimizations:
+
+TODO: ascii graph for matmul FLOPS vs non matmul FLOPS
+
 
 --------------------------------
 Part 1: Frontend — Graph Capture

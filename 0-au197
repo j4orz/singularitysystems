@@ -31,20 +31,24 @@ via deterministic languages encoded with 0s and 1s. The second one started in th
 2020s when we discovered how to compress sequences via stochastic distributions
 (models) with automatic differentiation and gradient descent.
 
+What's interesting to systems programmers and performance engineers is that the
+field is witnessing the rhyming of history. The feedback loop between the
+information revolution's software applications and sequential hardware
+(OOO, pipelining, TODO) creates this sociocultural phenomena dubbed
+"Moore's Law"[X]. The same loop is happening with the intelligence revolution's
+models and parallel hardware (tensor cores, TMA, TODO) which is now giving rise
+to the "Scaling Laws"[X]. All of the original assumptions in the design of the
+compilers and chips that make up the soul of the machine are being reassessed
+if the dominant workload is evaluating matrix multiplications for stochastic
+distributions instead of fetching data for discrete algorithms.
+
 In transportation technology is when humanity wants to go to the moon, engineers
 reassess the design of vehicles from first principles. Given the workload of
 space travel, it's economically feasiable to start from fundamentals and design
-a rocket rather than a car or bus.
+a rocket rather than a car or bus. As a result, the engineers behind the massive
+infrastructure buildout are dubbing this period of
+history as a new golden age:
 
-The same tension applies to intelligence technology — ever since the ChatGPT
-and DeepSeek moment, engineers are reassessing the design of computers from
-first principles. All of the original assumptions that were made last century
-need to be reevaluated if the significant mode of computation is evaluating
-matrix multiplications for stochastic distributions rather than fetching data
-for discrete algorithms.
-
-As a result, compiler buffs and chip architects report that the field is currently
-undergoing a Golden Age:
 1. A New Golden Age for Computer Architecture[0] — Hennessy and Patterson
 2. The Golden Age of Compiler Design[1] — Chris Lattner
 
@@ -76,9 +80,11 @@ Welcome to the golden age of Systems ML!
 
 References
 ----------
-[0] https://www.youtube.com/watch?v=3LVeEjsn8Ts
-[1] https://www.youtube.com/watch?v=4HgShra-KnY
-[2] https://karpathy.medium.com/software-2-0-a64152b37c35
+[X]: https://proceedings.neurips.cc/paper_files/paper/2012/file/c399862d3b9d6b76c8436e924a68c45b-Paper.pdf
+[X]: https://sci-hub.se/https://doi.org/10.1038/nature14539
+[0]: https://www.youtube.com/watch?v=3LVeEjsn8Ts
+[1]: https://www.youtube.com/watch?v=4HgShra-KnY
+[2]: https://karpathy.medium.com/software-2-0-a64152b37c35
 [3]: https://github.com/mit-pdos/xv6-public
 [4]: https://github.com/rui314/chibicc
 [5]: https://c9x.me/compile/
