@@ -17,9 +17,7 @@ Syllabus:
   3. pt2
   4. cloud
 Appendix:
-  A. c2r5
-  B. trs
-  C. licurs
+  A. tiles
 --------------------------------------------------------------------------------
 
 ---------------------------------------------------------
@@ -67,7 +65,7 @@ Researchers talk about "research debt"[6] with respect to model development, but
 what they forget to talk about is that the debt also applies to the underlying
 infrastructure that powers the training and inference of deep neural networks.
 This is largely in part because it's only been a decade since deep learning
-has entered the zeitgeist of the research community[7] and public consciousness[8].
+has entered the zeitgeist of academia[7] and the public[8].
 
 To give you a better idea of how nascent system ML as a field:
   1. the leading conferences for AI (NeurIPS) and Hardware (HOTCHIPS) have both
@@ -81,7 +79,7 @@ Welcome to the golden age of Systems ML!
 References
 ----------
 [X]: https://proceedings.neurips.cc/paper_files/paper/2012/file/c399862d3b9d6b76c8436e924a68c45b-Paper.pdf
-[X]: https://sci-hub.se/https://doi.org/10.1038/nature14539
+[X]: https://www.nature.com/articles/nature14539
 [0]: https://www.youtube.com/watch?v=3LVeEjsn8Ts
 [1]: https://www.youtube.com/watch?v=4HgShra-KnY
 [2]: https://karpathy.medium.com/software-2-0-a64152b37c35
@@ -90,7 +88,7 @@ References
 [5]: https://c9x.me/compile/
 [6]: https://distill.pub/2017/research-debt/
 [7]: https://proceedings.neurips.cc/paper_files/paper/2012/file/c399862d3b9d6b76c8436e924a68c45b-Paper.pdf
-[8]: https://sci-hub.se/https://doi.org/10.1038/nature14539
+[8]: https://www.nature.com/articles/nature14539
 [9]: https://papers.nips.cc/
 [10]: https://hotchips.org/archives/
 [11]: https://proceedings.mlsys.org/

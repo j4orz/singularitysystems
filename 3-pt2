@@ -21,16 +21,42 @@ Contents:
     Part 2: backend — optimization & generation
   4. cloud
 Appendix:
-  A. c2r5
-  B. trs
-  C. licurs
+  A. tiles
 --------------------------------------------------------------------------------
+
+TODO: fit this
+The essence of a programming language is a collection of features that interact
+and compose with one another to provide a pleasant human computer interaction.
+That means languages are not tied to their implementation strategies. Although C
+is traditionally compiled, there is nothing stopping someone from implementing an
+interpreter for it. Similarly, although PyTorch was traditionally interpreted,
+there is nothing stopping someone from implementing a compiler for it. There is
+even an implementation strategy that is the hyrid of interpretation and
+compilation, referred to as JIT compilation. Many people coloquially refer to
+some languages as "compiled languages" and others as "interpreted languages" and 
+the first thing to understand is that these terms are nonsensical. However, this
+then begs the question. How do you choose between the various implementation
+strategies for your language?
+
+The answer is to choose the implementation strategy with the least risk. This
+translates to prioritizing the various implementations
+according to the lengths of their iteration cycles, and is exactly what companies
+such as Meta and Google have done in order to grow a language.
+
+They have nailed down the semantics of their deep learning languages with
+interpreters like PyTorch 1. Once that is done, the second step is to build
+a compiler to achieve maximium efficiency of the hardware — realizing that
+compiler construction takes longer because you need to account for the
+portability of targets and performance. However, once you a compiler, and the
+compiler's IR op set has stabilized, then the third step is to tape out a chip
+like MTIA that evaluates that specific op set. A chip afterall is an interpreter
+implemented via microcode.
 
 -------------------------------------------------------------
 Part 0: DLPL — Deep Learning F̶r̶a̶m̶e̶w̶o̶r̶k̶s̶ Programming Languages
 -------------------------------------------------------------
 For the past decade ever since deep learning has entered the zeitgeist of the
-academic community[0] and public consciousness[1], frameworks have been
+academic[0] and the public[1], frameworks have been
 researching for the right programming model to express deep neural networks. In
 terms of user and execution models, the industry started with TF1's graph-graph
 approach, and settled on PT1's eager-eager approach. Given that
@@ -66,6 +92,13 @@ Part 1: Frontend — Graph Capture
 
 
 References:
+[2]: https://dl.acm.org/doi/pdf/10.1145/3620665.3640366
+[3]: https://wiki.c2.com/?MooresLaw
+[4]: https://arxiv.org/abs/2001.08361
+[5]: https://www.youtube.com/watch?v=3LVeEjsn8Ts
+[6]: https://www.youtube.com/watch?v=4HgShra-KnY
+
+
 productivity-performance-pareto
 - DLPL: https://math.mit.edu/~edelman/publications/on_machine_learning.pdf
 - graph-graph: TF1/caffe/theano https://arxiv.org/abs/1605.08695, https://dl.acm.org/doi/abs/10.1145/2647868.2654889, https://arxiv.org/abs/1605.02688
