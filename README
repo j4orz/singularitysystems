@@ -54,21 +54,15 @@ Syllabus
   2. brrr
   3. pt2
   4. use1az2
-  5. fin
   ---Appendix
-  A. c2r5
-  B. trs
-  C. licurs
+  A. tiles
 
 Ch.0 introduces the golden age of systems ml and the course.
 Ch.1 implements a multidimensional array with autodifferentiation.
 Ch.2 accelerates the framework with massively parallel processors.
 Ch.3 compiles models with static tensor compilation.
 Ch.4 implements distributed training for datacenters.
-Ch.5 summarizes the course and where to go from here.
-Ap.A reviews traditional optimizing compilers.
-Ap.B tours through gpu kernel languages.
-Ap.C
+Ap.A reviews the compiler construction for tiling languages.
 * lecture videos do not cover appendices.
 ** v2 course offering: thorough treatment of kernel tile languages and exotic hardware.
 
