@@ -14,10 +14,10 @@ P"Ybmmd" .JMML..JMML  JMML.YMMMMMb    `Mbod"YML..JMML.`Moo9^Yo..JMML.   .JMML. `
 ,MI    "Y                   MM
 `MMb.  `7M'   `MF',pP"Ybd mmMMmm .gP"Ya `7MMpMMMb.pMMMb.  ,pP"Ybd
   `YMMNq.VA   ,V  8I   `"   MM  ,M'   Yb  MM    MM    MM  8I   `"
-.     `MM VA ,V   `YMMMa.   MM  8M""""""  MM    MM    MM  `YMMMa.                              
-Mb     dM  VVV    L.   I8   MM  YM.    ,  MM    MM    MM  L.   I8                              
+.     `MM VA ,V   `YMMMa.   MM  8M""""""  MM    MM    MM  `YMMMa.
+Mb     dM  VVV    L.   I8   MM  YM.    ,  MM    MM    MM  L.   I8
 P"Ybmmd"   ,V     M9mmmP'   `Mbmo`Mbmmd'.JMML  JMML  JMML.M9mmmP'
-          ,V                                                                                   
+          ,V
        OOb"
 
 Singularity Systems: Zero to Hero — The Hacker's Guide to Tensor Compilers (by j4orz)
@@ -51,20 +51,18 @@ Syllabus
 --------
   0. au197
   1. dfdx(nd)
-  2. brrr
+  2. tiles
   3. pt2
   4. use1az2
-  ---Appendix
-  A. tiles
+  ---appendix
+  a. turing
 
-Ch.0 introduces the golden age of systems ml and the course.
-Ch.1 implements a multidimensional array with autodifferentiation.
-Ch.2 accelerates the framework with massively parallel processors.
-Ch.3 compiles models with static tensor compilation.
-Ch.4 implements distributed training for datacenters.
-Ap.A reviews the compiler construction for tiling languages.
-* lecture videos do not cover appendices.
-** v2 course offering: thorough treatment of kernel tile languages and exotic hardware.
+Ch.0 introduces the golden age of systems ml.
+Ch.1 implements an interpreter for neural networks (pytorch1)
+Ch.2 implements a compiler for a tiling language (triton)
+Ch.3 implements a compiler for neural networks (pytorch2)
+Ch.4 implements distributed training
+** v2 course offering: tenstorrent.
 
 Citation
 --------

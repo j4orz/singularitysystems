@@ -19,10 +19,11 @@ Contents:
     Part 3: attention — a(q,k,v)
     Part 4: thought — ??
   2. brrr
-  3. pt2
-  4. datacenter
-Appendix:
-  A. tiles
+  3. tiles
+  4. pt2
+  5. use1az2
+  ---appendix
+  a. turing
 --------------------------------------------------------------------------------
 
 Welcome to the beginning of a whirlwind tour within the world of deep learning
