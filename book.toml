@@ -1,0 +1,6 @@
+[book]
+authors = ["jeffzh4ng"]
+language = "en"
+multilingual = false
+src = "src"
+title = "singularity systems"
