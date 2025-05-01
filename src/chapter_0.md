@@ -1,29 +1,7 @@
-                        __,                     
- ,6"Yb.`7MM  `7MM      `7MM  .d*"*bg. M******A' 
-8)   MM  MM    MM        MM 6MP    Mb Y     A'  
- ,pm9MM  MM    MM        MM YMb    MM      A'   
-8M   MM  MM    MM        MM  `MbmmdM9     A'    
-`Moo9^Yo.`Mbod"YML.    .JMML.     .M'    A'     
-                                .d9     A'      
-                              m"'      A'       
+# Chapter 0: dfdx(nd)
+**This chapter introduces the golden age of systems ml.**
 
-Singularity Systems: Zero to Hero
---------------------------------------------------------------------------------
-Syllabus:
-  0. au197 <-- HERE
-    Part 1: Golden Age — Software 2.0 Infrastructure Buildout
-  1. dfdx(nd)
-  2. brrr
-  3. tiles
-  4. pt2
-  5. use1az2
-  ---appendix
-  a. turing
---------------------------------------------------------------------------------
-
----------------------------------------------------------
-Part 1: Golden Age — Software 2.0 Infrastructure Buildout
----------------------------------------------------------
+## Golden Age — Software 2.0 Infrastructure Buildout
 Welcome to the second golden age of computing. The first one started in the 1940s
 when humanity discovered how to mechanize reprogrammable instructions (algorithms)
 via deterministic languages encoded with 0s and 1s. The second one started in the
@@ -79,19 +57,19 @@ Welcome to the golden age of Systems ML!
 
 References
 ----------
-[X]: https://proceedings.neurips.cc/paper_files/paper/2012/file/c399862d3b9d6b76c8436e924a68c45b-Paper.pdf
-[X]: https://www.nature.com/articles/nature14539
-[0]: https://www.youtube.com/watch?v=3LVeEjsn8Ts
-[1]: https://www.youtube.com/watch?v=4HgShra-KnY
-[2]: https://karpathy.medium.com/software-2-0-a64152b37c35
-[3]: https://github.com/mit-pdos/xv6-public
-[4]: https://github.com/rui314/chibicc
-[5]: https://c9x.me/compile/
-[6]: https://distill.pub/2017/research-debt/
-[7]: https://proceedings.neurips.cc/paper_files/paper/2012/file/c399862d3b9d6b76c8436e924a68c45b-Paper.pdf
-[8]: https://www.nature.com/articles/nature14539
-[9]: https://papers.nips.cc/
-[10]: https://hotchips.org/archives/
-[11]: https://proceedings.mlsys.org/
-[12]: https://soumith.ch/blog/2023-12-17-pytorch-design-origins.md.html
-[13]: https://pytorch.org/assets/pytorch2-2.pdf
+0. [https://proceedings.neurips.cc/paper_files/paper/2012/file/c399862d3b9d6b76c8436e924a68c45b-Paper.pdf](https://proceedings.neurips.cc/paper_files/paper/2012/file/c399862d3b9d6b76c8436e924a68c45b-Paper.pdf)
+0. [https://www.nature.com/articles/nature14539](https://www.nature.com/articles/nature14539)
+0. [https://www.youtube.com/watch?v=3LVeEjsn8Ts](https://www.youtube.com/watch?v=3LVeEjsn8Ts)
+0. [https://www.youtube.com/watch?v=4HgShra-KnY](https://www.youtube.com/watch?v=4HgShra-KnY)
+0. [https://karpathy.medium.com/software-2-0-a64152b37c35](https://karpathy.medium.com/software-2-0-a64152b37c35)
+0. [https://github.com/mit-pdos/xv6-public](https://github.com/mit-pdos/xv6-public)
+0. [https://github.com/rui314/chibicc](https://github.com/rui314/chibicc)
+0. [https://c9x.me/compile/](https://c9x.me/compile/)
+0. [https://distill.pub/2017/research-debt/](https://distill.pub/2017/research-debt/)
+0. [https://proceedings.neurips.cc/paper_files/paper/2012/file/c399862d3b9d6b76c8436e924a68c45b-Paper.pdf](https://proceedings.neurips.cc/paper_files/paper/2012/file/c399862d3b9d6b76c8436e924a68c45b-Paper.pdf)
+0. [https://www.nature.com/articles/nature14539](https://www.nature.com/articles/nature14539)
+0. [https://papers.nips.cc/](https://papers.nips.cc/)
+0. [https://hotchips.org/archives/](https://hotchips.org/archives/)
+0. [https://proceedings.mlsys.org/](https://proceedings.mlsys.org/)
+0. [https://soumith.ch/blog/2023-12-17-pytorch-design-origins.md.html](https://soumith.ch/blog/2023-12-17-pytorch-design-origins.md.html)
+0. [https://pytorch.org/assets/pytorch2-2.pdf](https://pytorch.org/assets/pytorch2-2.pdf)
