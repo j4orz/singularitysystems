@@ -1,4 +1,5 @@
-# Chapter 1
+# Chapter 1: dfdx(nd)
+**This chapter implements an interpreter for neural networks (pytorch1).**
 
 ## Chapter 1 Contents
 0. non-linear parametric models — nn.Linear(), nn.ReLU
