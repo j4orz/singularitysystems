@@ -1,25 +1,31 @@
-# Chapter 1: dfdx(nd)
-**This chapter implements an interpreter for neural networks (pytorch1).**
+# Chapter 2: dfdx(nd)
+**This chapter implements an interpreter for neural networks (pytorch1 "eager" mode).**
+As stated in the syllabus, solid deep learning and systems programming are
+prerequisites. Section 1 on correctness assumes mathematical maturity with
+statistics and matrix calculus. Section 2 assumes familiarity with out of order
+and superscalar processors. By the end of this chapter, you will have an
+accelerated implementation of the multidimensional array with autodifferentiation
+capability capable of interpreting llama and sd.
 
-## Chapter 1 Contents
-0. non-linear parametric models — nn.Linear(), nn.ReLU
-0. multidimensional array — model.forward()
-0. gradient descent — loss.backward(), opt.step()
-0. attention — a(q,k,v)
-0. thought — ??
+## Table of Contents
+[**Section 1: Correctness**]()
 
-Welcome to the beginning of a whirlwind tour within the world of deep learning
-frameworks! Throughout this journey you will build an interpreter and compiler
-for llama and r1 line by line, from scratch. By the end of the first chapter,
-you will have a working implementation of the multidimensional array with
-autodifferentiation capability capable of interpreting a ffn, llama, and r1.
-In the next chapter we will accelerate all three models using GPUs.
+0. [non-linear parametric models: `nn.Linear()`, `nn.ReLU()`]()
+1. [multidimensional array: `model.forward()`]()
+2. [gradient descent: `loss.backward()`, `opt.step()`]()
+3. [attention: a(q,k,v)]()
+4. [thought:]()
 
+[**Section 2: Speed**]()
 
-
+5. [CPU (SIMD on SIMD): `AVX512`, `AMX`, `NEON`]()
+6. [GPU (SIMT on SIMD):]()
+7. [TPU (systolic):]()
 
 
-## Part 0: non-linear parametric models — nn.Linear, nn.ReLU
+# Section 1: Correctness
+
+## Part 0: non-linear parametric models: `nn.Linear()`, `nn.ReLU()`
 Before jumping into the implementation of our deep learning framework's
 multidimensional array with autodifferentiation capability, let's review the
 mathematics of neural networks. We will incrementally construct a family of
@@ -150,7 +156,7 @@ the mathematical specification over the biological inspiration, neural networks,
 reductively put, are a lot of logistic regressions (weighted sums with
 non-linearities) stacked together.
 
-```
+```python
 """
 model: Neural Language Models (Bengio et al. 2003) URL: https://www.jmlr.org/papers/volume3/bengio03a/bengio03a.pdf
 
@@ -231,7 +237,7 @@ for _ in range(20): # 20 samples
 
 
 
-## Part 1: multidimensional array — model.forward()
+## Part 1: multidimensional array: `model.forward()`
 Let's start with the multidimensional array and follow pytorch's `tensor` naming
 convention. Consider the following product type for tensor:
 
@@ -363,7 +369,7 @@ plt.plot(steps, losses)
 
 
 
-## Part 2: gradient descent — model.backward(), opt.step()
+## Part 2: gradient descent: `model.backward()`, `opt.step()`
   2a — Derivative: approximation via local linearization
   2b — Derivative rules: backward methods
   2c — Automatic differentiation: calculus on computational graph
@@ -661,11 +667,7 @@ adjusting θ̂ via gradient descent:
     θ^(t+1) := θ^t - α∇ℒ(Θ)
              = θ^t - α∇-ΣlogP(y^i|x^i;Θ)
 
-
-
-
-
-## Part 3: attention — a(q,k,v)
+<!-- ## Part 3: attention — a(q,k,v)
 Since the discovery of the attention operator in 2017 by (Vaswani et al. 2017),
 language, vision, audio and any domain that can be expressed as an autoregressive
 sequence of tokens (text/pixels/waves) — that is, an n-dimensional joint distribution:
@@ -684,27 +686,67 @@ reinforcement learning from human rewards
 
 
 ## Part 5: reasoner — GRPO
-reinforcement learning from automated rewards
+reinforcement learning from automated rewards -->
 
 
 
 
 
 
-References
-----------
-[0]: https://web.stanford.edu/~jurafsky/slp3/
-[1]: https://arxiv.org/pdf/1912.01703
-[2]: http://blog.ezyang.com/2019/05/pytorch-internals/
-[3]: https://docs.jax.dev/en/latest/autodidax.html
-[4]: https://numpy.org/doc/stable/dev/internals.html
-[5]: https://numpy.org/doc/stable/reference/arrays.ndarray.html#internal-memory-layout-of-an-ndarray
-[6]: https://ocw.mit.edu/courses/18-s096-matrix-calculus-for-machine-learning-and-beyond-january-iap-2023/
-[7]: https://indico.ijclab.in2p3.fr/event/2914/contributions/6483/subcontributions/180/attachments/6060/7185/automl-short.pdf
-[8]: https://blog.x.com/engineering/en_us/topics/infrastructure/2015/autograd-for-torch
-[9]: https://openreview.net/pdf?id=BJJsrmfCZ
-[10]: http://www.incompleteideas.net/book/RLbook2020.pdf
-[11]: https://arxiv.org/pdf/2312.16730
-[12]: https://arxiv.org/abs/2412.05265
-[13]: https://spinningup.openai.com/en/latest/
-[14]: https://rlhfbook.com/
+
+
+
+
+
+
+
+
+
+
+# Section 2: Speed
+- does the current cpu ops vectorize? godbolt.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## Section 1 References
+0. [https://web.stanford.edu/~jurafsky/slp3/](https://web.stanford.edu/~jurafsky/slp3/)
+1. [https://arxiv.org/pdf/1912.01703](https://arxiv.org/pdf/1912.01703)
+2. [http://blog.ezyang.com/2019/05/pytorch-internals/](http://blog.ezyang.com/2019/05/pytorch-internals/)
+3. [https://docs.jax.dev/en/latest/autodidax.html](https://docs.jax.dev/en/latest/autodidax.html)
+4. [https://numpy.org/doc/stable/dev/internals.html](https://numpy.org/doc/stable/dev/internals.html)
+5. [https://numpy.org/doc/stable/reference/arrays.ndarray.html#internal-memory-layout-of-an-ndarray](https://numpy.org/doc/stable/reference/arrays.ndarray.html#internal-memory-layout-of-an-ndarray)
+6. [https://ocw.mit.edu/courses/18-s096-matrix-calculus-for-machine-learning-and-beyond-january-iap-2023/](https://ocw.mit.edu/courses/18-s096-matrix-calculus-for-machine-learning-and-beyond-january-iap-2023/)
+7. [https://indico.ijclab.in2p3.fr/event/2914/contributions/6483/subcontributions/180/attachments/6060/7185/automl-short.pdf](https://indico.ijclab.in2p3.fr/event/2914/contributions/6483/subcontributions/180/attachments/6060/7185/automl-short.pdf)
+8. [https://blog.x.com/engineering/en_us/topics/infrastructure/2015/autograd-for-torch](https://blog.x.com/engineering/en_us/topics/infrastructure/2015/autograd-for-torch)
+9. [https://openreview.net/pdf?id=BJJsrmfCZ](https://openreview.net/pdf?id=BJJsrmfCZ)
+10. [http://www.incompleteideas.net/book/RLbook2020.pdf](http://www.incompleteideas.net/book/RLbook2020.pdf)
+11. [https://arxiv.org/pdf/2312.16730](https://arxiv.org/pdf/2312.16730)
+12. [https://arxiv.org/abs/2412.05265](https://arxiv.org/abs/2412.05265)
+13. [https://spinningup.openai.com/en/latest/](https://spinningup.openai.com/en/latest/)
+14. [https://rlhfbook.com/](https://rlhfbook.com/)
+
+## Section 2 References

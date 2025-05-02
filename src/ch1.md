@@ -1,12 +1,48 @@
-# Chapter 0: au-197
-**This chapter introduces the golden age of systems ml.**
+# Chapter 1: au-197
+**This chapter introduces the golden age of systems ml**
 
 ## Golden Age — Software 2.0 Infrastructure Buildout
-Welcome to the second golden age of computing. The first one started in the 1940s
-when humanity discovered how to mechanize reprogrammable instructions (algorithms)
-via deterministic languages encoded with 0s and 1s. The second one started in the
-2020s when we discovered how to compress sequences via stochastic distributions
-(models) with automatic differentiation and gradient descent.
+Welcome to the second golden age of computing. The first one took place in the
+1940s when we discovered how to program sequences of instructions on
+latency-oriented machines with scalar processing. We collectively refer to this
+period as the *information revolution*. The second one is taking place today in
+the 2020s where we are discovering how to compress sequences with stochastic
+distributions on throughput-oriented machines with vector processing. People are
+describing this period as the beginning of the *intelligence revolution*.
+
+What we see in both periods is the occurence of positive-sum-game-generating
+socioeconomic feedback loops dubbed "scaling laws" between software and hardware.
+That is, the more demand generated from applications, the more supply from
+infrastructure, which unlocks better applications, which generates more demand,
+which increases the supply, and so on. The information revolution gave rise
+to Moore's Law, an exponential trend between transistor density and TODO: X,
+while the intelligence revolution today gives rise to Scaling Law's, another
+exponential between compression and parameter count.
+
+This textbook is all about the latter. More specifically we focus our attention
+on the **compilers and chips** that are powering the massive AI infrastructure
+buildout that's happening today. What's exciting from the perspective of a
+compiler engineer or chip architect is that all of the assumptions held in the
+design of our computers need to be reassessed and reevaluated. This is because
+the "soul of the machine" is constructed by the dance that happens between the
+compiler and chip — *together* through software-hardware codesign they bridge
+the semantic gap between humans and electrons.
+
+The original assumption held in the computers designed from the information
+revolution was [Dennard Scaling]() (also referred to as MOSFET Scaling) which
+states that as the size of transistors decreases, the power density stays
+constant.
+
+
+
+
+
+
+
+
+
+TODO: von neumann prog/exec model. 
+The von neumann
 
 What's interesting to systems programmers and performance engineers is that the
 field is witnessing the rhyming of history. The feedback loop between the
@@ -14,8 +50,8 @@ information revolution's software applications and sequential hardware
 (OOO, pipelining, TODO) creates this sociocultural phenomena dubbed
 "Moore's Law"[X]. The same loop is happening with the intelligence revolution's
 models and parallel hardware (tensor cores, TMA, TODO) which is now giving rise
-to the "Scaling Laws"[X]. All of the original assumptions in the design of the
-compilers and chips that make up the soul of the machine are being reassessed
+to the "Scaling Laws"[X]. All of the original assumptions held in the design of
+the compilers and chips that make up the soul of the machine are being reassessed
 if the dominant workload is evaluating matrix multiplications for stochastic
 distributions instead of fetching data for discrete algorithms.
 

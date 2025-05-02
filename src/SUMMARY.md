@@ -1,5 +1,8 @@
 # Contents
 
-[Singularity Systems](./syllabus.md)
-- [Chapter 0: au-197](./chapter_0.md)
-- [Chapter 1: dfdx(nd)](./chapter_1.md)
+[Syllabus](./syllabus.md)
+[Dedication](./dedication.md)
+- [Ch 1: au-197](./ch1.md)
+- [Ch 2: dfdx(nd)](./ch2.md)
+- [Ch 3: pt2](./ch3.md)
+- [Ch 4: tiles](./ch4.md)
