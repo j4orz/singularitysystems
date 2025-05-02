@@ -153,7 +153,16 @@
 
                 <div id="content" class="content">
                     <main>
-                        <p><img src="./flammarion.webp" alt="" /></p>
+                        <h1 id="dedication"><a class="header" href="#dedication">Dedication</a></h1>
+<p>This "textbook" is dedicated to my father Thomas, brother Leo, and partner Anna
+who have helped me through my original plans for graduate school needing to be
+redirected towards helping my sister's diagnosis with schizophrenia. I have learned
+more about what life is truly about off the keyboard than I ever could have
+hacking on a terminal. Although I was not able to pursue my original goals
+(at this time), I hope Singularity Systems can provide some use to the future
+generation of programmers following the ways of old school hacker culture.</p>
+<p>- <a href="https://github.com/j4orz/">j4orz</a></p>
+<div style="break-before: page; page-break-before: always;"></div><p><img src="./flammarion.webp" alt="" /></p>
 <h1 id="singularity-systems-zero-to-hero"><a class="header" href="#singularity-systems-zero-to-hero">Singularity Systems: Zero to Hero</a></h1>
 <p><em><strong>The Hacker's Guide to Tensor Compilers</strong></em></p>
 <h2 id="course-description"><a class="header" href="#course-description">Course Description</a></h2>
@@ -193,15 +202,6 @@ to further understand the compilers and chips that power machine learning.</p>
   url     = "https://github.com/j4orz/singularitysystems"
 }
 </code></pre>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="dedication"><a class="header" href="#dedication">Dedication</a></h1>
-<p>This "textbook" is dedicated to my father Thomas, brother Leo, and partner Anna
-who have helped me through my original plans for graduate school needing to be
-redirected towards helping my sister's diagnosis with schizophrenia. I have learned
-more about what life is truly about off the keyboard than I ever could have
-hacking on a terminal. Although I was not able to pursue my original goals
-(at this time), I hope Singularity Systems can provide some use to the future
-generation of programmers following the ways of old school hacker culture.</p>
-<p>- <a href="https://github.com/j4orz/">j4orz</a></p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="chapter-1-au-197"><a class="header" href="#chapter-1-au-197">Chapter 1: au-197</a></h1>
 <p><strong>This chapter introduces the golden age of systems ml</strong></p>
 <h2 id="golden-age--software-20-infrastructure-buildout"><a class="header" href="#golden-age--software-20-infrastructure-buildout">Golden Age — Software 2.0 Infrastructure Buildout</a></h2>
@@ -955,22 +955,6 @@ compiler will translate a triton-like eDSL to PTX. If you prefer to learn
 
         </div>
 
-        <!-- Livereload script (if served using the cli tool) -->
-        <script>
-            const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
-            const wsAddress = wsProtocol + "//" + location.host + "/" + "__livereload";
-            const socket = new WebSocket(wsAddress);
-            socket.onmessage = function (event) {
-                if (event.data === "reload") {
-                    socket.close();
-                    location.reload();
-                }
-            };
-
-            window.onbeforeunload = function() {
-                socket.close();
-            }
-        </script>
 
 
 

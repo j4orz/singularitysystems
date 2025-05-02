@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Syllabus - Singularity Systems: Zero to Hero</title>
+        <title>Dedication - Singularity Systems: Zero to Hero</title>
 
 
         <!-- Custom HTML head -->
@@ -152,53 +152,22 @@
 
                 <div id="content" class="content">
                     <main>
-                        <p><img src="./flammarion.webp" alt="" /></p>
-<h1 id="singularity-systems-zero-to-hero"><a class="header" href="#singularity-systems-zero-to-hero">Singularity Systems: Zero to Hero</a></h1>
-<p><em><strong>The Hacker's Guide to Tensor Compilers</strong></em></p>
-<h2 id="course-description"><a class="header" href="#course-description">Course Description</a></h2>
-<p>Singularity Systems: Zero to Hero follows up from
-<a href="https://karpathy.ai/zero-to-hero.html">Neural Networks: Zero to Hero</a>. We convert</p>
-<ul>
-<li><a href="https://github.com/karpathy/micrograd"><strong>micrograd</strong></a>: toy backpropagation engine <em>into...</em></li>
-<li><a href="https://github.com/j4orz/picograd"><strong>picograd</strong></a>: modern deep learning framework</li>
-</ul>
-<p>While micrograd is good for research scientists to further understand the leaky
-abstraction of backpropagation (think activation gradients and normalization),
-picograd is intended for systems programmers and performance engineers looking
-to further understand the compilers and chips that power machine learning.</p>
-<h3 id="prereqs"><a class="header" href="#prereqs">Prereqs</a></h3>
-<ul>
-<li>solid deep learning (sd &amp;&amp; llama)</li>
-<li>solid systems programming (C || C++ || Rust* || Python**)
-<ul>
-<li>*rust is currently the only supported language</li>
-<li>**python is ok (following pure-python systems like PyTorch 2.0 &amp; CUTLASS 4.0)</li>
-</ul>
-</li>
-</ul>
-<h3 id="syllabus"><a class="header" href="#syllabus">Syllabus</a></h3>
-<ol>
-<li><strong>au197</strong>: introduces the golden age of systems ml.</li>
-<li><strong>dfdx(nd)</strong>: implements an interpreter for neural networks (pytorch1).</li>
-<li><strong>pt2</strong>: implements a compiler for neural networks (pytorch2).</li>
-<li><strong>tiles</strong>: implements a compiler for a tiling language (triton).</li>
-<li><strong>turing</strong>: implements a compiler that maps C to RISCV.</li>
-</ol>
-<h3 id="citation"><a class="header" href="#citation">Citation</a></h3>
-<pre><code>@article{j4orz2025singsys,
-  author  = "j4orz",
-  title   = "Singularity Systems: Zero to Hero",
-  year    = "2025",
-  url     = "https://github.com/j4orz/singularitysystems"
-}
-</code></pre>
+                        <h1 id="dedication"><a class="header" href="#dedication">Dedication</a></h1>
+<p>This "textbook" is dedicated to my father Thomas, brother Leo, and partner Anna
+who have helped me through my original plans for graduate school needing to be
+redirected towards helping my sister's diagnosis with schizophrenia. I have learned
+more about what life is truly about off the keyboard than I ever could have
+hacking on a terminal. Although I was not able to pursue my original goals
+(at this time), I hope Singularity Systems can provide some use to the future
+generation of programmers following the ways of old school hacker culture.</p>
+<p>- <a href="https://github.com/j4orz/">j4orz</a></p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
 
-                            <a rel="next prefetch" href="dedication.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="syllabus.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -209,29 +178,13 @@ to further understand the compilers and chips that power machine learning.</p>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
 
-                    <a rel="next prefetch" href="dedication.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="syllabus.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>
 
         </div>
 
-        <!-- Livereload script (if served using the cli tool) -->
-        <script>
-            const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
-            const wsAddress = wsProtocol + "//" + location.host + "/" + "__livereload";
-            const socket = new WebSocket(wsAddress);
-            socket.onmessage = function (event) {
-                if (event.data === "reload") {
-                    socket.close();
-                    location.reload();
-                }
-            };
-
-            window.onbeforeunload = function() {
-                socket.close();
-            }
-        </script>
 
 
 
