@@ -5,10 +5,10 @@
 Welcome to the second golden age of computing. The first one took place in the
 1940s when we discovered how to program sequences of instructions on
 latency-oriented machines with scalar processing. We collectively refer to this
-period as the *information revolution*. The second one is taking place today in
+period as the **information revolution**. The second one is taking place today in
 the 2020s where we are discovering how to compress sequences with stochastic
 distributions on throughput-oriented machines with vector processing. People are
-describing this period as the beginning of the *intelligence revolution*.
+describing this period as the beginning of the **intelligence revolution**.
 
 What we see in both periods is the occurence of positive-sum-game-generating
 socioeconomic feedback loops dubbed "scaling laws" between software and hardware.
@@ -20,18 +20,48 @@ while the intelligence revolution today gives rise to Scaling Law's, another
 exponential between compression and parameter count.
 
 This textbook is all about the latter. More specifically we focus our attention
-on the **compilers and chips** that are powering the massive AI infrastructure
+on the compilers and chips that are powering the massive AI infrastructure
 buildout that's happening today. What's exciting from the perspective of a
 compiler engineer or chip architect is that all of the assumptions held in the
 design of our computers need to be reassessed and reevaluated. This is because
 the "soul of the machine" is constructed by the dance that happens between the
-compiler and chip — *together* through software-hardware codesign they bridge
+compiler and chip — together through **software-hardware codesign** they bridge
 the semantic gap between humans and electrons.
+
+we need software hardware codesign because we need to design from
+first principles. everything is in flux now because the assumptions are changing.
 
 The original assumption held in the computers designed from the information
 revolution was [Dennard Scaling]() (also referred to as MOSFET Scaling) which
 states that as the size of transistors decreases, the power density stays
 constant.
+
+## Mount Everest — Software 2.0 Infrastructure Research Debt
+
+inspired by two educators:
+
+
+1. shriram krishnamurthi:
+- high level blog post. or read the source code.
+- this course is the bridge. gaps are good for bridging.
+- common semantic core
+-> implementation limited to
+   - RISCV (references to x86-64, AMD)
+   - CUDA (references to AMD)
+-> getting production-level performance, portability, and usability is for you
+   to go forward and read source code.
+
+2. karpathy
+- community building (build the ramp)
+- a good first contribution to any company is docs. so in some way this course
+- is my version of that for the community.
+
+- pytorch2 research colloqioum <--> github.com/pytorch/pytorch
+- triton presentation: triton <--> github.com/triton/triton
+- mojo: 10 part series blog <--> github.com/mojo/mojo
+- tinygrad: slidedeck <--> github.com/tinygrad/tinygrad
+
+
 
 
 

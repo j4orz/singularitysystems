@@ -18,9 +18,9 @@ capability capable of interpreting llama and sd.
 
 [**Section 2: Speed**]()
 
-5. [CPU (SIMD on SIMD): `AVX512`, `AMX`, `NEON`]()
-6. [GPU (SIMT on SIMD):]()
-7. [TPU (systolic):]()
+5. [CPU: `RVV`]()
+6. [GPU:]()
+7. [GPU Tensor core (TPU)]()
 
 
 # Section 1: Correctness
@@ -706,28 +706,16 @@ reinforcement learning from automated rewards -->
 # Section 2: Speed
 - does the current cpu ops vectorize? godbolt.
 
+CPU, GPU (they look similar. see tim sweeney's talk)
+prog model: autov11n -> intrinsics -> ??
+exec model: SIMD -> SIMT on SIMD. `AVX512`, `AMX`, `NEON`
 
+## Part 5 CPU: `RVV`
+-> numpy simd
+-> we will focus on RISC.
+-> fearless SIMD with rust.
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+## Part 6 GPU: `RVV`
 
 
 

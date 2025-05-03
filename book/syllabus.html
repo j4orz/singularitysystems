@@ -154,7 +154,7 @@
                     <main>
                         <p><img src="./flammarion.webp" alt="" /></p>
 <h1 id="singularity-systems-zero-to-hero"><a class="header" href="#singularity-systems-zero-to-hero">Singularity Systems: Zero to Hero</a></h1>
-<p><em><strong>The Hacker's Guide to Tensor Compilers</strong></em></p>
+<p>The Hacker's Guide to Tensor Compilers: <em>"Talk is cheap. Show me the code"</em></p>
 <h2 id="course-description"><a class="header" href="#course-description">Course Description</a></h2>
 <p>Singularity Systems: Zero to Hero follows up from
 <a href="https://karpathy.ai/zero-to-hero.html">Neural Networks: Zero to Hero</a>. We convert</p>
@@ -165,24 +165,29 @@
 <p>While micrograd is good for research scientists to further understand the leaky
 abstraction of backpropagation (think activation gradients and normalization),
 picograd is intended for systems programmers and performance engineers looking
-to further understand the compilers and chips that power machine learning.</p>
-<h3 id="prereqs"><a class="header" href="#prereqs">Prereqs</a></h3>
+to further understand the compilers and chips of deep learning.</p>
+<h3 id="prerequisites"><a class="header" href="#prerequisites">Prerequisites</a></h3>
 <ul>
 <li>solid deep learning (sd &amp;&amp; llama)</li>
 <li>solid systems programming (C || C++ || Rust* || Python**)
 <ul>
 <li>*rust is currently the only supported language</li>
-<li>**python is ok (following pure-python systems like PyTorch 2.0 &amp; CUTLASS 4.0)</li>
+<li>**python is ok (following pure-python hackable PyTorch 2, CUTLASS 4)</li>
 </ul>
 </li>
 </ul>
 <h3 id="syllabus"><a class="header" href="#syllabus">Syllabus</a></h3>
+<p><strong>Core</strong>: <em>Deep Learning Compilers of Today</em></p>
 <ol>
-<li><strong>au197</strong>: introduces the golden age of systems ml.</li>
+<li><strong>au197</strong>: introduces the golden age of systems ml and course overview.</li>
 <li><strong>dfdx(nd)</strong>: implements an interpreter for neural networks (pytorch1).</li>
-<li><strong>pt2</strong>: implements a compiler for neural networks (pytorch2).</li>
-<li><strong>tiles</strong>: implements a compiler for a tiling language (triton).</li>
-<li><strong>turing</strong>: implements a compiler that maps C to RISCV.</li>
+<li><strong>pt2</strong>: constructs a compiler for neural networks (pytorch2).</li>
+<li><strong>tiles</strong>: constructs a compiler for a tiling language (triton).</li>
+</ol>
+<p><strong>Appendix</strong>: <em>Parallel Computing of Yesterday and Tomorrow</em></p>
+<ol>
+<li><strong>turing</strong>: reviews a compiler that maps C to RISCV.</li>
+<li><strong>richard</strong>:: explores heterogenous parallel languages and machines.</li>
 </ol>
 <h3 id="citation"><a class="header" href="#citation">Citation</a></h3>
 <pre><code>@article{j4orz2025singsys,
@@ -222,6 +227,22 @@ to further understand the compilers and chips that power machine learning.</p>
 
         </div>
 
+        <!-- Livereload script (if served using the cli tool) -->
+        <script>
+            const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsAddress = wsProtocol + "//" + location.host + "/" + "__livereload";
+            const socket = new WebSocket(wsAddress);
+            socket.onmessage = function (event) {
+                if (event.data === "reload") {
+                    socket.close();
+                    location.reload();
+                }
+            };
+
+            window.onbeforeunload = function() {
+                socket.close();
+            }
+        </script>
 
 
 

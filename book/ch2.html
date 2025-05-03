@@ -171,9 +171,9 @@ capability capable of interpreting llama and sd.</p>
 </ol>
 <p><a href=""><strong>Section 2: Speed</strong></a></p>
 <ol start="5">
-<li><a href="">CPU (SIMD on SIMD): <code>AVX512</code>, <code>AMX</code>, <code>NEON</code></a></li>
-<li><a href="">GPU (SIMT on SIMD):</a></li>
-<li><a href="">TPU (systolic):</a></li>
+<li><a href="">CPU: <code>RVV</code></a></li>
+<li><a href="">GPU:</a></li>
+<li><a href="">GPU Tensor core (TPU)</a></li>
 </ol>
 <h1 id="section-1-correctness"><a class="header" href="#section-1-correctness">Section 1: Correctness</a></h1>
 <h2 id="part-0-non-linear-parametric-models-nnlinear-nnrelu"><a class="header" href="#part-0-non-linear-parametric-models-nnlinear-nnrelu">Part 0: non-linear parametric models: <code>nn.Linear()</code>, <code>nn.ReLU()</code></a></h2>
@@ -763,6 +763,14 @@ reinforcement learning from automated rewards -->
 <ul>
 <li>does the current cpu ops vectorize? godbolt.</li>
 </ul>
+<p>CPU, GPU (they look similar. see tim sweeney's talk)
+prog model: autov11n -&gt; intrinsics -&gt; ??
+exec model: SIMD -&gt; SIMT on SIMD. <code>AVX512</code>, <code>AMX</code>, <code>NEON</code></p>
+<h2 id="part-5-cpu-rvv"><a class="header" href="#part-5-cpu-rvv">Part 5 CPU: <code>RVV</code></a></h2>
+<p>-&gt; numpy simd
+-&gt; we will focus on RISC.
+-&gt; fearless SIMD with rust.</p>
+<h2 id="part-6-gpu-rvv"><a class="header" href="#part-6-gpu-rvv">Part 6 GPU: <code>RVV</code></a></h2>
 <h2 id="section-1-references"><a class="header" href="#section-1-references">Section 1 References</a></h2>
 <ol start="0">
 <li><a href="https://web.stanford.edu/~jurafsky/slp3/">https://web.stanford.edu/~jurafsky/slp3/</a></li>
@@ -812,6 +820,22 @@ reinforcement learning from automated rewards -->
 
         </div>
 
+        <!-- Livereload script (if served using the cli tool) -->
+        <script>
+            const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsAddress = wsProtocol + "//" + location.host + "/" + "__livereload";
+            const socket = new WebSocket(wsAddress);
+            socket.onmessage = function (event) {
+                if (event.data === "reload") {
+                    socket.close();
+                    location.reload();
+                }
+            };
+
+            window.onbeforeunload = function() {
+                socket.close();
+            }
+        </script>
 
 
 

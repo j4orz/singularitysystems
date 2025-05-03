@@ -154,17 +154,14 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="dedication"><a class="header" href="#dedication">Dedication</a></h1>
-<p>This "textbook" is dedicated to my father Thomas, brother Leo, and partner Anna
-who have helped me navigate the plan for graduate school being redirected
-towards helping my sister and her diagnosis with schizophrenia. I have learned
-more about what life is truly about off the keyboard than I ever could have
-hacking on a terminal. Although I was not able to pursue my original goals
-(at this time), I hope Singularity Systems can provide some use to the future
-generation of programmers following the ways of old school hacker culture.</p>
-<p>- <a href="https://github.com/j4orz/">j4orz</a></p>
+<p>This textbook is dedicated to my father Thomas, brother Leo, and partner Anna
+who have helped me when my plans for graduate school were changed to leading the
+recovery program for my sister's diagnosis of schizophrenia. I have learned more
+about what life is truly about off the keyboard than I ever could have while
+hacking on a terminal.</p>
 <div style="break-before: page; page-break-before: always;"></div><p><img src="./flammarion.webp" alt="" /></p>
 <h1 id="singularity-systems-zero-to-hero"><a class="header" href="#singularity-systems-zero-to-hero">Singularity Systems: Zero to Hero</a></h1>
-<p><em><strong>The Hacker's Guide to Tensor Compilers</strong></em></p>
+<p>The Hacker's Guide to Tensor Compilers: <em>"Talk is cheap. Show me the code"</em></p>
 <h2 id="course-description"><a class="header" href="#course-description">Course Description</a></h2>
 <p>Singularity Systems: Zero to Hero follows up from
 <a href="https://karpathy.ai/zero-to-hero.html">Neural Networks: Zero to Hero</a>. We convert</p>
@@ -175,24 +172,29 @@ generation of programmers following the ways of old school hacker culture.</p>
 <p>While micrograd is good for research scientists to further understand the leaky
 abstraction of backpropagation (think activation gradients and normalization),
 picograd is intended for systems programmers and performance engineers looking
-to further understand the compilers and chips that power machine learning.</p>
-<h3 id="prereqs"><a class="header" href="#prereqs">Prereqs</a></h3>
+to further understand the compilers and chips of deep learning.</p>
+<h3 id="prerequisites"><a class="header" href="#prerequisites">Prerequisites</a></h3>
 <ul>
 <li>solid deep learning (sd &amp;&amp; llama)</li>
 <li>solid systems programming (C || C++ || Rust* || Python**)
 <ul>
 <li>*rust is currently the only supported language</li>
-<li>**python is ok (following pure-python systems like PyTorch 2.0 &amp; CUTLASS 4.0)</li>
+<li>**python is ok (following pure-python hackable PyTorch 2, CUTLASS 4)</li>
 </ul>
 </li>
 </ul>
 <h3 id="syllabus"><a class="header" href="#syllabus">Syllabus</a></h3>
+<p><strong>Core</strong>: <em>Deep Learning Compilers of Today</em></p>
 <ol>
-<li><strong>au197</strong>: introduces the golden age of systems ml.</li>
+<li><strong>au197</strong>: introduces the golden age of systems ml and course overview.</li>
 <li><strong>dfdx(nd)</strong>: implements an interpreter for neural networks (pytorch1).</li>
-<li><strong>pt2</strong>: implements a compiler for neural networks (pytorch2).</li>
-<li><strong>tiles</strong>: implements a compiler for a tiling language (triton).</li>
-<li><strong>turing</strong>: implements a compiler that maps C to RISCV.</li>
+<li><strong>pt2</strong>: constructs a compiler for neural networks (pytorch2).</li>
+<li><strong>tiles</strong>: constructs a compiler for a tiling language (triton).</li>
+</ol>
+<p><strong>Appendix</strong>: <em>Parallel Computing of Yesterday and Tomorrow</em></p>
+<ol>
+<li><strong>turing</strong>: reviews a compiler that maps C to RISCV.</li>
+<li><strong>richard</strong>:: explores heterogenous parallel languages and machines.</li>
 </ol>
 <h3 id="citation"><a class="header" href="#citation">Citation</a></h3>
 <pre><code>@article{j4orz2025singsys,
@@ -208,10 +210,10 @@ to further understand the compilers and chips that power machine learning.</p>
 <p>Welcome to the second golden age of computing. The first one took place in the
 1940s when we discovered how to program sequences of instructions on
 latency-oriented machines with scalar processing. We collectively refer to this
-period as the <em>information revolution</em>. The second one is taking place today in
+period as the <strong>information revolution</strong>. The second one is taking place today in
 the 2020s where we are discovering how to compress sequences with stochastic
 distributions on throughput-oriented machines with vector processing. People are
-describing this period as the beginning of the <em>intelligence revolution</em>.</p>
+describing this period as the beginning of the <strong>intelligence revolution</strong>.</p>
 <p>What we see in both periods is the occurence of positive-sum-game-generating
 socioeconomic feedback loops dubbed "scaling laws" between software and hardware.
 That is, the more demand generated from applications, the more supply from
@@ -221,17 +223,63 @@ to Moore's Law, an exponential trend between transistor density and TODO: X,
 while the intelligence revolution today gives rise to Scaling Law's, another
 exponential between compression and parameter count.</p>
 <p>This textbook is all about the latter. More specifically we focus our attention
-on the <strong>compilers and chips</strong> that are powering the massive AI infrastructure
+on the compilers and chips that are powering the massive AI infrastructure
 buildout that's happening today. What's exciting from the perspective of a
 compiler engineer or chip architect is that all of the assumptions held in the
 design of our computers need to be reassessed and reevaluated. This is because
 the "soul of the machine" is constructed by the dance that happens between the
-compiler and chip — <em>together</em> through software-hardware codesign they bridge
+compiler and chip — together through <strong>software-hardware codesign</strong> they bridge
 the semantic gap between humans and electrons.</p>
+<p>we need software hardware codesign because we need to design from
+first principles. everything is in flux now because the assumptions are changing.</p>
 <p>The original assumption held in the computers designed from the information
 revolution was <a href="">Dennard Scaling</a> (also referred to as MOSFET Scaling) which
 states that as the size of transistors decreases, the power density stays
 constant.</p>
+<h2 id="mount-everest--software-20-infrastructure-research-debt"><a class="header" href="#mount-everest--software-20-infrastructure-research-debt">Mount Everest — Software 2.0 Infrastructure Research Debt</a></h2>
+<p>inspired by two educators:</p>
+<ol>
+<li>shriram krishnamurthi:</li>
+</ol>
+<ul>
+<li>high level blog post. or read the source code.</li>
+<li>this course is the bridge. gaps are good for bridging.</li>
+<li>common semantic core
+-&gt; implementation limited to
+<ul>
+<li>RISCV (references to x86-64, AMD)</li>
+<li>CUDA (references to AMD)
+-&gt; getting production-level performance, portability, and usability is for you
+to go forward and read source code.</li>
+</ul>
+</li>
+</ul>
+<ol start="2">
+<li>karpathy</li>
+</ol>
+<ul>
+<li>
+<p>community building (build the ramp)</p>
+</li>
+<li>
+<p>a good first contribution to any company is docs. so in some way this course</p>
+</li>
+<li>
+<p>is my version of that for the community.</p>
+</li>
+<li>
+<p>pytorch2 research colloqioum &lt;--&gt; github.com/pytorch/pytorch</p>
+</li>
+<li>
+<p>triton presentation: triton &lt;--&gt; github.com/triton/triton</p>
+</li>
+<li>
+<p>mojo: 10 part series blog &lt;--&gt; github.com/mojo/mojo</p>
+</li>
+<li>
+<p>tinygrad: slidedeck &lt;--&gt; github.com/tinygrad/tinygrad</p>
+</li>
+</ul>
 <p>TODO: von neumann prog/exec model.
 The von neumann</p>
 <p>What's interesting to systems programmers and performance engineers is that the
@@ -316,9 +364,9 @@ capability capable of interpreting llama and sd.</p>
 </ol>
 <p><a href=""><strong>Section 2: Speed</strong></a></p>
 <ol start="5">
-<li><a href="">CPU (SIMD on SIMD): <code>AVX512</code>, <code>AMX</code>, <code>NEON</code></a></li>
-<li><a href="">GPU (SIMT on SIMD):</a></li>
-<li><a href="">TPU (systolic):</a></li>
+<li><a href="">CPU: <code>RVV</code></a></li>
+<li><a href="">GPU:</a></li>
+<li><a href="">GPU Tensor core (TPU)</a></li>
 </ol>
 <h1 id="section-1-correctness"><a class="header" href="#section-1-correctness">Section 1: Correctness</a></h1>
 <h2 id="part-0-non-linear-parametric-models-nnlinear-nnrelu"><a class="header" href="#part-0-non-linear-parametric-models-nnlinear-nnrelu">Part 0: non-linear parametric models: <code>nn.Linear()</code>, <code>nn.ReLU()</code></a></h2>
@@ -908,6 +956,14 @@ reinforcement learning from automated rewards -->
 <ul>
 <li>does the current cpu ops vectorize? godbolt.</li>
 </ul>
+<p>CPU, GPU (they look similar. see tim sweeney's talk)
+prog model: autov11n -&gt; intrinsics -&gt; ??
+exec model: SIMD -&gt; SIMT on SIMD. <code>AVX512</code>, <code>AMX</code>, <code>NEON</code></p>
+<h2 id="part-5-cpu-rvv"><a class="header" href="#part-5-cpu-rvv">Part 5 CPU: <code>RVV</code></a></h2>
+<p>-&gt; numpy simd
+-&gt; we will focus on RISC.
+-&gt; fearless SIMD with rust.</p>
+<h2 id="part-6-gpu-rvv"><a class="header" href="#part-6-gpu-rvv">Part 6 GPU: <code>RVV</code></a></h2>
 <h2 id="section-1-references"><a class="header" href="#section-1-references">Section 1 References</a></h2>
 <ol start="0">
 <li><a href="https://web.stanford.edu/~jurafsky/slp3/">https://web.stanford.edu/~jurafsky/slp3/</a></li>
@@ -955,6 +1011,22 @@ compiler will translate a triton-like eDSL to PTX. If you prefer to learn
 
         </div>
 
+        <!-- Livereload script (if served using the cli tool) -->
+        <script>
+            const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsAddress = wsProtocol + "//" + location.host + "/" + "__livereload";
+            const socket = new WebSocket(wsAddress);
+            socket.onmessage = function (event) {
+                if (event.data === "reload") {
+                    socket.close();
+                    location.reload();
+                }
+            };
+
+            window.onbeforeunload = function() {
+                socket.close();
+            }
+        </script>
 
 
 

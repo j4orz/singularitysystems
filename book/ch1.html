@@ -158,10 +158,10 @@
 <p>Welcome to the second golden age of computing. The first one took place in the
 1940s when we discovered how to program sequences of instructions on
 latency-oriented machines with scalar processing. We collectively refer to this
-period as the <em>information revolution</em>. The second one is taking place today in
+period as the <strong>information revolution</strong>. The second one is taking place today in
 the 2020s where we are discovering how to compress sequences with stochastic
 distributions on throughput-oriented machines with vector processing. People are
-describing this period as the beginning of the <em>intelligence revolution</em>.</p>
+describing this period as the beginning of the <strong>intelligence revolution</strong>.</p>
 <p>What we see in both periods is the occurence of positive-sum-game-generating
 socioeconomic feedback loops dubbed "scaling laws" between software and hardware.
 That is, the more demand generated from applications, the more supply from
@@ -171,17 +171,63 @@ to Moore's Law, an exponential trend between transistor density and TODO: X,
 while the intelligence revolution today gives rise to Scaling Law's, another
 exponential between compression and parameter count.</p>
 <p>This textbook is all about the latter. More specifically we focus our attention
-on the <strong>compilers and chips</strong> that are powering the massive AI infrastructure
+on the compilers and chips that are powering the massive AI infrastructure
 buildout that's happening today. What's exciting from the perspective of a
 compiler engineer or chip architect is that all of the assumptions held in the
 design of our computers need to be reassessed and reevaluated. This is because
 the "soul of the machine" is constructed by the dance that happens between the
-compiler and chip — <em>together</em> through software-hardware codesign they bridge
+compiler and chip — together through <strong>software-hardware codesign</strong> they bridge
 the semantic gap between humans and electrons.</p>
+<p>we need software hardware codesign because we need to design from
+first principles. everything is in flux now because the assumptions are changing.</p>
 <p>The original assumption held in the computers designed from the information
 revolution was <a href="">Dennard Scaling</a> (also referred to as MOSFET Scaling) which
 states that as the size of transistors decreases, the power density stays
 constant.</p>
+<h2 id="mount-everest--software-20-infrastructure-research-debt"><a class="header" href="#mount-everest--software-20-infrastructure-research-debt">Mount Everest — Software 2.0 Infrastructure Research Debt</a></h2>
+<p>inspired by two educators:</p>
+<ol>
+<li>shriram krishnamurthi:</li>
+</ol>
+<ul>
+<li>high level blog post. or read the source code.</li>
+<li>this course is the bridge. gaps are good for bridging.</li>
+<li>common semantic core
+-&gt; implementation limited to
+<ul>
+<li>RISCV (references to x86-64, AMD)</li>
+<li>CUDA (references to AMD)
+-&gt; getting production-level performance, portability, and usability is for you
+to go forward and read source code.</li>
+</ul>
+</li>
+</ul>
+<ol start="2">
+<li>karpathy</li>
+</ol>
+<ul>
+<li>
+<p>community building (build the ramp)</p>
+</li>
+<li>
+<p>a good first contribution to any company is docs. so in some way this course</p>
+</li>
+<li>
+<p>is my version of that for the community.</p>
+</li>
+<li>
+<p>pytorch2 research colloqioum &lt;--&gt; github.com/pytorch/pytorch</p>
+</li>
+<li>
+<p>triton presentation: triton &lt;--&gt; github.com/triton/triton</p>
+</li>
+<li>
+<p>mojo: 10 part series blog &lt;--&gt; github.com/mojo/mojo</p>
+</li>
+<li>
+<p>tinygrad: slidedeck &lt;--&gt; github.com/tinygrad/tinygrad</p>
+</li>
+</ul>
 <p>TODO: von neumann prog/exec model.
 The von neumann</p>
 <p>What's interesting to systems programmers and performance engineers is that the
@@ -277,6 +323,22 @@ decade, and the 2.0 release[13] was released only 2 years ago</li>
 
         </div>
 
+        <!-- Livereload script (if served using the cli tool) -->
+        <script>
+            const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsAddress = wsProtocol + "//" + location.host + "/" + "__livereload";
+            const socket = new WebSocket(wsAddress);
+            socket.onmessage = function (event) {
+                if (event.data === "reload") {
+                    socket.close();
+                    location.reload();
+                }
+            };
+
+            window.onbeforeunload = function() {
+                socket.close();
+            }
+        </script>
 
 
 
