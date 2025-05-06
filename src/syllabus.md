@@ -1,6 +1,12 @@
 ![](./flammarion.webp)
 # Singularity Systems: Zero to Hero
-The Hacker's Guide to Tensor Compilers: *"Talk is cheap. Show me the code"*
+*Dragon Book 2.0: The Hacker's Guide to Tensor Compilers*
+
+
+point solution:
+- 1 model
+- 1 framework
+- 1 hardware
 
 ## Course Description
 Singularity Systems: Zero to Hero follows up from
@@ -15,20 +21,19 @@ to further understand the compilers and chips of deep learning.
 
 ### Prerequisites
 - solid deep learning (sd && llama)
-- solid systems programming (C || C++ || Rust* || Python**)
-  * *rust is currently the only supported language
-  * **python is ok (following pure-python hackable PyTorch 2, CUTLASS 4)
+- solid systems programming (C || C++ || Rust)
 
 ### Syllabus
 **Core**: *Deep Learning Compilers of Today*
-1. **au197**: introduces the golden age of systems ml and course overview.
-2. **dfdx(nd)**: implements an interpreter for neural networks (pytorch1).
+
+0. **preface**: introduces the golden age of systems ml and provides a course overview.
+1. **dfdx(nd)**: implements an interpreter for neural networks (pytorch1).
+2. **brrr**: accelerates the interpreter with vector processing (pytorch1).
 3. **pt2**: constructs a compiler for neural networks (pytorch2).
-4. **tiles**: constructs a compiler for a tiling language (triton).
 
 **Appendix**: *Parallel Computing of Yesterday and Tomorrow*
-1. **turing**: reviews a compiler that maps C to RISCV.
-2. **richard**:: explores heterogenous parallel languages and machines.
+-  **A: backus2brooks**: speedruns an optimizing compiler (c -> riscv).
+-  **B: allen2cray**: tourguides the unsolved problem of parallel computing (mojo, tenstorrent).
 
 ### Citation
 ```

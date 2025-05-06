@@ -1,8 +1,11 @@
 # Contents
 
-[Dedication](./dedication.md)
 [Syllabus](./syllabus.md)
-- [au-197](./ch1.md)
-- [dfdx(nd)](./ch2.md)
+[Preface](./preface.md)
+
+- [dfdx(nd)](./ch1.md)
+- [brrr](./ch2.md)
 - [pt2](./ch3.md)
-- [tiles](./ch4.md)
+
+[A. backus2brooks](./apa.md)
+[B. allen2cray](./apb.md)
