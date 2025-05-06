@@ -2,12 +2,6 @@
 # Singularity Systems: Zero to Hero
 *Dragon Book 2.0: The Hacker's Guide to Tensor Compilers*
 
-
-point solution:
-- 1 model
-- 1 framework
-- 1 hardware
-
 ## Course Description
 Singularity Systems: Zero to Hero follows up from
 [Neural Networks: Zero to Hero](https://karpathy.ai/zero-to-hero.html). We convert
@@ -15,9 +9,9 @@ Singularity Systems: Zero to Hero follows up from
 - [**picograd**](https://github.com/j4orz/picograd): modern deep learning framework
 
 While micrograd is good for research scientists to further understand the leaky
-abstraction of backpropagation (think activation gradients and normalization),
-picograd is intended for systems programmers and performance engineers looking
-to further understand the compilers and chips of deep learning.
+abstraction of backpropagation, picograd is intended for systems programmers and
+performance engineers looking to further understand the compilers and chips of
+deep learning.
 
 ### Prerequisites
 - solid deep learning (sd && llama)
@@ -26,7 +20,6 @@ to further understand the compilers and chips of deep learning.
 ### Syllabus
 **Core**: *Deep Learning Compilers of Today*
 
-0. **preface**: introduces the golden age of systems ml and provides a course overview.
 1. **dfdx(nd)**: implements an interpreter for neural networks (pytorch1).
 2. **brrr**: accelerates the interpreter with vector processing (pytorch1).
 3. **pt2**: constructs a compiler for neural networks (pytorch2).

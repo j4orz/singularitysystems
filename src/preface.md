@@ -1,67 +1,121 @@
 # Preface: au-197
 **This chapter introduces the golden age of systems ml and provides a course overview**
 
-Principles.
-average fortune 500 company lasts 30 years.
-average individual software...
-you'd be lucky if your creations lasts 5-10 years (HW3).
 
-AI Software stack 4-5 levels of translation.
+<!-- ## Revolutions: Industrial, Information, Intelligence
+
+### Industrial Revolution
+During the industrial revolution we naturalized *energy* ("ability to do work")
+with *thermodynamics* by defining it as product of power and time
+`E(J)=P(W)*T(s)`. As a result we moved from horsepower to W(J/s), which lets us
+answer questions such as:
+- Q: how much energy is required to heat water from 20°C to 100°C?
+- Q: how much energy is required to cool a fridge from X to Y?
+- Q: how much energy is required to heat a steam engine from X to y?
+
+![](./energy.svg)
+
+
+### Information Revolution
+During the information revolution we naturalized *computation* ("execution of
+a sequence of instructions) with *informatics* by defining it as turing-complete
+`L,M,N ::= x | (λx.N) | (L M)`. As a result we moved from human computers to
+mechanical ones, which lets us answer questions such as:
+- Q: is Dijkstra's algorithm computable? A: yes.
+- Q: how compute is required for Dijkstra's algorithm? A: O(x) time, O(x) space
+- Q: is the Traveling Salesman problem computable? A: ??
+- Q: how compute is required for Dijkstra's algorithm? A: idk.
+- Q: is the Halting Problem computable? A: no.
+
+![](./computation.svg)
+
+
+### Industrial Revolution
+Today, we are at the dawn of an intelligence revolution which is naturalizing
+*intelligence* ("achieving goals") with *entropics*, defining intelligence as
+compression `I=FOO`. As a result we will move from our intuitive personyears to
+petaFLOP/s
+
+- Q: how much intelligence is required for 2000 ELO in chess? A:
+- Q: how much intelligence is required for 2000 ELO in go? A:
+- Q: how much intelligence is required for 2000 ELO in codeforces? A:
+- Q: how much intelligence is required to prove fermat's last theorem? A: idk. andrew wyles.
+
+![](./intelligence.svg) -->
 
 ## Golden Age — Software 2.0 Infrastructure Buildout
-Welcome to the second golden age of computing. The first one started in the
-1950s when we discovered how to program sequences of instructions on
-latency-oriented machines with scalar processing. We collectively refer to this
-period as the **information revolution**. The second one began today in the
-2020s where we are discovering how to compress sequences with stochastic
-distributions on throughput-oriented machines with vector processing. People are
-describing this period as the beginning of the **intelligence revolution**.
 
-What we see in both periods is the occurence of positive-sum-game-generating
-socioeconomic feedback loops dubbed "scaling laws" between software and hardware.
-That is, the more demand generated from applications, the more supply from
-infrastructure, which unlocks better applications, which generates more demand,
-which increases the supply, and so on. The information revolution gave rise
-to Moore's Law, an exponential trend between transistor density and TODO: X,
-while the intelligence revolution today gives rise to Scaling Law's, another
-exponential between compression and parameter count.
+Throughout the past decade, modern day AI infrastructure has extremely rapidly
+to meet the needs of training deep neural networks, most notably with the
+throughput performance of datacenter GPUs moving from TFLOPS(1e12) to
+PFLOPS(1e15). And now with supercomputing reaching (non-distributed) EFLOP(1e15)
+performance, datacenter computing will follow.
 
-This textbook is all about the latter. More specifically we focus our attention
-on the compilers and chips that are powering the massive AI infrastructure
-buildout that's happening today. What's exciting from the perspective of a
-compiler engineer or chip architect is that all of the assumptions held in the
-design of our computers need to be reassessed and reevaluated. This is because
+### Golden Age (1 minute version)
+Working backwards from physics, Dennard scaling (also known as MOSFET scaling)
+describes how power stays constant even though transistor size shrinks.
+Since `TODO: P proportional Load? * V^2 * Hz`, the semiconductor industry is
+described as the "power wall". While there's still plenty of room at the bottom
+(brains are existence proof of PFLOP machines powered by 20W), the strategy to
+solve the problem today is to tapeout specialized processors over generalized
+ones.
+
+Deep learning (and graphics) are enjoying 10-100x more perf(throughput) of GPUs/TPUs,
+but it's very expensive so can we make it more cheaper (efficient) `FLOP/W` or `FLOP/$` for existing AI/graphics workloads?
+-> which might have downstream effects of unlocking FLOP/S to any compute that
+can be expressed as a graph.
+
+programming model implemented by interpreter/compiler. "only" achieving 50% utilization
+execution model implemented by chip: graph programs on vector processors
+
+CONCLUSION: lots of accidental complexity arisen (genius workaround at first but now ducktaping)
+
+SOLUTIONs today: graph compilers, kernel authoring: CUBLAS, CUDNN,
+SOLUTIONS tmr: mojo/apl/futhark (metaprogramming with comptime), tenstorrent/cell (dataflow computing)
+
+we will build a poitn-wise (1 model, 1 framework, 1 hardware) solution picograd
+built that were hillclimbed from yesterdays solutions:
+
+**Welcome to the golden age of Systems ML!**
+
+### Golden Age (10 minute version)
+
+programming an M1 and a whatever1 feel relative the same.
+the hardware/software contract is pretty clean for scalar computing
+and does not leak complexity up the stack.
+
+the same cannot be said for unlocking the performance of modern day for
+vector processors and tensorprocessors. you have to know about (come back here:
+TMA, X, Y, Z)
+
+- moores law. scaling laws.
+- bells law
+1. A New Golden Age for Computer Architecture[0] — Hennessy and Patterson
+2. The Golden Age of Compiler Design[1] — Chris Lattner
+
+ This is because
 the "soul of the machine" is constructed by the dance that happens between the
 compiler and chip — together through **software-hardware codesign** they bridge
 the semantic gap between humans and electrons.
+All of the original assumptions held in the design of
+the compilers and chips that make up the soul of the machine are being reassessed
+if the dominant workload is evaluating matrix multiplications for stochastic
+distributions instead of fetching data for discrete algorithms.
 
 
-
-
-we need software hardware codesign because we need to design from
-first principles. everything is in flux now because the assumptions are changing.
-The original assumption held in the computers designed from the information
-revolution was [Dennard Scaling]() (also referred to as MOSFET Scaling) which
-states that as the size of transistors decreases, the power density stays
-constant.
-
-
-
-
-
-
-
-
-## Mount Everest — Research Debt
-tech debt.
-research debt of models. research debt of infrastructure.
-
-inspired by two educators:
-
+Many toy autograds exist — the software 2.0[2] version of calculator interpreters
+capable of evaluating arithmetic. These are excellent in providing intuition for
+backpropagation (calculus on a computational graph), a very important abstraction
+to understand considering how leaky it is (think gradient initialization and
+normalization). However, there are zero resources that dive deeper into cutting
+your teeth on the advanced capabilities of PyTorch such as torch.compile and
+torch distributed. Linux has xv6[3], clang has chibicc[4], and llvm has qbe[5],
+but pytorch is missing it's teaching compiler. This is the gap that the course
+fills.
 
 1. shriram krishnamurthi:
 - high level blog post. or read the source code.
-- this course is the bridge. gaps are good for bridging.
+- this course is the bridge between blog posts and phd theses. gaps are good for bridging.
 - common semantic core. taxonification of tf vs pt is useless. link to soumith's tweet
 -> implementation limited to
    - RISCV (references to x86-64, AMD)
@@ -74,135 +128,4 @@ inspired by two educators:
 - a good first contribution to any company is docs. so in some way this course
 - is my version of that for the community.
 
-- pytorch2 research colloqioum <--> github.com/pytorch/pytorch
-- triton presentation: triton <--> github.com/triton/triton
-- mojo: 10 part series blog <--> github.com/mojo/mojo
-- tinygrad: slidedeck <--> github.com/tinygrad/tinygrad
-
-## PyTorch 1 "Eager" Mode — Deep Learning Interpreter
-
-in ch2.dfdx(nd)
-
-## PyTorch 2 "Graph" Mode — Deep Learning Compiler
-
-ch3.pt2
-ch4.tiles
-
-## Horses:Energy <?> GPUs:Intelligence
-young person building the future.
-positive sum games.
-rewrite it from scratch.
-first principles. respect for the past. learn from history. -> atom configuration.
-diminishing returns in bells law. iphone is the new blackberry.
-adventure.
-
-
-lots of complexity: necessary and accidental. accidental complexity with the GPU
-
-
-apA: turing
-
-apB: richard
-
-gpus. best throughput/energy (FLOP/W or FLOP/$) machine
-
-programming model |----- hardware/software contract??? impedence mismatches.
-execution model   |
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-TODO: von neumann prog/exec model. 
-The von neumann
-
-What's interesting to systems programmers and performance engineers is that the
-field is witnessing the rhyming of history. The feedback loop between the
-information revolution's software applications and sequential hardware
-(OOO, pipelining, TODO) creates this sociocultural phenomena dubbed
-"Moore's Law"[X]. The same loop is happening with the intelligence revolution's
-models and parallel hardware (tensor cores, TMA, TODO) which is now giving rise
-to the "Scaling Laws"[X]. All of the original assumptions held in the design of
-the compilers and chips that make up the soul of the machine are being reassessed
-if the dominant workload is evaluating matrix multiplications for stochastic
-distributions instead of fetching data for discrete algorithms.
-
-In transportation technology is when humanity wants to go to the moon, engineers
-reassess the design of vehicles from first principles. Given the workload of
-space travel, it's economically feasiable to start from fundamentals and design
-a rocket rather than a car or bus. As a result, the engineers behind the massive
-infrastructure buildout are dubbing this period of
-history as a new golden age:
-
-1. A New Golden Age for Computer Architecture[0] — Hennessy and Patterson
-2. The Golden Age of Compiler Design[1] — Chris Lattner
-
-Many toy autograds exist — the software 2.0[2] version of calculator interpreters
-capable of evaluating arithmetic. These are excellent in providing intuition for
-backpropagation (calculus on a computational graph), a very important abstraction
-to understand considering how leaky it is (think gradient initialization and
-normalization). However, there are zero resources that dive deeper into cutting
-your teeth on the advanced capabilities of PyTorch such as torch.compile and
-torch distributed. Linux has xv6[3], clang has chibicc[4], and llvm has qbe[5],
-but pytorch is missing it's teaching compiler. This is the gap that the course
-fills.
-
-The field of artificial intelligence is no stranger to pedagogical gaps.
-Researchers talk about "research debt"[6] with respect to model development, but
-what they forget to talk about is that the debt also applies to the underlying
-infrastructure that powers the training and inference of deep neural networks.
-This is largely in part because it's only been a decade since deep learning
-has entered the zeitgeist of academia[7] and the public[8].
-
-To give you a better idea of how nascent system ML as a field:
-  1. the leading conferences for AI (NeurIPS) and Hardware (HOTCHIPS) have both
-     been running for ~30 years[9][10]. Meanwhile, the conference for the
-     intersection of the two (mlsys) has only been running for 6[11].
-  2. the lingua franca deep learning framework was released[12] less than a
-     decade, and the 2.0 release[13] was released only 2 years ago
-
-Welcome to the golden age of Systems ML!
-
-References
-----------
-0. [https://proceedings.neurips.cc/paper_files/paper/2012/file/c399862d3b9d6b76c8436e924a68c45b-Paper.pdf](https://proceedings.neurips.cc/paper_files/paper/2012/file/c399862d3b9d6b76c8436e924a68c45b-Paper.pdf)
-0. [https://www.nature.com/articles/nature14539](https://www.nature.com/articles/nature14539)
-0. [https://www.youtube.com/watch?v=3LVeEjsn8Ts](https://www.youtube.com/watch?v=3LVeEjsn8Ts)
-0. [https://www.youtube.com/watch?v=4HgShra-KnY](https://www.youtube.com/watch?v=4HgShra-KnY)
-0. [https://karpathy.medium.com/software-2-0-a64152b37c35](https://karpathy.medium.com/software-2-0-a64152b37c35)
-0. [https://github.com/mit-pdos/xv6-public](https://github.com/mit-pdos/xv6-public)
-0. [https://github.com/rui314/chibicc](https://github.com/rui314/chibicc)
-0. [https://c9x.me/compile/](https://c9x.me/compile/)
-0. [https://distill.pub/2017/research-debt/](https://distill.pub/2017/research-debt/)
-0. [https://proceedings.neurips.cc/paper_files/paper/2012/file/c399862d3b9d6b76c8436e924a68c45b-Paper.pdf](https://proceedings.neurips.cc/paper_files/paper/2012/file/c399862d3b9d6b76c8436e924a68c45b-Paper.pdf)
-0. [https://www.nature.com/articles/nature14539](https://www.nature.com/articles/nature14539)
-0. [https://papers.nips.cc/](https://papers.nips.cc/)
-0. [https://hotchips.org/archives/](https://hotchips.org/archives/)
-0. [https://proceedings.mlsys.org/](https://proceedings.mlsys.org/)
-0. [https://soumith.ch/blog/2023-12-17-pytorch-design-origins.md.html](https://soumith.ch/blog/2023-12-17-pytorch-design-origins.md.html)
-0. [https://pytorch.org/assets/pytorch2-2.pdf](https://pytorch.org/assets/pytorch2-2.pdf)
+**Welcome to the golden age of Systems ML!**
