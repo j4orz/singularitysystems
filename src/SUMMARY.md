@@ -8,5 +8,5 @@
 - [brrr](./ch2.md)
 - [pt2](./ch3.md)
 
-[A. backus2brooks](./apa.md)
-[B. allen2cray](./apb.md)
+[A. backus&brooks](./apa.md)
+[B. allen&cray](./apb.md)

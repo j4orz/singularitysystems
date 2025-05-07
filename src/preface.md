@@ -1,64 +1,87 @@
+![](./au197.jpg)
+
+> *Dreams. Each man longs to pursue his dream.* — Guts
 # Preface: au-197
 **This chapter introduces the golden age of systems ml and provides a course overview**
 
-
-<!-- ## Revolutions: Industrial, Information, Intelligence
-
-### Industrial Revolution
-During the industrial revolution we naturalized *energy* ("ability to do work")
-with *thermodynamics* by defining it as product of power and time
-`E(J)=P(W)*T(s)`. As a result we moved from horsepower to W(J/s), which lets us
-answer questions such as:
-- Q: how much energy is required to heat water from 20°C to 100°C?
-- Q: how much energy is required to cool a fridge from X to Y?
-- Q: how much energy is required to heat a steam engine from X to y?
-
-![](./energy.svg)
-
-
-### Information Revolution
-During the information revolution we naturalized *computation* ("execution of
-a sequence of instructions) with *informatics* by defining it as turing-complete
-`L,M,N ::= x | (λx.N) | (L M)`. As a result we moved from human computers to
-mechanical ones, which lets us answer questions such as:
-- Q: is Dijkstra's algorithm computable? A: yes.
-- Q: how compute is required for Dijkstra's algorithm? A: O(x) time, O(x) space
-- Q: is the Traveling Salesman problem computable? A: ??
-- Q: how compute is required for Dijkstra's algorithm? A: idk.
-- Q: is the Halting Problem computable? A: no.
-
-![](./computation.svg)
-
-
-### Industrial Revolution
-Today, we are at the dawn of an intelligence revolution which is naturalizing
-*intelligence* ("achieving goals") with *entropics*, defining intelligence as
-compression `I=FOO`. As a result we will move from our intuitive personyears to
-petaFLOP/s
-
-- Q: how much intelligence is required for 2000 ELO in chess? A:
-- Q: how much intelligence is required for 2000 ELO in go? A:
-- Q: how much intelligence is required for 2000 ELO in codeforces? A:
-- Q: how much intelligence is required to prove fermat's last theorem? A: idk. andrew wyles.
-
-![](./intelligence.svg) -->
-
 ## Golden Age — Software 2.0 Infrastructure Buildout
 
-Throughout the past decade, modern day AI infrastructure has extremely rapidly
-to meet the needs of training deep neural networks, most notably with the
-throughput performance of datacenter GPUs moving from TFLOPS(1e12) to
-PFLOPS(1e15). And now with supercomputing reaching (non-distributed) EFLOP(1e15)
-performance, datacenter computing will follow.
+Throughout the past decade, modern day AI infrastructure has rapidly evolved
+to meet the needs of deep neural networks — most notably with the throughput
+performance of GPUs moving from `TFLOPS` to `PFLOPS`. Datacenter
+computing now has the goal of a machine with `EFLOPS` speed, now that that
+the throughput of the fastest (non-distributed) supercomputers on TOP500 are just
+reaching `EFLOP` levels.
 
-### Golden Age (1 minute version)
-Working backwards from physics, Dennard scaling (also known as MOSFET scaling)
-describes how power stays constant even though transistor size shrinks.
-Since `TODO: P proportional Load? * V^2 * Hz`, the semiconductor industry is
-described as the "power wall". While there's still plenty of room at the bottom
-(brains are existence proof of PFLOP machines powered by 20W), the strategy to
-solve the problem today is to tapeout specialized processors over generalized
-ones.
+---
+
+### 1 second version
+SOTA semiconductor physics is forcing both languages and machines to be redesigned
+from frist principles. This creates a golden age for compiler engineers and
+computer architects because who need to software-hardware codesign the machines
+of tomorrow.
+
+*Welcome to the golden age of Systems ML!*
+
+---
+
+### 1 minute version
+Although the brain is an existence proof of physics powering `20PFLOP` machines
+with `20W`, the problem with SOTA semiconductor physics is two-fold:
+1. instruction-level parallelism from out of order, superscalar pipelines is providing diminishing returns
+2. frequency scaling is hitting against [Dennard scaling](https://en.wikipedia.org/wiki/Dennard_scaling)'s power wall
+
+and so this free-single-thread-performance-lunch aspect to [Moore's law](https://en.wikipedia.org/wiki/Moore%27s_law)
+that transitioned us from minis to micros and from micros to mobile is "over".
+Now, the complexity of extracting program performance is leaking from the hardware,
+and the programmer is now exposed to thread-level parallelism with multi-core and
+many-core machines also known as vector processors.
+
+The problem with the vector processing of multi-core/many-core machines is two-fold:
+1. programming model: compiler engineers wrote [sufficiently smart compilers](https://wiki.c2.com/?SufficientlySmartCompiler) with [autovectorization](https://pharr.org/matt/blog/2018/04/18/ispc-origins)
+2. execution model: program speedups were bound by [Amdahl's law](https://en.wikipedia.org/wiki/Amdahl%27s_law) — their serial portions
+
+But the industry sidestepped these problems by changing the programming model to
+SIMT on SIMD (CUDA) and finding domains whose execution models had more parallelism
+(deep neural networks). The challenge (and golden age) of compiler engineers and
+chip architects face is the creation of new programming languages and machines
+while minimizing the accidental complexity that naturally builds up along the way:
+
+- [The Golden Age of Compiler Design (Lattner)](https://www.youtube.com/watch?v=4HgShra-KnY)
+- [A New Golden Age for Computer Architecture (Hennessy and Patterson)](https://www.youtube.com/watch?v=3LVeEjsn8Ts)
+
+*Welcome to the golden age of Systems ML!*
+
+
+---
+
+### 10 minute version
+
+In this course, we will convert [Neural Networks: Zero to Hero](https://karpathy.ai/zero-to-hero.html) micrograd
+into [Singularity Systems: Zero to Hero](./syllabus.md) picograd (line by line, from scratch).
+
+The difference between the two is that:
+- [micrograd](https://github.com/karpathy/micrograd) is a toy backpropagation engine on scalars that is extremely helpful for researchers to understand the leaky abstraction that backpropagation is (gradient activations, normalizations, etc.)
+- [picograd](https://github.com/j4orz/picograd) is a pedagogical deep learning framework with full modern-day tensor-support for both pytorch1 interpretation and pytorch2 compilation.
+
+While picograd is more oriented towards low-level system programmers and
+performance engineers, this framework is still *pedagogical* and remains a
+point-wise solution meaning that we will support 1 model (llama), 1 framework
+(pytorch api) and 1 hardware (riscv, nvidia).
+
+
+### 10 hour version
+This course!
+
+### 100 hour - version
+
+
+
+
+accidental complexity ==> FLOPS/W or FLOPS/$
+
+
+
 
 Deep learning (and graphics) are enjoying 10-100x more perf(throughput) of GPUs/TPUs,
 but it's very expensive so can we make it more cheaper (efficient) `FLOP/W` or `FLOP/$` for existing AI/graphics workloads?
@@ -76,7 +99,7 @@ SOLUTIONS tmr: mojo/apl/futhark (metaprogramming with comptime), tenstorrent/cel
 we will build a poitn-wise (1 model, 1 framework, 1 hardware) solution picograd
 built that were hillclimbed from yesterdays solutions:
 
-**Welcome to the golden age of Systems ML!**
+*Welcome to the golden age of Systems ML!*
 
 ### Golden Age (10 minute version)
 
@@ -93,7 +116,7 @@ TMA, X, Y, Z)
 1. A New Golden Age for Computer Architecture[0] — Hennessy and Patterson
 2. The Golden Age of Compiler Design[1] — Chris Lattner
 
- This is because
+This is because
 the "soul of the machine" is constructed by the dance that happens between the
 compiler and chip — together through **software-hardware codesign** they bridge
 the semantic gap between humans and electrons.
@@ -122,10 +145,3 @@ fills.
    - CUDA (references to AMD)
 -> getting production-level performance, portability, and usability is for you
    to go forward and read source code.
-
-2. karpathy
-- community building (build the ramp)
-- a good first contribution to any company is docs. so in some way this course
-- is my version of that for the community.
-
-**Welcome to the golden age of Systems ML!**

@@ -25,8 +25,8 @@ deep learning.
 3. **pt2**: constructs a compiler for neural networks (pytorch2).
 
 **Appendix**: *Parallel Computing of Yesterday and Tomorrow*
--  **A: backus2brooks**: speedruns an optimizing compiler (c -> riscv).
--  **B: allen2cray**: tourguides the unsolved problem of parallel computing (mojo, tenstorrent).
+-  **A: backus&brooks**: speedruns an optimizing compiler (c -> riscv).
+-  **B: allen&cray**: tourguides the unsolved problem of parallel computing (mojo, tenstorrent).
 
 ### Citation
 ```

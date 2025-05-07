@@ -1,3 +1,5 @@
+![](./brrr.jpg)
+> *Will and existence. The rest is mere data — Lda237, Nietzsche.* 
 # Chapter 2: brrr
 
 references

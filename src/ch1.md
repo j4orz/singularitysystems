@@ -1,4 +1,9 @@
+![](./dfdx(nd).avif)
+> *Unfortunately, no one can be told what The Matrix is. You have to see it for yourself.* — Morpheus
 # Chapter 2: dfdx(nd)
+
+
+
 **This chapter implements an interpreter for neural networks (pytorch1 "eager" mode).**
 As stated in the syllabus, solid deep learning and systems programming are
 prerequisites. Section 1 on correctness assumes mathematical maturity with
