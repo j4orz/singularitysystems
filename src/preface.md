@@ -18,8 +18,7 @@ reaching `EFLOP` levels.
 ### 1 second version
 SOTA semiconductor physics is forcing both languages and machines to be redesigned
 from frist principles. This creates a golden age for compiler engineers and
-computer architects because who need to software-hardware codesign the machines
-of tomorrow.
+computer architects who need to software-hardware codesign the machines of tomorrow.
 
 *Welcome to the golden age of Systems ML!*
 
@@ -27,15 +26,19 @@ of tomorrow.
 
 ### 1 minute version
 Although the brain is an existence proof of physics powering `20PFLOP` machines
-with `20W`, the problem with SOTA semiconductor physics is two-fold:
-1. instruction-level parallelism from out of order, superscalar pipelines is providing diminishing returns
+with `20W`, the problem with the semiconductor physics of *today* is two-fold:
+1. instruction-level parallelism from out-of-order superscalar pipelines hits diminishing returns
 2. frequency scaling is hitting against [Dennard scaling](https://en.wikipedia.org/wiki/Dennard_scaling)'s power wall
 
 and so this free-single-thread-performance-lunch aspect to [Moore's law](https://en.wikipedia.org/wiki/Moore%27s_law)
-that transitioned us from minis to micros and from micros to mobile is "over".
-Now, the complexity of extracting program performance is leaking from the hardware,
-and the programmer is now exposed to thread-level parallelism with multi-core and
-many-core machines also known as vector processors.
+that transitioned us across computer classes from minis to micros and from micros
+to mobile is "over".
+
+As a result computer architects are moving from homogenous general hardware
+to heterogenous specialized hardware, which means that the complexity of extracting
+program performance leaks upwards from the hardware — these days, to unlock
+the full performance of hardware, it's the programmer's responsibility to program
+the vector processors in multi-core/many-core machines.
 
 The problem with the vector processing of multi-core/many-core machines is two-fold:
 1. programming model: compiler engineers wrote [sufficiently smart compilers](https://wiki.c2.com/?SufficientlySmartCompiler) with [autovectorization](https://pharr.org/matt/blog/2018/04/18/ispc-origins)
@@ -43,8 +46,10 @@ The problem with the vector processing of multi-core/many-core machines is two-f
 
 But the industry sidestepped these problems by changing the programming model to
 SIMT on SIMD (CUDA) and finding domains whose execution models had more parallelism
-(deep neural networks). The challenge (and golden age) of compiler engineers and
-chip architects face is the creation of new programming languages and machines
+(deep neural networks).
+
+The challenge (producing a golden age) of compiler engineers and chip architects face is to find the optimal mapping from
+intelligence to energy. This means creating new programming languages and machiens
 while minimizing the accidental complexity that naturally builds up along the way:
 
 - [The Golden Age of Compiler Design (Lattner)](https://www.youtube.com/watch?v=4HgShra-KnY)
@@ -57,31 +62,65 @@ while minimizing the accidental complexity that naturally builds up along the wa
 
 ### 10 minute version
 
-In this course, we will convert [Neural Networks: Zero to Hero](https://karpathy.ai/zero-to-hero.html) micrograd
-into [Singularity Systems: Zero to Hero](./syllabus.md) picograd (line by line, from scratch).
+In this course, we will convert [Neural Networks: Zero to Hero](https://karpathy.ai/zero-to-hero.html) `micrograd`
+into [Singularity Systems: Zero to Hero](./syllabus.md) `picograd` (line by line, from scratch).
 
 The difference between the two is that:
-- [micrograd](https://github.com/karpathy/micrograd) is a toy backpropagation engine on scalars that is extremely helpful for researchers to understand the leaky abstraction that backpropagation is (gradient activations, normalizations, etc.)
-- [picograd](https://github.com/j4orz/picograd) is a pedagogical deep learning framework with full modern-day tensor-support for both pytorch1 interpretation and pytorch2 compilation.
+- [micrograd](https://github.com/karpathy/micrograd) is a toy backprop engine with scalar-support which helps researchers to understand the leaky abstraction that backpropagation is (gradient activations, normalizations, etc.)
+- [picograd](https://github.com/j4orz/picograd) is a modern-day deep learning framework with tensor-support for both pytorch1 interpretation and pytorch2 compilation.
 
-While picograd is more oriented towards low-level system programmers and
+While `picograd` is more oriented towards low-level system programmers and
 performance engineers, this framework is still *pedagogical* and remains a
 point-wise solution meaning that we will support 1 model (llama), 1 framework
-(pytorch api) and 1 hardware (riscv, nvidia).
+(pytorch api) and 2 hardware (riscv, nvidia) and 2 levels of numerical precision
+(fp32, tf32).
+
+The astute reader will realize that the second reason why compilers are useful
+(besides the performance they unlock) is the portability of that said-performance.
 
 
-### 10 hour version
-This course!
+Jax+XLA is better on TPUs.
+PyTorch+Inductor is better on NV.
+both have poor performance (for complex workloads) AMD.
 
-### 100 hour - version
+fragmentation. no shared
+accidental complexity in non-differentiated components ==> FLOPS/W or FLOPS/$
+hardware is getting harder.
+tt chasing sanity. amd following nv. todo: jim keller economic law?? ai first time it didn't get cheaper?
+nv: "moat". "Swamp" of kernel authoring. sidestepped the issue. potential to bite them in butt. impedence mismatch.
+todo: mojo 9part blog
+the accidental complexity of impedence mismatch (programming graphs on vector processors)
+is making it non-general
+
+general: is when a library is modular so you can mix-match the components for applications
+that the library designer never thought of.
+for instance: LLVM as a modular compiler infrastructure. Clang (OpenCL), Swift Julia Rust etc.
+what if there are other graph-related workloads that 
+
+what this course is going to introduce today's solutions. subset deep learning frameworks.
+but will end up exploring preparing you for the future of tomorrow. mojo and tenstorrent?
+unsolved problem of parallel computing.
+-> raph levien's notes and links.
+
+course is only covered to a single machine (scale up)
+perhaps a v2 course offering can provide multi-machine distributed systems (scale out).
+-> intersection of graph compilers and distributed systems.
+
+programming an M1 and a whatever1 feel relative the same.
+the hardware/software contract is pretty clean for scalar computing
+and does not leak complexity up the stack.
+
+the same cannot be said for unlocking the performance of modern day for
+vector processors and tensorprocessors. you have to know about (come back here:
+TMA, X, Y, Z)
 
 
 
 
-accidental complexity ==> FLOPS/W or FLOPS/$
 
-
-
+So although the course "only" builds a point-wise solution, we will make the
+connections to how production-level language implementations (PyTorch and friends)
+handle the problem of generitization so tha
 
 Deep learning (and graphics) are enjoying 10-100x more perf(throughput) of GPUs/TPUs,
 but it's very expensive so can we make it more cheaper (efficient) `FLOP/W` or `FLOP/$` for existing AI/graphics workloads?
@@ -100,48 +139,3 @@ we will build a poitn-wise (1 model, 1 framework, 1 hardware) solution picograd
 built that were hillclimbed from yesterdays solutions:
 
 *Welcome to the golden age of Systems ML!*
-
-### Golden Age (10 minute version)
-
-programming an M1 and a whatever1 feel relative the same.
-the hardware/software contract is pretty clean for scalar computing
-and does not leak complexity up the stack.
-
-the same cannot be said for unlocking the performance of modern day for
-vector processors and tensorprocessors. you have to know about (come back here:
-TMA, X, Y, Z)
-
-- moores law. scaling laws.
-- bells law
-1. A New Golden Age for Computer Architecture[0] — Hennessy and Patterson
-2. The Golden Age of Compiler Design[1] — Chris Lattner
-
-This is because
-the "soul of the machine" is constructed by the dance that happens between the
-compiler and chip — together through **software-hardware codesign** they bridge
-the semantic gap between humans and electrons.
-All of the original assumptions held in the design of
-the compilers and chips that make up the soul of the machine are being reassessed
-if the dominant workload is evaluating matrix multiplications for stochastic
-distributions instead of fetching data for discrete algorithms.
-
-
-Many toy autograds exist — the software 2.0[2] version of calculator interpreters
-capable of evaluating arithmetic. These are excellent in providing intuition for
-backpropagation (calculus on a computational graph), a very important abstraction
-to understand considering how leaky it is (think gradient initialization and
-normalization). However, there are zero resources that dive deeper into cutting
-your teeth on the advanced capabilities of PyTorch such as torch.compile and
-torch distributed. Linux has xv6[3], clang has chibicc[4], and llvm has qbe[5],
-but pytorch is missing it's teaching compiler. This is the gap that the course
-fills.
-
-1. shriram krishnamurthi:
-- high level blog post. or read the source code.
-- this course is the bridge between blog posts and phd theses. gaps are good for bridging.
-- common semantic core. taxonification of tf vs pt is useless. link to soumith's tweet
--> implementation limited to
-   - RISCV (references to x86-64, AMD)
-   - CUDA (references to AMD)
--> getting production-level performance, portability, and usability is for you
-   to go forward and read source code.

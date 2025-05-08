@@ -2,6 +2,7 @@
 # Singularity Systems: Zero to Hero
 *Dragon Book 2.0: The Hacker's Guide to Tensor Compilers*
 
+
 ## Course Description
 Singularity Systems: Zero to Hero follows up from
 [Neural Networks: Zero to Hero](https://karpathy.ai/zero-to-hero.html). We convert
