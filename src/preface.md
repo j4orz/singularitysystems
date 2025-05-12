@@ -10,8 +10,8 @@ Throughout the past decade, modern day AI infrastructure has rapidly evolved
 to meet the needs of deep neural networks — most notably with the throughput
 performance of GPUs moving from `TFLOPS` to `PFLOPS`. Datacenter
 computing now has the goal of a machine with `EFLOPS` speed, now that that
-the throughput of the fastest (non-distributed) supercomputers on TOP500 are just
-reaching `EFLOP` levels.
+the throughput of the fastest (non-distributed) supercomputers on TOP500 LINPACK
+workloads are just reaching `EFLOP` levels.
 
 ---
 
@@ -41,8 +41,8 @@ the full performance of hardware, it's the programmer's responsibility to progra
 the vector processors in multi-core/many-core machines.
 
 The problem with the vector processing of multi-core/many-core machines is two-fold:
-1. programming model: compiler engineers wrote [sufficiently smart compilers](https://wiki.c2.com/?SufficientlySmartCompiler) with [autovectorization](https://pharr.org/matt/blog/2018/04/18/ispc-origins)
-2. execution model: program speedups were bound by [Amdahl's law](https://en.wikipedia.org/wiki/Amdahl%27s_law) — their serial portions
+1. programming model: compilers were [sufficiently smart](https://wiki.c2.com/?SufficientlySmartCompiler) with [autovectorization](https://pharr.org/matt/blog/2018/04/18/ispc-origins)
+2. execution model: program speedups were bound by [Amdahl's law](https://en.wikipedia.org/wiki/Amdahl%27s_law)
 
 But the industry sidestepped these problems by changing the programming model to
 SIMT on SIMD (CUDA) and finding domains whose execution models had more parallelism
@@ -62,24 +62,90 @@ while minimizing the accidental complexity that naturally builds up along the wa
 
 ### 10 minute version
 
-In this course, we will convert [Neural Networks: Zero to Hero](https://karpathy.ai/zero-to-hero.html) `micrograd`
-into [Singularity Systems: Zero to Hero](./syllabus.md) `picograd` (line by line, from scratch).
-
-The difference between the two is that:
-- [micrograd](https://github.com/karpathy/micrograd) is a toy backprop engine with scalar-support which helps researchers to understand the leaky abstraction that backpropagation is (gradient activations, normalizations, etc.)
-- [picograd](https://github.com/j4orz/picograd) is a modern-day deep learning framework with tensor-support for both pytorch1 interpretation and pytorch2 compilation.
+The [Singularity Systems: Zero to Hero](./syllabus.md) course follows up from
+where [Neural Networks: Zero to Hero](https://karpathy.ai/zero-to-hero.html)
+left off: we will convert `micrograd` into `picrograd`, where the main difference is that:
+- [micrograd](https://github.com/karpathy/micrograd) is a backprop engine with scalar-support helping researchers  understand that backpropagation as an abstraction is in fact leaky (gradient activations, normalizations)
+- [picograd](https://github.com/j4orz/picograd) leans closer towards modern day deep learning frameworks with tensor-support for both pytorch1 interpretation and pytorch2 compilation.
 
 While `picograd` is more oriented towards low-level system programmers and
-performance engineers, this framework is still *pedagogical* and remains a
-point-wise solution meaning that we will support 1 model (llama), 1 framework
-(pytorch api) and 2 hardware (riscv, nvidia) and 2 levels of numerical precision
-(fp32, tf32).
+performance engineers, this framework remains *pedagogical* and remains a
+point-wise compiler. This means that we will "only" support:
+- **3 models**: llama, stable diffusion, whisper
+- **1 programming model**: eager
+- **2 execution model**: eager, graph
+- **2 hardware architectures**: amd cpu, nvidia gpu
+- **2 precisions**: fp32, tf32
 
-The astute reader will realize that the second reason why compilers are useful
-(besides the performance they unlock) is the portability of that said-performance.
+The astute reader will point out that besides the unlock of hardware performance
+itself, the secondary benefit compilers bring to the table is the *portability*
+of said-performance. While this is true from theoretical normative perspective,
+in practice, the industry does not have *performance-portability* with vector
+nor tensor programs on vector processors (GPUs) — standing in contrast to
+scalar programs on scalar processors (CPUs).
+
+Colloquially, the industry's lack of *performance-portability* is also known as
+**the cuda moat**. This is because the cheapest path to maximize performance
+measured in `FLOP/S/W` or `BW/S/W` is done with NVIDIA's vector processors, where
+the normalizing term of cost denominated in energy also includes the operational
+expenditure required to hire kernel engineers for each new A100/H100/B100 generation.
+
+So with that being said, although the gold standard for compiler construction
+would unlock both 1. performance and 2. performance-portability, given that the
+industry itself has not even reached the second bar, we will provide ramps to
+*performance-portability* by comparsing and contrasting the implementation of
+*picograd* to *tinygrad*, a framework trying to unlock that portability —
+colloquially known as **comoditizing the petaflop**.
+
+![](./preface1.png)
+
+The core design decision that tinygrad makes in order to differentiate itself
+from pytorch and friends is bringing back *search* at the systems level
+pioneered by [halide](https://people.csail.mit.edu/jrk/halide-pldi13.pdf) and
+[tvm](https://arxiv.org/abs/1802.04799). Although many research scientists
+espouse the "learning and search" wisdom from
+[the Bitter Lesson](http://www.incompleteideas.net/IncIdeas/BitterLesson.html),
+the jury is still out whether search works at the systems level given that
+empirically, it's failed in the past (i.e. the addition of tensor cores to the
+underlying hardware is one of the main reasons attributed towards tvm's "failure"),
+and in the present, tinygrad is still underperforming pytorch on NVIDIA hardware.
+
+But even with all that being said with respect to the technical design decisions
+being made, what's more relevent and compelling to the Singularity Systems course
+is the philosophical engineering decision tinygrad is making: **to surface complexity**.
+
+The PyTorch project is 3,327,184 lines of code across 11,449 files while the
+tinygrad project is 296,447 across 865 files (where source is further limited
+to 13k lines of code). Assuming PyTorch's non-source/source ratio is in the same ballpark
+as tinygrad's then this implies there's around 100,000 lines of PyTorch source,
+and so measured in lines of code in both non-source and source, PyTorch has 10x more
+complexity than tinygrad.
+
+And so although there does exist this argument that PyTorch provides a more
+batteries-included experience, using tinygrad's implementation as a case-study
+is more well-suited to the goals of this course. In all three chapters, we will
+walk through [picograd]()'s implementation, and then compare it to that of [tinygrad]()'s.
+
+*Welcome to the golden age of Systems ML!*
+
+![](./preface2.png)
 
 
-Jax+XLA is better on TPUs.
+### 1(0) year version
+Although the Singularity Systems course points towards tinygrad as a system
+attempting to ammend the industry's lack of *performance-portability* (removing the
+"cuda moat" by "comoditizing the petaflop"), there are other possible solutions
+that take a broader view. Rather than building a new framework or domain specific
+language, perhaps new programming and execution models implemented as new
+languages and machines for parallel computing should be built.
+
+And this is exactly what companies like Mojo and Tenstorrent are doing — they are
+re-industrializing research ideas from the unsolved world of parallel computing.
+The former riffing on ideas from comptime metaprogamming pioneered by Zig, and
+the latter on ones from CELL/Larabee tensor processing.
+
+
+<!-- Jax+XLA is better on TPUs.
 PyTorch+Inductor is better on NV.
 both have poor performance (for complex workloads) AMD.
 
@@ -138,4 +204,4 @@ SOLUTIONS tmr: mojo/apl/futhark (metaprogramming with comptime), tenstorrent/cel
 we will build a poitn-wise (1 model, 1 framework, 1 hardware) solution picograd
 built that were hillclimbed from yesterdays solutions:
 
-*Welcome to the golden age of Systems ML!*
+*Welcome to the golden age of Systems ML!* -->

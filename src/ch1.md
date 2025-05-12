@@ -1,16 +1,11 @@
 ![](./dfdx(nd).avif)
 > *Unfortunately, no one can be told what The Matrix is. You have to see it for yourself.* — Morpheus
-# Chapter 2: dfdx(nd)
-
-
+# Chapter 1: dfdx(nd)
 
 **This chapter implements an interpreter for neural networks (pytorch1 "eager" mode).**
-As stated in the syllabus, solid deep learning and systems programming are
-prerequisites. Section 1 on correctness assumes mathematical maturity with
-statistics and matrix calculus. Section 2 assumes familiarity with out of order
-and superscalar processors. By the end of this chapter, you will have an
-accelerated implementation of the multidimensional array with autodifferentiation
-capability capable of interpreting llama and sd.
+By the end of this chapter, you will have a working implementation of the
+multidimensional array abstraction with autodifferentiation capability capable
+of interpreting llama, stable diffusion, and whisper.
 
 ## Table of Contents
 [**Section 1: Correctness**]()
@@ -21,11 +16,11 @@ capability capable of interpreting llama and sd.
 3. [attention: a(q,k,v)]()
 4. [thought:]()
 
-[**Section 2: Speed**]()
+<!-- [**Section 2: Speed**]()
 
 5. [CPU: `RVV`]()
 6. [GPU:]()
-7. [GPU Tensor core (TPU)]()
+7. [GPU Tensor core (TPU)]() -->
 
 
 # Section 1: Correctness

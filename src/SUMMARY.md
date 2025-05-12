@@ -5,8 +5,9 @@
 [Preface](./preface.md)
 
 - [dfdx(nd)](./ch1.md)
-- [brrr](./ch2.md)
+<!-- - [brrr](./ch2.md)
 - [pt2](./ch3.md)
 
-[A. backus&brooks](./apa.md)
-[B. allen&cray](./apb.md)
+[A. soul](./apa.md)
+[B. s2.0](./apb.md) -->
+<!-- [B. allen&cray](./apb.md) -->
