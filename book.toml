@@ -4,3 +4,10 @@ language = "en"
 multilingual = false
 src = "src"
 title = "Singularity Systems: Zero to Hero"
+
+[preprocessor.katex]
+after = ["links"]
+
+[preprocessor.repl]
+python.enable = true
+python.loading = "lazy"

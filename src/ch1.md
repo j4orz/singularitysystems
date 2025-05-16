@@ -2,188 +2,51 @@
 > *Unfortunately, no one can be told what The Matrix is. You have to see it for yourself.* — Morpheus
 # Chapter 1: dfdx(nd)
 
-**This chapter implements an interpreter for neural networks (pytorch1 "eager" mode).**
+*This chapter implements an interpreter for neural network.*
 By the end of this chapter, you will have a working implementation of the
-multidimensional array abstraction with autodifferentiation capability capable
-of interpreting llama, stable diffusion, and whisper.
+multidimensional array abstraction pioneered by [numpy](https://numpy.org/doc/stable/reference/arrays.ndarray.html#), and autodifferentiation pioneered by [HIPS autograd](https://videolectures.net/videos/deeplearning2017_johnson_automatic_differentiation).
 
-## Table of Contents
-[**Section 1: Correctness**]()
+**Contents**
+1. [nd: forward pass with `loss = model(x)`]()
+2. [dfdx(nd): backward pass with `loss.backward()`, `opt.step()`]()
+3. [ffn to gpt: lstm, rnn, gpt]()
+4. [beyond nanogpt: attention variants, kv cache, speculative decoding]()
 
-0. [non-linear parametric models: `nn.Linear()`, `nn.ReLU()`]()
-1. [multidimensional array: `model.forward()`]()
-2. [gradient descent: `loss.backward()`, `opt.step()`]()
-3. [attention: a(q,k,v)]()
-4. [thought:]()
+**References**
 
-<!-- [**Section 2: Speed**]()
+## Part 1 — nd: forward pass with `loss = model(x)`
 
-5. [CPU: `RVV`]()
-6. [GPU:]()
-7. [GPU Tensor core (TPU)]() -->
-
-
-# Section 1: Correctness
-
-## Part 0: non-linear parametric models: `nn.Linear()`, `nn.ReLU()`
-Before jumping into the implementation of our deep learning framework's
-multidimensional array with autodifferentiation capability, let's review the
-mathematics of neural networks. We will incrementally construct a family of
-functions from logistic regression, multiclass regression, feedforward
-neural networks, attention and chain of thought variants, all for the
-classification setting where Y⊆ℕ.
-
-Recall that the logistic regression model for binary classification recovers the
-bernouilli distribution:
-```
-    P: ℝ^d -> [0,1] by assuming
-    P(Y=1|X=x;θ={w,b}) := σ(wᵀx) ==> P(Y=0|X=x;θ) = 1 - σ(wᵀx)
-==> P(Y=y|X=x;θ) = ŷ^y (1-ŷ)^(1-y) [continuous form]
-                 = σ(wᵀx)^y [1-σ(wᵀx)]^(1-y)
-
-+---+             
-| x1+---+         
-| x2+--+|w_0      
-|   |  ||         
-|   |w_1|         
-| . |  |+---->-+. 
-| . |  +-->(wᵀ |σ)
-| . |  +--->`--+' 
-|   |  |          
-|   |  |w_d       
-|   |  |          
-| xd+--+          
-+---+
-Fig 1. logistic regression
-```
-
-where we can omit the bias by prepending column vector x with x_0 := 1, using
-using w_0 as b. From now on we will implicitly assume that the hyperparameter
-d is d_old+1 so there is an extra row for the bias terms. And since we are
-training from a dataset D={(x_i, y_i)} (i=1..n), we can evaluate the function
-P: ℝ^d -> [0,1], P(x^i;θ={w,b}) := σ(wᵀx^(i)) for all n input-output pairs with
-a single matrix vector multiplication:
-    ŷ = σ(Xw, dim=0)
-where:
-    X ∈ ℝ^{nxd}
-    w ∈ ℝ^d
-
-We can also extend this model to multi-class classification by generalizing
-logistic regression to softmax regression by replacing σ(z) with softmax(z):
-    σ: ℝ -> [0,1], σ(z) := 1/[1+exp(-z)]
-    softmax: ℝ^k -> [0,1]^k, softmax(z_i) := exp(z_i) / Σ exp(z_j)
-                                                        j=1..k
-
-recalling that 1. ∫softmax(z) = 1 and 2. that z is referred to as the logits
-since sigmoid and softmax map ℝ to log odds (ln[p/(1-p)]). Generalizing sigmoid
-to softmax allows us to recover the multinomial distribution:
-```
-    P: ℝ^d -> [0,1]^k by assuming
-    P(Y=i|X=x) = exp(w_iᵀx) / Σ exp(w_jᵀx)
-                              j=1..k
-==> P(Y=y|X=x) = softmax(Wx), where W ∈ ℝ^{kxd}, x ∈ ℝ^d : x_0 = 1
-
-+---++---------------++----+                          +------------------------+
-| x1||               ||w1ᵀσ|                          |exp(w1ᵀx) / Σ exp(w_jᵀx)|
-| x2||               ||w2ᵀσ|                          |exp(w2ᵀx) / Σ exp(w_jᵀx)|
-|   ||               ||    |                          |                        |
-|   ||               ||    |                          |                        |
-| . ||               || .  |    +----------------+    | .                      |
-| . ||       W       || .  |--->|g(z):=softmax(z)|--->| .                      |
-| . ||               || .  |    +----------------+    | .                      |
-|   ||               ||    |                          |                        |
-|   ||               ||    |                          |                        |
-|   ||               ||    |                          |                        |
-| xd||               ||wdᵀσ|                          |exp(wdᵀx) / Σ exp(w_jᵀx)|
-+---++---------------++----+                          +------------------------+
-Fig 2. softmax regression
-```
-
-And to evaluate P: ℝ^d -> [0,1]^k, P(x^i;θ) := softmax(Wx) for all n input-output
-pairs with a single matrix multiplication:
-    ŷ = softmax(XW, dim=0)
-where:
-    X ∈ ℝ^{nxd}
-    W ∈ ℝ^{dxk}
-
-Finally, we can extend the multinomial logistic regression by introducing
-intermediate stages of computation to project the representation of inputs
-into a basis that is more tractable when mapping to a distribution:
-```
-    P: ℝ^d -> [0,1]^k
-    P(x;θ={w,b}) := (softmax ◦ W_L ◦ (φ ◦ W_{L-1}) ◦ ... ◦ (φ ◦ W_1))(x)
-
-and each pair of linearity W and non-linearity φ is a "hidden layer" so
-    h^(1) := φ(W^1x+b_1)
-    h^(2) := φ(W^2h^(1)+b_2)
-    .
-    .
-    .
-    h^(L) := φ(W^Lh^(L-1)+b_L)
-
-                                                                               +------------------------+
-                                                                               |exp(w1ᵀx) / Σ exp(w_jᵀx)|
-                                                                               |exp(w2ᵀx) / Σ exp(w_jᵀx)|
-                                                                               |                        |
-                      +---++---------------++-------+                          |                        |
-                      | a1||               ||φ(w1ᵀσ)|    +----------------+    | .                      |
-                      | a2||               ||φ(w2ᵀσ)|--->|g(z):=softmax(z)|--->| .                      |
-                      |   ||               ||       |    +----------------+    | .                      |
-  +-------------------+---++----+          ||       |                          |                        |
- ++----------------------------+|          || .     |                          |                        |
-++--++---------------++-------+||  WL      || .     |                          |                        |
-| x1||               ||φ(w1ᵀσ)|||          || .     |                          |exp(wdᵀx) / Σ exp(w_jᵀx)|
-| x2||               ||φ(w2ᵀσ)|||          ||       |                          +------------------------+
-|   ||               ||       |||  *       ||       |
-|   ||               ||       ||| *        ||       |
-| . ||               || .     |||*         ||φ(wdᵀσ)|
-| . ||       W1      || .     ||+----------++-------+
-| . ||               || .     |||
-|   ||               ||       |||
-|   ||               ||       |||
-|   ||               ||       |++
-| xd++               ++φ(wdᵀσ)++
-+---++---------------++-------+
-Fig 3. neural network
-```
-
-Recall that neural networks are the family of functions that are non-linear
-and parametric. The non-linearities that act as feature extractors differentiate
-this class from the family of linear functions such as linear and logistic
-regression, and the parametric weights and biases differentiate the class from
-other non-linear functions such as gaussian processes and kernel methods. Favoring
-the mathematical specification over the biological inspiration, neural networks,
-reductively put, are a lot of logistic regressions (weighted sums with
-non-linearities) stacked together.
+The following is the model definition and inference loop for a FFN language model
+following [(Bengio et al. 2003)](https://www.jmlr.org/papers/volume3/bengio03a/bengio03a.pdf).
+The API is a 1-1 match with PyTorch — take a second to convince yourself by
+replacing `import picograd` with `import torch` and sampling from the inference
+loop.
 
 ```python
 """
-model: Neural Language Models (Bengio et al. 2003) URL: https://www.jmlr.org/papers/volume3/bengio03a/bengio03a.pdf
-
 Dimension key:
-# windows
 B: batch size
 T: sequence length
-
-# input/output
 V: vocabulary size
-E: embedding dimension (E != D in paper)
+E: embedding dimension (E != D)
 D: model dimension
 """
+
 import picograd
+# from jaxtyping import
+
+# *********************MODEL*********************
 B, T = 32, 3
 V, E, D = 27, 10, 200
 
-# *********************MODEL*********************
 class Linear:
   def __init__(self, D_in, D_out, bias=True):
-    self.W_DiDo = picograd.randn((D_in, D_out)) * (5/3)/D_in**0.5 # kaiming init (He et al. 2015)
+    self.W_DiDo = picograd.randn((D_in, D_out)) * 0.01
     self.b_Do = picograd.zeros(D_out) if bias else None
 
   def __call__(self, X_Di):
     self.X_Do = X_Di @ self.W_DiDo
-    if self.b_Do is not None:
-        self.X_Do += self.b_Do
+    if self.b_Do is not None: self.X_Do += self.b_Do
     self.out = self.X_Do
     return self.X_Do
 
@@ -193,8 +56,6 @@ class Linear:
 class Tanh:
   def __call__(self, X_BD):
     self.X_BD = picograd.tanh(X_BD)
-    # plt.hist(self.X_BD.view(-1).tolist(), 50); # distribution of weights
-    # plt.imshow(self.X_BD.abs() > 0.99, cmap='gray', interpolation='nearest') # vanishing gradients
     self.out = self.X_BD
     return self.X_BD
   
@@ -207,7 +68,13 @@ model = [
   Linear(D, V, bias=False)
 ]
 
-C_VE = picograd.randn((V,E))
+C_VE = picograd.randn((V,E)) #, generator=g)
+params = [C_VE] + [p for l in model for p in l.parameters()]
+for p in params:
+    p.requires_grad = True
+
+print("model loaded to cpu")
+
 
 # *********************INFERENCE LOOP*********************
 for _ in range(20): # 20 samples
@@ -215,7 +82,6 @@ for _ in range(20): # 20 samples
   while True:
     X_1T = picograd.tensor([context]) # B=1 for inference, T=3, in [0..27] (set to 0 for init)
     X_1TE = C_VE[X_1T] # using 0..27 as indices into C_VE for each B=1 example of context length T
-    print(X_1TE)
     X_1cTE = X_1TE.view(-1, T*E) # B=1, TE
     X = X_1cTE
 
@@ -233,12 +99,14 @@ for _ in range(20): # 20 samples
   print(''.join(output))
 ```
 
+At the end of part 1 we will be able to autoregressively sample from the
+untrained model with the inference loop.
+![](./forward.png)
 
 
 
 
-## Part 1: multidimensional array: `model.forward()`
-Let's start with the multidimensional array and follow pytorch's `tensor` naming
+<!-- Let's start with the multidimensional array and follow pytorch's `tensor` naming
 convention. Consider the following product type for tensor:
 
 struct Tensor {
@@ -324,9 +192,11 @@ intractable. So in part 2 and part 3 we will add autodifferentiation and
 gradient descent support to our tensor library enabling the training of deep
 neural networks where deriving the gradient and optimizing the network is
 abstracted for the user with a loss.backward() and an optim.step(). The framework
-will be able to interpret the following training loop for the FFN from above:
+will be able to interpret the following training loop for the FFN from above: -->
 
-```
+## Part 2 — dfdx(nd): backward pass with `loss.backward()`, `opt.step()`
+
+```python
 # *********************TRAINING LOOP*********************
 losses, steps = [], []
 for step in range(100): #200000:
@@ -367,9 +237,6 @@ plt.plot(steps, losses)
 
 
 
-
-
-## Part 2: gradient descent: `model.backward()`, `opt.step()`
   2a — Derivative: approximation via local linearization
   2b — Derivative rules: backward methods
   2c — Automatic differentiation: calculus on computational graph
@@ -667,60 +534,10 @@ adjusting θ̂ via gradient descent:
     θ^(t+1) := θ^t - α∇ℒ(Θ)
              = θ^t - α∇-ΣlogP(y^i|x^i;Θ)
 
-<!-- ## Part 3: attention — a(q,k,v)
-Since the discovery of the attention operator in 2017 by (Vaswani et al. 2017),
-language, vision, audio and any domain that can be expressed as an autoregressive
-sequence of tokens (text/pixels/waves) — that is, an n-dimensional joint distribution:
-  p(X_1=x^1,...,X_n=x^m;θ) = Πp(x^i|x^<i)
-                             i=1..n
-are all converging onto a single network architecture: transformers and their
-attention variants. Later in part four we'll reproduce Llama using our deep
-learning framework, but for now, we'll prototype with a more simpler feed-forward
-neural network (FFN). Here is the model definiton and inference loop:
 
 
 
-## Part 4: assistant — RLHF
-reinforcement learning from human rewards
-
-
-
-## Part 5: reasoner — GRPO
-reinforcement learning from automated rewards -->
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# Section 2: Speed
-- does the current cpu ops vectorize? godbolt.
-
-CPU, GPU (they look similar. see tim sweeney's talk)
-prog model: autov11n -> intrinsics -> ??
-exec model: SIMD -> SIMT on SIMD. `AVX512`, `AMX`, `NEON`
-
-## Part 5 CPU: `RVV`
--> numpy simd
--> we will focus on RISC.
--> fearless SIMD with rust.
-
-## Part 6 GPU: `RVV`
-
-
-
-
-## Section 1 References
+## References
 0. [https://web.stanford.edu/~jurafsky/slp3/](https://web.stanford.edu/~jurafsky/slp3/)
 1. [https://arxiv.org/pdf/1912.01703](https://arxiv.org/pdf/1912.01703)
 2. [http://blog.ezyang.com/2019/05/pytorch-internals/](http://blog.ezyang.com/2019/05/pytorch-internals/)
@@ -736,5 +553,3 @@ exec model: SIMD -> SIMT on SIMD. `AVX512`, `AMX`, `NEON`
 12. [https://arxiv.org/abs/2412.05265](https://arxiv.org/abs/2412.05265)
 13. [https://spinningup.openai.com/en/latest/](https://spinningup.openai.com/en/latest/)
 14. [https://rlhfbook.com/](https://rlhfbook.com/)
-
-## Section 2 References

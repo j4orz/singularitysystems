@@ -9,22 +9,10 @@
 Throughout the past decade, modern day AI infrastructure has rapidly evolved
 to meet the needs of deep neural networks — most notably with the throughput
 performance of GPUs moving from `TFLOPS` to `PFLOPS`. Datacenter
-computing now has the goal of a machine with `EFLOPS` speed, now that that
-the throughput of the fastest (non-distributed) supercomputers on TOP500 LINPACK
+computing now has the goal of machines with `EFLOP` speeds, now that that the
+throughput of the fastest (non-distributed) supercomputers on TOP500 LINPACK
 workloads are just reaching `EFLOP` levels.
 
----
-
-### 1 second version
-SOTA semiconductor physics is forcing both languages and machines to be redesigned
-from frist principles. This creates a golden age for compiler engineers and
-computer architects who need to software-hardware codesign the machines of tomorrow.
-
-*Welcome to the golden age of Systems ML!*
-
----
-
-### 1 minute version
 Although the brain is an existence proof of physics powering `20PFLOP` machines
 with `20W`, the problem with the semiconductor physics of *today* is two-fold:
 1. instruction-level parallelism from out-of-order superscalar pipelines hits diminishing returns
@@ -55,12 +43,7 @@ while minimizing the accidental complexity that naturally builds up along the wa
 - [The Golden Age of Compiler Design (Lattner)](https://www.youtube.com/watch?v=4HgShra-KnY)
 - [A New Golden Age for Computer Architecture (Hennessy and Patterson)](https://www.youtube.com/watch?v=3LVeEjsn8Ts)
 
-*Welcome to the golden age of Systems ML!*
-
-
----
-
-### 10 minute version
+**Singularity Systems**
 
 The [Singularity Systems: Zero to Hero](./syllabus.md) course follows up from
 where [Neural Networks: Zero to Hero](https://karpathy.ai/zero-to-hero.html)
@@ -71,67 +54,15 @@ left off: we will convert `micrograd` into `picrograd`, where the main differenc
 While `picograd` is more oriented towards low-level system programmers and
 performance engineers, this framework remains *pedagogical* and remains a
 point-wise compiler. This means that we will "only" support:
-- **3 models**: llama, stable diffusion, whisper
+- **1 model**: llama
 - **1 programming model**: eager
 - **2 execution model**: eager, graph
 - **2 hardware architectures**: amd cpu, nvidia gpu
 - **2 precisions**: fp32, tf32
 
-The astute reader will point out that besides the unlock of hardware performance
-itself, the secondary benefit compilers bring to the table is the *portability*
-of said-performance. While this is true from theoretical normative perspective,
-in practice, the industry does not have *performance-portability* with vector
-nor tensor programs on vector processors (GPUs) — standing in contrast to
-scalar programs on scalar processors (CPUs).
-
-Colloquially, the industry's lack of *performance-portability* is also known as
-**the cuda moat**. This is because the cheapest path to maximize performance
-measured in `FLOP/S/W` or `BW/S/W` is done with NVIDIA's vector processors, where
-the normalizing term of cost denominated in energy also includes the operational
-expenditure required to hire kernel engineers for each new A100/H100/B100 generation.
-
-So with that being said, although the gold standard for compiler construction
-would unlock both 1. performance and 2. performance-portability, given that the
-industry itself has not even reached the second bar, we will provide ramps to
-*performance-portability* by comparsing and contrasting the implementation of
-*picograd* to *tinygrad*, a framework trying to unlock that portability —
-colloquially known as **comoditizing the petaflop**.
-
-![](./preface1.png)
-
-The core design decision that tinygrad makes in order to differentiate itself
-from pytorch and friends is bringing back *search* at the systems level
-pioneered by [halide](https://people.csail.mit.edu/jrk/halide-pldi13.pdf) and
-[tvm](https://arxiv.org/abs/1802.04799). Although many research scientists
-espouse the "learning and search" wisdom from
-[the Bitter Lesson](http://www.incompleteideas.net/IncIdeas/BitterLesson.html),
-the jury is still out whether search works at the systems level given that
-empirically, it's failed in the past (i.e. the addition of tensor cores to the
-underlying hardware is one of the main reasons attributed towards tvm's "failure"),
-and in the present, tinygrad is still underperforming pytorch on NVIDIA hardware.
-
-But even with all that being said with respect to the technical design decisions
-being made, what's more relevent and compelling to the Singularity Systems course
-is the philosophical engineering decision tinygrad is making: **to surface complexity**.
-
-The PyTorch project is 3,327,184 lines of code across 11,449 files while the
-tinygrad project is 296,447 across 865 files (where source is further limited
-to 13k lines of code). Assuming PyTorch's non-source/source ratio is in the same ballpark
-as tinygrad's then this implies there's around 100,000 lines of PyTorch source,
-and so measured in lines of code in both non-source and source, PyTorch has 10x more
-complexity than tinygrad.
-
-And so although there does exist this argument that PyTorch provides a more
-batteries-included experience, using tinygrad's implementation as a case-study
-is more well-suited to the goals of this course. In all three chapters, we will
-walk through [picograd]()'s implementation, and then compare it to that of [tinygrad]()'s.
-
 *Welcome to the golden age of Systems ML!*
 
-![](./preface2.png)
-
-
-### 1(0) year version
+<!-- ### 1(0) year version
 Although the Singularity Systems course points towards tinygrad as a system
 attempting to ammend the industry's lack of *performance-portability* (removing the
 "cuda moat" by "comoditizing the petaflop"), there are other possible solutions
@@ -142,7 +73,7 @@ languages and machines for parallel computing should be built.
 And this is exactly what companies like Mojo and Tenstorrent are doing — they are
 re-industrializing research ideas from the unsolved world of parallel computing.
 The former riffing on ideas from comptime metaprogamming pioneered by Zig, and
-the latter on ones from CELL/Larabee tensor processing.
+the latter on ones from CELL/Larabee tensor processing. -->
 
 
 <!-- Jax+XLA is better on TPUs.

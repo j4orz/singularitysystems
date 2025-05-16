@@ -1,0 +1,211 @@
+         ,,    ,,                  
+  mm     db  `7MM                  
+  MM           MM                  
+mmMMmm `7MM    MM  .gP"Ya  ,pP"Ybd 
+  MM     MM    MM ,M'   Yb 8I   `" 
+  MM     MM    MM 8M"""""" `YMMMa. 
+  MM     MM    MM YM.    , L.   I8 
+  `Mbmo.JMML..JMML.`Mbmmd' M9mmmP' 
+                                   
+Singularity Systems: Zero to Hero
+--------------------------------------------------------------------------------
+Contents:
+  0. au197z
+  1. dfdx(nd)
+  2. brrr
+  3. tiles
+  4. pt2
+  5. use1az2
+  ---appendix
+  a. turing
+--------------------------------------------------------------------------------
+list
+1. sufficiently smart compiler: ispc vs cuda
+  - https://pharr.org/matt/blog/2018/04/30/ispc-all
+  - https://wiki.c2.com/?SufficientlySmartCompiler
+2. mlir
+  - 
+
+In this appendix we will implement a tiling language for parallel machines like
+GPUs and TPUs. Our language will be heavily inspired by Triton, Pallas, and
+cuTile: domain specific kernel languages that frameworks such as PyTorch and
+Jax are starting to target over hardware-specific languages like CUDA and HIP.
+
+standard model:
+- substitution model: eager over lazy
+- ???: sequential over parallel
+
+triton compared to standard model:
+- ??
+- parallel
+--
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+DEFS
+----
+f(x): x+1, g(y): f(y+2)
+                   ----> f(7) => 7+1 => 8
+g(5) ==> f(5+2)    OR(EAGER, LAZY)
+                   ----> (5+2)+1 => 7+1 => 8
+
+EVALUATION MODEL: SUBSTITUTION MODEL (REPLACE FORMAL PARAMS WITH ACTUAL PARAMS)
+
+
+DEFS
+----
+h(z, w): g(z) + g(w)
+
+
+            --------------------------> 
+h(6, 7) ==> OR(SEQUENTIAL,PARALLEL)
+            -------------------------->PARALLEL: MAURICE HEN
+
+------------------
+Part 1: arithmetic 
+------------------
+concrete syntax (text meant for human expression)
+-> hierarchy isn't explicit
+-> very implicit. e.g. arithmetic order everyone learned in grade school.
+
+
+
+                       AST        CFG + BB               SON
+                    IR: tree -> two-tiered graph -> single-tiered graph
+            abstract (optimize)
+      lift: parse       lower: generate    
+concrete                           concrete
+
+----------------
+Part 2: bindings
+----------------
+
+--------------------
+Part 3: control flow
+--------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+formal----
+perhaps latter when the dust settles, dexlang, julia..
+https://arxiv.org/abs/2104.05372
+with type theory,..
+- TAPL 2002 Pierce https://www.cis.upenn.edu/~bcpierce/tapl/
+- PAPL 2016 Harper https://www.cs.cmu.edu/~rwh/pfpl
+https://xavierleroy.org/publi/cfront.pdf/
+https://xavierleroy.org/publi/compiler-certif.pdf
+https://xavierleroy.org/publi/compcert-CACM.pdf
+
+standard model---
+we will cover the standard model of languages to provide an anchor point to orient yourself.
+common semantic core:
+- safe runtime systems,
+- automated memory management
+- eager evaluation
+- first-class lexically-scoped functions
+- first-order mutable variables
+- first-class mutable structures
+some deep learning languages will modify eager -> lazy.
+some will eschew turing completeness for polyhedral analysis. etc.
+---------------------------
+Part 0: evaluation speedrun
+---------------------------
+  0a — arithmetic
+  0b — bindings, functions
+  0c — control flow
+  0d — heap
+
+Starting the study of the principles of programming languages with definitional
+interpreters is convenient as it allows us to operationalize a common core of
+semantics without worrying about the semantic chasm that lies between syntax and
+the electrons. Rather than use the chip's implementation with microcode as the
+interprter, we will build our own interpreter in software. In the development of
+our C0 interpreter, we won't smoke test it with too many programs, since 1. the
+focus here is on principles of programming languages and 2. there is close to no
+real usage of C0 outside CMU. In the next document, we will add the complexity
+of the semantic chasm back in by implementing a compiler for C89, targeting RV32I.
+
+The data an interpreter (and compiler) uses to represent a program is abstract
+syntax, in contrast to the concrete syntax — this distinction was introduced in
+Landin's infamous paper: Next 700 Programming Languages. Parsing maps this
+concrete syntax to abstract syntax, and evaluating maps the abstract syntax to a
+value. If you take a step back, a parser and evaluator are adjoint functors to
+one another, just like probability and statistics. A parser is a function that
+maps information to data (abstract syntax), and an evaluator is a function that
+maps data back to information. Coloquially, a parser lifts the representation
+and the evaluator lowers it. Most of the time, the abstract syntax is
+represented with a tree.
+
+0a — arithmetic
+---------------
+
+
+References
+----------
+[0]: https://math.mit.edu/~edelman/publications/on_machine_learning.pdf
+[1]: https://wiki.c2.com/?PhilipGreenspun
+[2]: https://dev-discuss.pytorch.org/t/where-we-are-headed-and-why-it-looks-a-lot-like-julia-but-not-exactly-like-julia/276/10
+[3]: https://www.youtube.com/watch?v=_ahvzDzKdB0
+[4]: https://papl.cs.brown.edu/
+[5]: https://cs.brown.edu/courses/cs173/2012/book/
+[6]: https://www.plai.org/
+[7]: https://www.cs.cmu.edu/~janh/courses/411/24/schedule.html
+[8]: https://www.cs.cornell.edu/courses/cs4120/2023sp/notes/
+[9]: https://www.cs.cornell.edu/courses/cs6120/2023fa/lesson/
+[10]: https://www.clear.rice.edu/comp512/Lectures/
+[11]: https://mitpress.mit.edu/9780262047760/essentials-of-compilation/
+[12]: https://www.cs.princeton.edu/~appel/modern/
+[13]: https://github.com/lighthousand/books/blob/master/Engineering%20A%20Compiler%202nd%20Edition%20by%20Cooper%20and%20Torczon.pdf
+[14]: https://github.com/rambhawan/Computer-Compiler-Lang/blob/master/Advanced%20Compiler%20Design%20and%20Implementation.pdf
+[15]: https://cs.au.dk/~amoeller/spa/
+[16]: https://link.springer.com/book/10.1007/978-3-030-80515-9
+[17]: https://repository.rice.edu/server/api/core/bitstreams/c5ea1ab7-e6c6-41e7-8e06-3cd5b80aeccd/content
+[18]: https://softlib.rice.edu/pub/CRPC-TRs/reports/CRPC-TR93366-S.pdf
+[19]: https://www.oracle.com/technetwork/java/javase/tech/c2-ir95-150110.pdf
+[20]: https://www.youtube.com/watch?v=9epgZ-e6DUU
