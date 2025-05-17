@@ -2,82 +2,137 @@
 > *A famous colleague once sent an actually very well-written paper he was quite proud of to a famous complexity theorist. His answer: “I can’t find a theorem in the paper. I have no idea what this paper is about.”*
 # Appendix A: 2.0
 
-*This appendix speedruns deep learning prerequisites by using language modelling as a running example.*
-By the end of the appendix you should be comfortable with state of the art
-open source models such as [llama]() and [r1]().
+*This appendix speedruns deep learning prerequisites by using language modeling as a running example.*
+By the end of the appendix you should be comfortable with state of the art open
+source models such as [llama](https://arxiv.org/abs/2407.21783) and [r1](https://arxiv.org/abs/2501.12948).
+
+Note: The appendix first presents **external properties of abstract objects** defined by *conceptual interfaces*,
+followed by their **internal structure of concrete models** defined by *concrete implementations*.
+That is, we will define objects with the territory first, map second.
+
+- *linear algebra*: abstract vector space $V$ before concrete coordinate systems $\mathbb{R}$, $\mathbb{R}^d$, $\mathbb{R}^n$
+- *physics*/*machine learning*: tensor products before indexable ndarrays
+- *matrix calculus* abstract linear operator $L$ on abstract vector space $V$ before concrete $\frac{df}{dx}$ on $\mathbb{R}$
+- *probability* abstract probability space $(\Omega, \mathcal{E}, P)$ before concrete events $E$, random variables $X$.
 
 **Contents**
 1. [probability: language modeling]()
 2. [statistical learning: linear ->  non-linear](#part-1--statistical-learning-linear-to-non-linear)
-3. [deep learning: from ffn to gpt](#part-2--deep-learning-from-ffn-to-gpt)
-4. [return of the rl]()
+3. [matrix calculus: higher dimensional derivatives]()
+4. [deep learning: from ffn to gpt](#part-2--deep-learning-from-ffn-to-gpt)
+5. [attention is all you need]()
+6. [return of the rl]()
 
 **References**
+
+*Probability Theory*
+1. [Tao 2015](https://terrytao.wordpress.com/category/teaching/275a-probability-theory/)
 1. [Piech 2024](https://chrispiech.github.io/probabilityForComputerScientists/en/)
+1. [Harchol-Balter 2024](https://www.cs.cmu.edu/~harchol/Probability/book.html)
+
+*Matrix Calculus*
+1. [Kang, Cho 2024](https://kyunghyuncho.me/linear-algebra-for-data-science/)
+1. [Bright, Edelman, Johnson 2025](https://arxiv.org/abs/2501.14787)
+
+*Deep Statistical Learning*
+1. [Cho 2015](https://arxiv.org/abs/1511.07916)
 1. [Hardt, Recht 2022](https://mlstory.org/)
 1. [Recht 2023](https://www.argmin.net/p/patterns-predictions-and-actions)
 1. [Bach 2024](https://www.di.ens.fr/~fbach/ltfp_book.pdf)
-1. [Cho 2015](https://arxiv.org/abs/1511.07916)
 1. [Jurafsky, Martin 2025](https://web.stanford.edu/~jurafsky/slp3/)
 
 ## Part 1 — probability: language modeling
-**Probability** measures the uncertainty around stochastic (non-deterministic)
-phenomena.
+By default, mathematical reasoning is understood to be deterministic where
+a **statement** $S$ is either true (holds) or false (does not hold). Any
+**variable** $x$ can only take on one specific value at a time.
 
-Even though the world may be deterministic probability theory provides methods
-to measure the degrees of subjective belief. Perhaps knowing the position of
-every water molecule lets you deterministically calculate and predict tomorrow's
-weather, but in practice, this is intractable.
+However there are other times where what's desirable is describing phenomena that
+is in fact non-deterministic (while still remaining precise). Even if base reality
+turns out to be deterministic, in practice there are many scenarios where carrying
+out calculation is intractable. i.e, predicting tomorrow's weather by knowing the position of every water molecule
 
-Formally, a probability space is formalized as a triplet
+The most widely adopted mathematical language for formalizing our intuitions
+around non-deterministic, stochastic phenomena is probability theory. In
+probability theory  **statements** $S$ are neither true nor false. Rather, the
+"truth" is distributed across a weighted set of **random events**. Similarly,
+**random variables** $X$ do not take on a definite value but rather a set of values.
+
+Formally, a probability space is defined as a triplet
 $(\Omega, \mathcal{E}, P)$ that comprises a sample space $\Omega$, an
 event space $\mathcal{E}$, and a measure $P: \mathcal{E} \to [0,1]$. A
 probability space distributes truth across a weighted set of events.
 
----
-**Example 1**
+TODO: measurable axioms?
 
-Modeling the sample space and event space for language looks like:
-1. the sample space $\Omega$ is the *set* of all possible *outcomes* (**words**)
-2. the event space $\mathcal{E}$ is the *power set* $2^\Omega$ of all possible *subsets* (**sentences**)
+### Example 1: language as a probability space
 
-and so if the *experiment* is to sample a single word from the english corpus,
-then the:
-- $\Omega=\{a, aardvark, ... zygote\}$
-- and some event $E$ where you sample a word that starts with the letter j is the subset $E=\{j, jaguar, ...\}$.
+Modeling out the sample space and event space for language looks like:
+1. the **sample space** $\Omega$ is the **set** of all possible **outcomes**
+2. the **event space** $\mathcal{E}$ is the **power set** $2^\Omega$ of all possible **subsets**
 
-on the other hand if the *experiment* is to sample two words from the english
-corppus, then:
-- the sample space $\Omega=\{\{a,a\}, \{a, aardvark\}, ... \{zygote,zebra\}, \{zygote, zygote\},\}$
-- and some event $F$ where you sample two words that start with a letter in the first half of the alphabet is the subset $F=$
----
+where with language we coloquially refer to the *sample space* as the
+*vocabulary* of *words*, and the *event space* as all possible
+(permutations, combinations?) *sentences*.
 
-What can be counterintuitive at first is that the outcomes in the sample space
-can be sets themselves, which formalizes an experiment with more than one "object".
-Moreover, you can conceptualize an event as some semantic invariant placed on the
-sample space which constructs a subset of the sample space. But to complete our
-formalization of language as a probability space triplet $(\Omega, \mathcal{E}, P)$, we need:
+TODO:
+1. random variables as different "attributes" of an event.
+with one sample space (and it's event space), there can be multiple rv's defined.
+- people in car.
+- fuel in the car.
+- mileage traveled by car.
+- wavelength of car color.
+2.  random variables are neither "random" nor "variables". they are mappings from events to real number line.
 
-3. the measurer $P: \mathcal{E} \to [0,1]$ is the *function* that produces the size of any *subset* $E$ relative to the *powerset* $\mathcal{E}$ (**chance of a sentence ocurring**)
+3. formalizing probability spaces let us construct different sample spaces
 
-what can be counter intuitive at first is that the domain of function $P$ is
-$\mathcal{E}$ and not $\Omega$. Formalizing $P$ as $P(E) = \lim_{n\to\infty} \frac{|E|}{n}$
-places the foundations of probability on top of set theory with the following
-three axioms:
+If the *experiment* is to sample a single word from the
+english corpus then $\Omega=\{a, aardvark, ... zygote\}$ and $\mathcal{E}$ = $2^\Omega$.
+An event $E$ where **a** sampled word starts with the letter j is the subset (of the sample space) $E=\{j, jaguar, ...\}$.
+What is counterintuitive at first is that the **outcomes** of the sample space
+can be *tuples* themselves. That is, the experiment can be the roll of two dice,
+three dice, four cards, five words, etc. For instance, the sample space can look
+like $\Omega=\{(a,a), (a, aardvark), \ldots, (zygote, zygote)\}$. An event $F$
+where **each** word starts with the letter j is the subset (of the sample space) $F=\{(j,j), \ldots (jy, jy) \}$.
 
-1. $0 \leq P(E) \leq 1$
-2. $P(\Omega) = 1$
-3. $P(A \cup B ) = P(A) + P(B)$ if events A and B are mutually exclusive
+In either case, outcomes are differentiated from **events** where the latter
+should be conceptualized as a
+*semantic invariant on the event space by applying a boolean operator on the sample space*
+that constructs a **subset** of that sample space. Moving on, to complete our
+formalization of language as a probability space $(\Omega, \mathcal{E}, P)$ we need:
 
-So evaluating the probability of a single outcome translates to measuring the
-size of a subset with that single outcome, relative to the powerset. More
-coloquially however, the sample space is the **vocabulary**, the event space is
-the **language** and the measurer is the **language model**.
+3. the **probability function** $P: \mathcal{E} \to [0,1]$ is the **function** that produces the size of any **event (subset)** $E$ relative to the **event space (power set)** $\mathcal{E}$
 
-So for example, if a mathematically-inclined rapper wanted to ensure that the
-chances of their lyrics were "fresh" and "original", they should hope that
-the calculated is probability low. That is, the size of the event relative to the
-event space should be evaluated.
+interpret this to be the **chance** of an **event** occuring.
+- measure size of event to event space?
+- relative frequency in the limit? todo: justify.
+
+### Example 2: "fresh" lyrics crodie
+
+A mathematically inclined rapper wants to formalize their intuition on what he
+believes to be an "original" set of lyrics by measuring the **relative frequency**
+of the lyrics with respect to the entire english corpus. He remembers probability
+theory can help. As a well-trained mathematician, he starts off simple by
+decomposing the problem from assessing an *entire rap* to that of a *single word*.
+
+He wants a reuasable function where he can pass in *any event*
+(in the rapper's case a single word) and a *probability* is returned. This motivates
+**random variables** and their **distributions**.
+
+A **random variable** is a mapping
+
+**events**.
+
+
+
+
+That is, he
+wants some function that summarizes the entire experiment (in the rapper's case, sampling any word from english).
+
+ How is this possible when
+the domain of $P$ is $\mathcal{E}$. The answer, is with random variables.
+
+A random variable can take on events. We will differentiate the two by denoting
+the former with $X$, $Y$, $Z$, and the latter with $A$, $B$, $C$, $E$.
 
 ```
 P("
@@ -94,6 +149,21 @@ P("
   i'm wario when i'm in mario kart.
 ")
 ```
+
+
+
+
+<!-- Formalizing $P$ as $P(E) = \lim_{n\to\infty} \frac{|E|}{n}$
+places the foundations of probability on top of set theory with the following
+three axioms:
+
+1. $0 \leq P(E) \leq 1$
+2. $P(\Omega) = 1$
+3. $P(A \cup B ) = P(A) + P(B)$ if events A and B are mutually exclusive -->
+
+section 2: *random variables* and their *distributions* (pmf. pdf).
+random variable is a misnomer.
+section 3: *probabilistic models: n random variables. joint probability distribution*
 
 then intuitively we expect $P(A)$ is higher than $P(B)$ and would conclude that
 the second set of lyrics are more "fresh". But how do we access $P$, allowing us
@@ -300,7 +370,12 @@ for _ in range(20): # 20 samples
 ```
 
 
+## Part 3 — attention is all you need
 
+Within the GPTs, we saw the rise of [sparse attention](https://arxiv.org/abs/1904.10509).
+BERT variants showed us how [layer normalization](https://arxiv.org/abs/1607.06450) evolved into [RMSNorm](https://arxiv.org/abs/1910.07467).
+LLaMA iterations demonstrated the progression from standard attention to [grouped-query attention](https://arxiv.org/abs/1910.07467).
+DeepSeek’s releases, particularly constrained by hardware limitations, showed algorithms that enabled frontier performance without frontier compute.
 
 
 
@@ -328,3 +403,4 @@ bernouilli distribution $\mathbb{P}: \mathbb{R}^d \to [0,1]$ by assuming -->
                  &= \sigma(\textbf{w}^{\top}\textbf{x})^y [1-\sigma(\textbf{w}^{\top}\textbf{x})]^{1-y}
 \end{align*}
 $$ -->
+
