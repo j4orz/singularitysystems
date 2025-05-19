@@ -44,14 +44,34 @@ truth is distributed across a weighted set of **random events** $E$. Similarly,
 **random variables** $X$ do not take on a definite value but rather a set of
 values.
 
-We eschew measure-theoretic models of probability theory where the set $\Omega$,
-a $\sigma$-algebra $\mathcal{F}$ and probability measure $P: \mathcal{F} \to [0,1]$
-formalize a probability space $(\Omega, \mathcal{F}, P)$. For the more
-theoretically inclined we point to Tao's [excellent](https://terrytao.wordpress.com/2010/01/01/254a-notes-0-a-review-of-probability-theory/)
-[treatments](https://terrytao.wordpress.com/2015/09/29/275a-notes-0-foundations-of-probability-theory/)
-of formalizing foundational probabilistic concepts and operations that are
-preserved with respect to extension of the underlying sample space.
+The sample space $\Omega$ is the **countably discrete** set all possible
+**outcomes** $\omega$ in an experiment. Subsets of this sample space are
+**events** which are constructed by placing a boolean operator (corresponding
+to some semantic invariant) on the sample space. Functions $X: \Omega \to R$
+are **random variables**, where most of the time we use real random variables
+so $R=\mathbb{R}$.
 
+In the appendix' running example, consider describing a rappers vocabulary as
+some sample space $\Omega=\{ acid, balls, chop, death, grind, mind, poppin, pills, razor, shallow, tequila, zoey \}$. Let $X: \omega \to \mathbb{R} $ be the r.v that maps words to their
+lengths, and let $Y: \omega \to \mathbb{R}, $ be the r.v that maps the word
+$\omega$ to the ordinal-based unicode number of the first letter. So the event
+$X=5$ constructs the subset $A=\{balls, death, grind, pills, razor\}$. The event
+$Y=112$ constructs the subset $B=\{poppin, pills\}$. The event where $X=5$ and
+$Y=112$ constructs the subset $C=A\cup B=\{pills\}$.
+
+With sample spaces that are countably discrete like the rappers vocabulary, we can
+assign probabilities to each outcome $\omega \in \Omega$ with $p: \Omega \to [0,1]$
+which normalize so that certainty corresponds to 1 — $\sum_{\omega \in \Omega}P(\omega) = 1$.
+We can also assign probabilities to events with
+$P: \mathcal{F} \to [0,1]$ where $P(E) := \sum_{\omega \in E} p(\omega)$.
+
+The problem with this model of probability theory is when the sample space $\Omega$
+is **uncountably continuous**. There is no sensible way of adding an uncountable
+set of numbers each of which is 0. This observation isn't limited to the
+mathematician — later in the appendix we will review *word embedding* techniques
+in which statistical models represent a set of discrete words by projecting them
+into continuous euclidean space. In 1933, Kolmogorov moved past the intuitive discrete-based models and provided a measure-theoretic approach which is
+currently the most widely adopted model.
 
 ### Example 1:  "fresh" lyrics crodie
 
@@ -336,6 +356,7 @@ $$ -->
 *Deep Learning*
 1. [Cho 2015](https://arxiv.org/abs/1511.07916)
 1. [Goodfellow et al. 2016](https://www.deeplearningbook.org/)
+1. [Manning 2019](https://web.stanford.edu/class/cs224n/readings/)
 1. [Hardt, Recht 2022](https://mlstory.org/)
 1. [Recht 2023](https://www.argmin.net/p/patterns-predictions-and-actions)
 1. [Bach 2024](https://www.di.ens.fr/~fbach/ltfp_book.pdf)
