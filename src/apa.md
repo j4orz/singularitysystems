@@ -6,73 +6,97 @@
 By the end of the appendix you should be comfortable with state of the art open
 source models such as [llama](https://arxiv.org/abs/2407.21783) and [r1](https://arxiv.org/abs/2501.12948).
 
-Note: The appendix first presents **external properties of abstract objects** defined by *conceptual interfaces*,
-followed by their **internal structure of concrete models** defined by *concrete implementations*.
-That is, we will define objects with the territory first, map second.
-
-- *linear algebra*: abstract vector space $V$ before concrete coordinate systems $\mathbb{R}$, $\mathbb{R}^d$, $\mathbb{R}^n$
-- *physics*/*machine learning*: tensor products before indexable ndarrays
-- *matrix calculus* abstract linear operator $L$ on abstract vector space $V$ before concrete $\frac{df}{dx}$ on $\mathbb{R}$
-- *probability* abstract probability space $(\Omega, \mathcal{E}, P)$ before concrete events $E$, random variables $X$.
+Although the appendix serves as foundational material for the deep learning
+framework in the core syllabus, it will not be in any means foundational to the
+theoretician-inclined reader. That is, the appendix will not model peano axioms 
+in order to justify the use of numbers, abstract vector spaces to use
+n-dimensional euclidean space, tensor products to use ndarrays, linear operators
+on vector spaces to use derivatives. The target readers are working
+mathematicians and [concrete](https://en.wikipedia.org/wiki/Concrete_Mathematics)
+computer scientists, and so concepts are defined by their
+**internal structure of concrete implementations** rather than their
+**external properties of abstract interfaces**.
 
 **Contents**
 1. [probability: language modeling]()
 2. [statistical learning: linear ->  non-linear](#part-1--statistical-learning-linear-to-non-linear)
-3. [matrix calculus: higher dimensional derivatives]()
-4. [deep learning: from ffn to gpt](#part-2--deep-learning-from-ffn-to-gpt)
-5. [attention is all you need]()
-6. [return of the rl]()
-
-**References**
-
-*Probability Theory*
-1. [Tao 2015](https://terrytao.wordpress.com/category/teaching/275a-probability-theory/)
-1. [Piech 2024](https://chrispiech.github.io/probabilityForComputerScientists/en/)
-1. [Harchol-Balter 2024](https://www.cs.cmu.edu/~harchol/Probability/book.html)
-
-*Matrix Calculus*
-1. [Kang, Cho 2024](https://kyunghyuncho.me/linear-algebra-for-data-science/)
-1. [Bright, Edelman, Johnson 2025](https://arxiv.org/abs/2501.14787)
-
-*Deep Statistical Learning*
-1. [Cho 2015](https://arxiv.org/abs/1511.07916)
-1. [Hardt, Recht 2022](https://mlstory.org/)
-1. [Recht 2023](https://www.argmin.net/p/patterns-predictions-and-actions)
-1. [Bach 2024](https://www.di.ens.fr/~fbach/ltfp_book.pdf)
-1. [Jurafsky, Martin 2025](https://web.stanford.edu/~jurafsky/slp3/)
+3. [deep learning: from ffn to gpt](#part-2--deep-learning-from-ffn-to-gpt)
+4. [attention is all you need]()
+5. [return of the rl]()
+6. [references](#part-7--references)
 
 ## Part 1 — probability: language modeling
 By default, mathematical reasoning is understood to be deterministic where
 a **statement** $S$ is either true (holds) or false (does not hold). Any
-**variable** $x$ can only take on one specific value at a time.
-
-However there are other times where what's desirable is describing phenomena that
-is in fact non-deterministic (while still remaining precise). Even if base reality
-turns out to be deterministic, in practice there are many scenarios where carrying
-out calculation is intractable. i.e, predicting tomorrow's weather by knowing the position of every water molecule
+**variable** $x$ can only take on one specific value at a time. However there are
+other times where what's desirable is describing phenomena that is in fact
+non-deterministic (while still remaining precise). Even if base reality turns
+out to be deterministic, in practice there are many scenarios where carrying
+out calculation is intractable. i.e, predicting tomorrow's weather with the
+position of every water molecule.
 
 The most widely adopted mathematical language for formalizing our intuitions
-around non-deterministic, stochastic phenomena is probability theory. In
-probability theory  **statements** $S$ are neither true nor false. Rather, the
-"truth" is distributed across a weighted set of **random events**. Similarly,
-**random variables** $X$ do not take on a definite value but rather a set of values.
+around non-deterministic stochastic phenomena is probability theory (as opposed
+to alternative frameworks such as [probabilistic logic](https://en.wikipedia.org/wiki/Probabilistic_logic) or
+[uncertainty quantification](https://en.wikipedia.org/wiki/Uncertainty_quantification)).
+In probability theory  **statements** $S$ are neither true nor false. Rather,
+truth is distributed across a weighted set of **random events** $E$. Similarly,
+**random variables** $X$ do not take on a definite value but rather a set of
+values.
 
-Formally, a probability space is defined as a triplet
-$(\Omega, \mathcal{E}, P)$ that comprises a sample space $\Omega$, an
-event space $\mathcal{E}$, and a measure $P: \mathcal{E} \to [0,1]$. A
-probability space distributes truth across a weighted set of events.
+We eschew measure-theoretic models of probability theory where the set $\Omega$,
+a $\sigma$-algebra $\mathcal{F}$ and probability measure $P: \mathcal{F} \to [0,1]$
+formalize a probability space $(\Omega, \mathcal{F}, P)$. For the more
+theoretically inclined we point to Tao's [excellent](https://terrytao.wordpress.com/2010/01/01/254a-notes-0-a-review-of-probability-theory/)
+[treatments](https://terrytao.wordpress.com/2015/09/29/275a-notes-0-foundations-of-probability-theory/)
+of formalizing foundational probabilistic concepts and operations that are
+preserved with respect to extension of the underlying sample space.
 
-TODO: measurable axioms?
 
-### Example 1: language as a probability space
+### Example 1:  "fresh" lyrics crodie
 
-Modeling out the sample space and event space for language looks like:
+```
+P("
+  i got an empire of emotion,
+  a monopoly on lotion,
+  in a state of commotion,
+  i gesture at the notion.
+")
+
+P("
+  i got an empire of emotion,
+  squad see me cruisin', cruisin' in my go kart,
+  i'm war, ho, i'm warhol,
+  i'm wario when i'm in mario kart.
+")
+```
+
+
+<!-- Even though working mathematicians primarily use **random events** and
+**random variables** on a daily basis, it's useful to define the abstract
+probability space (TODO: why): a triplet $(\Omega, \mathcal{F}, P)$ that
+comprises a sample space $\Omega$, an event space $\mathcal{F}$, and a measure
+$P: \mathcal{F} \to [0,1]$. -->
+
+<!-- TODO: measurable axioms? -->
+<!-- 
 1. the **sample space** $\Omega$ is the **set** of all possible **outcomes**
-2. the **event space** $\mathcal{E}$ is the **power set** $2^\Omega$ of all possible **subsets**
+2. the **event space** $\mathcal{F}$ is the **power set** $2^\Omega$ of all possible **subsets**
 
-where with language we coloquially refer to the *sample space* as the
-*vocabulary* of *words*, and the *event space* as all possible
-(permutations, combinations?) *sentences*.
+where coloquially the *sample space* is referred to as the *vocabulary* of *words*,
+and the *event space* is all possible (permutations, combinations?) *sentences*.
+
+If the *experiment* is to sample a single word from the
+english corpus then $\Omega=\{a, aardvark, ... zygote\}$ and $\mathcal{F}$ = $2^\Omega$.
+An event $E$ where sampling a single word that starts with the letter j is the
+sample space subset $E=\{j, jaguar, \ldots, jynx\}$.
+
+
+What is counterintuitive at first is that the **outcomes** of the sample space
+can be *tuples* themselves. That is, the experiment can be the roll of two dice,
+three dice, four cards, five words, etc. For instance, the sample space can look
+like $\Omega=\{(a,a), (a, aardvark), \ldots, (zygote, zygote)\}$. An event $F$
+where **each** word starts with the letter j is the subset (of the sample space) $F=\{(j,j), \ldots (jy, jy) \}$.
 
 TODO:
 1. random variables as different "attributes" of an event.
@@ -85,30 +109,13 @@ with one sample space (and it's event space), there can be multiple rv's defined
 
 3. formalizing probability spaces let us construct different sample spaces
 
-If the *experiment* is to sample a single word from the
-english corpus then $\Omega=\{a, aardvark, ... zygote\}$ and $\mathcal{E}$ = $2^\Omega$.
-An event $E$ where **a** sampled word starts with the letter j is the subset (of the sample space) $E=\{j, jaguar, ...\}$.
-What is counterintuitive at first is that the **outcomes** of the sample space
-can be *tuples* themselves. That is, the experiment can be the roll of two dice,
-three dice, four cards, five words, etc. For instance, the sample space can look
-like $\Omega=\{(a,a), (a, aardvark), \ldots, (zygote, zygote)\}$. An event $F$
-where **each** word starts with the letter j is the subset (of the sample space) $F=\{(j,j), \ldots (jy, jy) \}$.
-
-In either case, outcomes are differentiated from **events** where the latter
-should be conceptualized as a
-*semantic invariant on the event space by applying a boolean operator on the sample space*
-that constructs a **subset** of that sample space. Moving on, to complete our
-formalization of language as a probability space $(\Omega, \mathcal{E}, P)$ we need:
-
-3. the **probability function** $P: \mathcal{E} \to [0,1]$ is the **function** that produces the size of any **event (subset)** $E$ relative to the **event space (power set)** $\mathcal{E}$
+3. the **probability function** $P: \mathcal{F} \to [0,1]$ is the **function** that produces the size of any **event (subset)** $E$ relative to the **event space (power set)** $\mathcal{F}$
 
 interpret this to be the **chance** of an **event** occuring.
 - measure size of event to event space?
-- relative frequency in the limit? todo: justify.
+- relative frequency in the limit? todo: justify. -->
 
-### Example 2: "fresh" lyrics crodie
-
-A mathematically inclined rapper wants to formalize their intuition on what he
+<!-- A mathematically inclined rapper wants to formalize their intuition on what he
 believes to be an "original" set of lyrics by measuring the **relative frequency**
 of the lyrics with respect to the entire english corpus. He remembers probability
 theory can help. As a well-trained mathematician, he starts off simple by
@@ -129,26 +136,10 @@ That is, he
 wants some function that summarizes the entire experiment (in the rapper's case, sampling any word from english).
 
  How is this possible when
-the domain of $P$ is $\mathcal{E}$. The answer, is with random variables.
+the domain of $P$ is $\mathcal{F}$. The answer, is with random variables.
 
 A random variable can take on events. We will differentiate the two by denoting
-the former with $X$, $Y$, $Z$, and the latter with $A$, $B$, $C$, $E$.
-
-```
-P("
-  i got an empire of emotion,
-  a monopoly on lotion,
-  in a state of commotion,
-  i gesture at the notion.
-")
-
-P("
-  i got an empire of emotion,
-  squad see me cruisin', cruisin' in my go kart,
-  i'm war, ho, i'm warhol,
-  i'm wario when i'm in mario kart.
-")
-```
+the former with $X$, $Y$, $Z$, and the latter with $A$, $B$, $C$, $E$. -->
 
 
 
@@ -161,7 +152,7 @@ three axioms:
 2. $P(\Omega) = 1$
 3. $P(A \cup B ) = P(A) + P(B)$ if events A and B are mutually exclusive -->
 
-section 2: *random variables* and their *distributions* (pmf. pdf).
+<!-- section 2: *random variables* and their *distributions* (pmf. pdf).
 random variable is a misnomer.
 section 3: *probabilistic models: n random variables. joint probability distribution*
 
@@ -180,81 +171,7 @@ functions can be represented with
 - code
 - charts (2D. 3D)
 any way of representing gives you the relationship between the events and measures.
-language model is the function $P(X=k)$.
-
-% First thought is to construct the sample space, a subset for the event we care
-% about, and then *count*.
-
-% ```python
-% # data
-% import torch
-% import torch.nn.functional as F
-% import matplotlib.pyplot as plt
-% %matplotlib inline
-% g = torch.Generator().manual_seed(2147483647)
-
-% words = open('./data/names.txt', 'r').read().splitlines()
-% v = sorted(list(set(''.join(words))))
-% encode = { c:i+1 for i,c in enumerate(v) }
-% encode['.'] = 0
-% decode = { i:c for c,i in encode.items() }
-
-% X, Y = [], []
-% for w in words[:1]:
-%     cs = ['.'] + list(w) + ['.']
-%     for c1, c2 in zip(cs, cs[1:]):
-%         x, y = encode[c1], encode[c2]
-%         X.append(x)
-%         Y.append(y)
-% X, Y = torch.tensor(X), torch.tensor(Y)
-
-% # model + training
-% # 1. freq counts
-% C = torch.zeros((27,27), dtype=torch.int32)
-% for w in words:
-%     cs = ['.'] + list(w) + ['.']
-%     for c1, c2 in zip(cs, cs[1:]):
-%         C[encode[c1], encode[c2]] += 1  # model: counts
-% smoothing = 1
-% P = (C.float()+smoothing) / C.float().sum(1, keepdim=True) # todo, understand broadcasting and shapes.
-%                                                # keepdim=False ==> normalizing cols instead of rows
-% plt.imshow(P)
-
-% nll, n = 0.0, 0
-% for w in words:
-%     cs = ['.'] + list(w) + ['.']
-%     for c1, c2 in zip(cs, cs[1:]):
-%         i, j = encode[c1], encode[c2]
-%         nll -= torch.log(P[i, j])
-%         n += 1
-% anll = nll/n
-% print(f'{anll=}')
-
-% # 2.  y_hat = softmax(Wx) (5,27) @ (27,27) -> (5,27)
-% for k in range(10):
-%     # -forward
-%     Xe = F.one_hot(X, num_classes=27).float() # .one_hot does not support d_type=torch.int32
-%     W = torch.randn((27,27), generator=g, requires_grad=True)
-%     logits = (Xe @ W) # R
-%     y_hat = logits.exp() / logits.exp().sum(1, keepdims=True) # softmax = R+/normalize
-%     loss = -y_hat[torch.arange(5), Y].log().mean() # todo: pluck out probs?
-%     # @, .exp(), / and .sum() are all differentiable
-%     print(loss.item())
-
-%     # -backward
-%     W.grad = None
-%     loss.backward()
-
-%     # -update
-%     W.data += -0.1 * W.grad
-% ```
-
-% ngrams suffer from curse of dimensionality. it's intractable to get long context lengths.
-% but somehow neural networks today have millions of context length.
-
-Returning to the probability space, the sample space is the set of all words,
-the event space is the powerset of words (all possible sentence combinations),
-so we can formalize the inquiry as
+language model is the function $P(X=k)$. -->
 
 <!-- $$
 \begin{align*}
@@ -266,13 +183,13 @@ $$ -->
 <!-- In order to define notions such as expectation, variance, and other computable
 estimators, we map the sample space to the real number line using a random variable. -->
 
-Random variables. Probability mass function.
+<!-- Random variables. Probability mass function.
 Probability distributions:
 Distributions are characterized by their parameters.
 
 running example is autoregressive language modelling.
 ngram model becomes intractable. time O(?). space O(?)
-In the case of language modelling, ex... probability space is token space...
+In the case of language modelling, ex... probability space is token space... -->
 
 ```python
 message = "Hello, world!"
@@ -404,3 +321,23 @@ bernouilli distribution $\mathbb{P}: \mathbb{R}^d \to [0,1]$ by assuming -->
 \end{align*}
 $$ -->
 
+
+
+## Part 7 — references
+
+*Probability Theory*
+1. [Piech 2024](https://chrispiech.github.io/probabilityForComputerScientists/en/)
+1. [Harchol-Balter 2024](https://www.cs.cmu.edu/~harchol/Probability/book.html)
+
+*Matrix Calculus*
+1. [Kang, Cho 2024](https://kyunghyuncho.me/linear-algebra-for-data-science/)
+1. [Bright, Edelman, Johnson 2025](https://arxiv.org/abs/2501.14787)
+
+*Deep Learning*
+1. [Cho 2015](https://arxiv.org/abs/1511.07916)
+1. [Goodfellow et al. 2016](https://www.deeplearningbook.org/)
+1. [Hardt, Recht 2022](https://mlstory.org/)
+1. [Recht 2023](https://www.argmin.net/p/patterns-predictions-and-actions)
+1. [Bach 2024](https://www.di.ens.fr/~fbach/ltfp_book.pdf)
+1. [Jurafsky, Martin 2025](https://web.stanford.edu/~jurafsky/slp3/)
+1. [Prince 2025](https://udlbook.github.io/udlbook/)
