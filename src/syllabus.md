@@ -11,9 +11,13 @@ Singularity Systems: Zero to Hero follows up from
 While micrograd helps research scientists to understand the leaky abstraction of
 backpropagation, picograd is intended for systems programmers and performance
 engineers looking to further understand the compilers and chips of deep learning.
+Try it out with:
+```
+pip install picograd
+```
 
 ### Prerequisites
-- solid deep learning (sd && llama)
+- solid deep learning (llama)
 - solid systems programming (C || C++ || Rust)
 
 ### Syllabus

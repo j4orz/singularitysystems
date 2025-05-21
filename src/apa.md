@@ -6,26 +6,24 @@
 By the end of the appendix you should be comfortable with state of the art open
 source models such as [llama](https://arxiv.org/abs/2407.21783) and [r1](https://arxiv.org/abs/2501.12948).
 
-Although the appendix serves as foundational material for the deep learning
-framework in the core syllabus, it will not be in any means foundational to the
-theoretician-inclined reader. That is, the appendix will not model peano axioms 
-in order to justify the use of numbers, abstract vector spaces to use
-n-dimensional euclidean space, tensor products to use ndarrays, linear operators
-on vector spaces to use derivatives. The target readers are working
-mathematicians and [concrete](https://en.wikipedia.org/wiki/Concrete_Mathematics)
-computer scientists, and so concepts are defined by their
-**internal structure of concrete implementations** rather than their
-**external properties of abstract interfaces**.
-
 **Contents**
-1. [probability: language modeling]()
-2. [statistical learning: linear ->  non-linear](#part-1--statistical-learning-linear-to-non-linear)
+1. [preliminaries: probability, algebra, and analysis]()
+2. [machine learning: energy](#part-1--statistical-learning-linear-to-non-linear)
 3. [deep learning: from ffn to gpt](#part-2--deep-learning-from-ffn-to-gpt)
 4. [attention is all you need]()
 5. [return of the rl]()
-6. [references](#part-7--references)
 
-## Part 1 — probability: language modeling
+[References](#references)
+
+## Part 1 — preliminaries: probability, algebra, analysis
+
+- [Measure Theory]()
+- [Probability Theory]()
+- [Linear Algebra]()
+- [Matrix Calculus]()
+
+### Measure Theory
+
 By default, mathematical reasoning is understood to be deterministic where
 a **statement** $S$ is either true (holds) or false (does not hold). Any
 **variable** $x$ can only take on one specific value at a time. However there are
@@ -52,26 +50,95 @@ are **random variables**, where most of the time we use real random variables
 so $R=\mathbb{R}$.
 
 In the appendix' running example, consider describing a rappers vocabulary as
-some sample space $\Omega=\{ acid, balls, chop, death, grind, mind, poppin, pills, razor, shallow, tequila, zoey \}$. Let $X: \omega \to \mathbb{R} $ be the r.v that maps words to their
-lengths, and let $Y: \omega \to \mathbb{R}, $ be the r.v that maps the word
+some sample space $\Omega=\{ acid, balls, chop, death, grind, mind, poppin, pills, razor, shallow, tequila, zoey \}$. Let $X: \Omega \to \mathbb{R} $ be the r.v that maps words to their
+lengths, and let $Y: \Omega \to \mathbb{R}, $ be the r.v that maps the word
 $\omega$ to the ordinal-based unicode number of the first letter. So the event
 $X=5$ constructs the subset $A=\{balls, death, grind, pills, razor\}$. The event
 $Y=112$ constructs the subset $B=\{poppin, pills\}$. The event where $X=5$ and
-$Y=112$ constructs the subset $C=A\cup B=\{pills\}$.
+$Y=112$ constructs the subset $C=A\cup B=\{pills\}$. With sample spaces that are
+countably discrete like the rappers vocabulary, we can assign probabilities to
+each outcome $\omega \in \Omega$ with $p: \Omega \to [0,1]$ where p needs to
+satisfiy *non-negativity*: $\forall \omega \in \Omega, p(\omega) > 0.$
+*additivity:*, and *normalization*: $\sum_{\omega \in \Omega}P(\omega) = 1$.
 
-With sample spaces that are countably discrete like the rappers vocabulary, we can
-assign probabilities to each outcome $\omega \in \Omega$ with $p: \Omega \to [0,1]$
-which normalize so that certainty corresponds to 1 — $\sum_{\omega \in \Omega}P(\omega) = 1$.
-We can also assign probabilities to events with
-$P: \mathcal{F} \to [0,1]$ where $P(E) := \sum_{\omega \in E} p(\omega)$.
-
-The problem with this model of probability theory is when the sample space $\Omega$
+The problem with this model of probability is when the sample space $\Omega$
 is **uncountably continuous**. There is no sensible way of adding an uncountable
-set of numbers each of which is 0. This observation isn't limited to the
-mathematician — later in the appendix we will review *word embedding* techniques
-in which statistical models represent a set of discrete words by projecting them
-into continuous euclidean space. In 1933, Kolmogorov moved past the intuitive discrete-based models and provided a measure-theoretic approach which is
-currently the most widely adopted model.
+set of outcomes where $p(\omega)=0$. Since defining probabilities on outcomes
+$\omega \in \Omega$ is nonsensical when $\Omega$ is uncountable, the next
+approach is to define probabilities on events with $P: \mathcal{F} \to [0,1]$ 
+for some class $\mathcal{F}$ of subsets $E \subset \Omega$.
+
+The question that arises naturally for the theoretician is how should
+$\mathcal{F}$ be axiomatized, and what properties should $P$ defined on
+$\mathcal{F}$ satisfy? We point the reader to explore other resources which
+delve deeper into measure-theoretic foundations proposed by Kolmogrov in 1933.
+
+### Probability Theory
+Measure theory provides an abstract model for **random events** $E$ and
+**random variables** $X$ are measurable subsets and measurable functions of a
+measurable space $\Omega$.
+
+
+Moving forward, we let the probability space fade into the background and focus
+on the probabilistic concepts invariant to sample space extensions. Recall that
+
+
+independance, joint, mutual exclusion, independance, etc.
+
+
+## Part 2 — machine learning: energy
+
+The goal of **machine learning** in general is to compress regularity found in
+data in order to make predictions.
+
+a probabilistic model is a special case of an energy model
+more general way than f: X->Y
+factors: F: XxY -> R which measure compatibility between input and output
+
+### Energy Models
+graphical models: factor graphs are bipartite graphs
+bipartite: two different nodes: G=({Variable, Factor}, E)
+factor graphs are generally interpreted as probabilistic models. lecun isn't going to do that.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+### Decision Theory
+Particularly with **supervised learning**,
+provided a $d=\{(x^{(i)},y^{(i)})\}_{i=0}^n$ and given previously unseen
+input $x \in \mathcal{X}$, the goal is to predict output $y \in \mathcal{Y}$.
+Most often $X=\mathbb{R}^d$, whereas $Y=\{0, 1, \ldots, k\} \subseteq \mathbb{N}$
+(referred to as **classification**) or $Y=\mathbb{R}$ (referred to as **regression**).
+The primary formalization of supervised learning is the probabilistic formulation,
+where $(x^{(i)},y^{(i)}) \overset{\text{i.i.d.}}{\sim} (\mathcal{X}\times\mathcal{Y})^n$
+is assumed (the joint distribution will be referred to with $P$), and the machine
+learning algorithm is then $A: (\mathcal{X}\times\mathcal{Y})^n \to (\mathcal{X} \to \mathcal{Y})$
+where $A(d) \mapsto f: \mathcal{X} \to \mathcal{Y}$.
+
+The next component of the probabilistic formulation is the **loss** function
+and its expectation (referred to ask **risk**). The loss function is
+$l: \mathcal{Y} \times \mathcal{Y} \to \mathbb{R}_{+}$ which quantifies the error
+when a mismatch occurs between the **actual predicted output** and the
+**expected labeled output**. along with its expectation (refered to
+as **risk**).
+
+- loss function
+- risk
+- bayes predictor
+
+### Statistical Learning Theory
+
 
 ### Example 1:  "fresh" lyrics crodie
 
@@ -92,125 +159,6 @@ P("
 ```
 
 
-<!-- Even though working mathematicians primarily use **random events** and
-**random variables** on a daily basis, it's useful to define the abstract
-probability space (TODO: why): a triplet $(\Omega, \mathcal{F}, P)$ that
-comprises a sample space $\Omega$, an event space $\mathcal{F}$, and a measure
-$P: \mathcal{F} \to [0,1]$. -->
-
-<!-- TODO: measurable axioms? -->
-<!-- 
-1. the **sample space** $\Omega$ is the **set** of all possible **outcomes**
-2. the **event space** $\mathcal{F}$ is the **power set** $2^\Omega$ of all possible **subsets**
-
-where coloquially the *sample space* is referred to as the *vocabulary* of *words*,
-and the *event space* is all possible (permutations, combinations?) *sentences*.
-
-If the *experiment* is to sample a single word from the
-english corpus then $\Omega=\{a, aardvark, ... zygote\}$ and $\mathcal{F}$ = $2^\Omega$.
-An event $E$ where sampling a single word that starts with the letter j is the
-sample space subset $E=\{j, jaguar, \ldots, jynx\}$.
-
-
-What is counterintuitive at first is that the **outcomes** of the sample space
-can be *tuples* themselves. That is, the experiment can be the roll of two dice,
-three dice, four cards, five words, etc. For instance, the sample space can look
-like $\Omega=\{(a,a), (a, aardvark), \ldots, (zygote, zygote)\}$. An event $F$
-where **each** word starts with the letter j is the subset (of the sample space) $F=\{(j,j), \ldots (jy, jy) \}$.
-
-TODO:
-1. random variables as different "attributes" of an event.
-with one sample space (and it's event space), there can be multiple rv's defined.
-- people in car.
-- fuel in the car.
-- mileage traveled by car.
-- wavelength of car color.
-2.  random variables are neither "random" nor "variables". they are mappings from events to real number line.
-
-3. formalizing probability spaces let us construct different sample spaces
-
-3. the **probability function** $P: \mathcal{F} \to [0,1]$ is the **function** that produces the size of any **event (subset)** $E$ relative to the **event space (power set)** $\mathcal{F}$
-
-interpret this to be the **chance** of an **event** occuring.
-- measure size of event to event space?
-- relative frequency in the limit? todo: justify. -->
-
-<!-- A mathematically inclined rapper wants to formalize their intuition on what he
-believes to be an "original" set of lyrics by measuring the **relative frequency**
-of the lyrics with respect to the entire english corpus. He remembers probability
-theory can help. As a well-trained mathematician, he starts off simple by
-decomposing the problem from assessing an *entire rap* to that of a *single word*.
-
-He wants a reuasable function where he can pass in *any event*
-(in the rapper's case a single word) and a *probability* is returned. This motivates
-**random variables** and their **distributions**.
-
-A **random variable** is a mapping
-
-**events**.
-
-
-
-
-That is, he
-wants some function that summarizes the entire experiment (in the rapper's case, sampling any word from english).
-
- How is this possible when
-the domain of $P$ is $\mathcal{F}$. The answer, is with random variables.
-
-A random variable can take on events. We will differentiate the two by denoting
-the former with $X$, $Y$, $Z$, and the latter with $A$, $B$, $C$, $E$. -->
-
-
-
-
-<!-- Formalizing $P$ as $P(E) = \lim_{n\to\infty} \frac{|E|}{n}$
-places the foundations of probability on top of set theory with the following
-three axioms:
-
-1. $0 \leq P(E) \leq 1$
-2. $P(\Omega) = 1$
-3. $P(A \cup B ) = P(A) + P(B)$ if events A and B are mutually exclusive -->
-
-<!-- section 2: *random variables* and their *distributions* (pmf. pdf).
-random variable is a misnomer.
-section 3: *probabilistic models: n random variables. joint probability distribution*
-
-then intuitively we expect $P(A)$ is higher than $P(B)$ and would conclude that
-the second set of lyrics are more "fresh". But how do we access $P$, allowing us
-to reduce our common sense into calculation?
-$X is a random variable$
-$Let the event A be X="empire"$ apply a boolean operator to the RV.
-$Let the event B be X>="e"$
-$P(X="empire")$ is the probability of an event. remember P is only defined on event space -> [0,1]
-$P(X=k)$ is the probability mass function. all events the random variable can take on is summarized with this single function.
-if continuous then probability density function.
-
-functions can be represented with
-- equations
-- code
-- charts (2D. 3D)
-any way of representing gives you the relationship between the events and measures.
-language model is the function $P(X=k)$. -->
-
-<!-- $$
-\begin{align*}
-&P(Y=🌭|\textbf{X}=\textbf{x};\theta) := \sigma(\theta^{\top}\textbf{x}) \underset{total\ law}{\implies} P(Y=¬🌭|\textbf{X}=\textbf{x};\theta) = 1 - \sigma(\theta^{\top}\textbf{x}) \\
-\implies &P(Y=c|\textbf{X}=\textbf{x};θ) = \hat{y}^y (1-\hat{y})^{1-y} = \sigma(\theta^{\top}\textbf{x})^y [1-\sigma(\theta^{\top}\textbf{x})]^{1-y} \tag*{[continuous]}\\
-\end{align*}
-$$ -->
-
-<!-- In order to define notions such as expectation, variance, and other computable
-estimators, we map the sample space to the real number line using a random variable. -->
-
-<!-- Random variables. Probability mass function.
-Probability distributions:
-Distributions are characterized by their parameters.
-
-running example is autoregressive language modelling.
-ngram model becomes intractable. time O(?). space O(?)
-In the case of language modelling, ex... probability space is token space... -->
-
 ```python
 message = "Hello, world!"
 
@@ -229,6 +177,10 @@ predictions.
 show manim animation
 
 ## Part 2 — deep learning: from ffn to gpt
+
+### Sequence Modeling (Autoregressive Models)
+
+### Diffusion Modeling
 ```python
 """
 Dimension key:
@@ -343,22 +295,32 @@ $$ -->
 
 
 
-## Part 7 — references
+## References
 
 *Probability Theory*
+1. [Varadhan 2001](https://www.ams.org/books/cln/007/cln007-endmatter.pdf)
+1. [Chan 2021](https://probability4datascience.com/)
 1. [Piech 2024](https://chrispiech.github.io/probabilityForComputerScientists/en/)
 1. [Harchol-Balter 2024](https://www.cs.cmu.edu/~harchol/Probability/book.html)
 
+*Statistical Learning*
+1. [Hardt, Recht 2022](https://mlstory.org/)
+1. [Recht 2023](https://www.argmin.net/p/patterns-predictions-and-actions)
+1. [Bach 2024](https://www.di.ens.fr/~fbach/ltfp_book.pdf)
+
 *Matrix Calculus*
 1. [Kang, Cho 2024](https://kyunghyuncho.me/linear-algebra-for-data-science/)
+1. [Scardapane 2024](https://www.sscardapane.it/alice-book/)
 1. [Bright, Edelman, Johnson 2025](https://arxiv.org/abs/2501.14787)
+
+*Machine Learning*
+1. [Ng, Ma 2023](https://cs229.stanford.edu/main_notes.pdf)
+1. [Ermon, Grover 2023](https://deepgenerativemodels.github.io/notes/index.html)
+1. [Cho 2025](https://arxiv.org/abs/2505.03861)
 
 *Deep Learning*
 1. [Cho 2015](https://arxiv.org/abs/1511.07916)
 1. [Goodfellow et al. 2016](https://www.deeplearningbook.org/)
 1. [Manning 2019](https://web.stanford.edu/class/cs224n/readings/)
-1. [Hardt, Recht 2022](https://mlstory.org/)
-1. [Recht 2023](https://www.argmin.net/p/patterns-predictions-and-actions)
-1. [Bach 2024](https://www.di.ens.fr/~fbach/ltfp_book.pdf)
 1. [Jurafsky, Martin 2025](https://web.stanford.edu/~jurafsky/slp3/)
 1. [Prince 2025](https://udlbook.github.io/udlbook/)
