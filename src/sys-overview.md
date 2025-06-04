@@ -1,8 +1,15 @@
-![](./au197.jpg)
-# Systems Overview
-**This chapter introduces the golden age of systems ml and provides a course overview**
+<!-- ![](./au197.jpg) -->
+# Singularity Systems Overview
 
-##
+**Contents**
+- [Singularity Overview]()
+- [Systems Overview]()
+
+## Singularity Overview — Software 2.0
+
+## Systems Overview — "Golden Age" Infrastructure Buildout
+
+**Course Information**
 Singularity Systems: Zero to Hero follows up from
 [Neural Networks: Zero to Hero](https://karpathy.ai/zero-to-hero.html). We convert
 - [**micrograd**](https://github.com/karpathy/micrograd): toy backpropagation engine *into...*
@@ -17,19 +24,17 @@ Try it out with:
 pip install picograd
 ```
 
-### Prerequisites
+**Prerequisites**
 - solid deep learning (llama)
 - solid systems programming (C || C++ || Rust)
 
-### Syllabus
+**Syllabus**
 **Core**: *Deep Learning Compilers*
 
 1. **dfdx(nd)**: implements an interpreter for neural networks (HIPS/autograd)
 2. **brrr**: accelerates the interpreter with vector processing (pytorch1)
 3. **pt2**: constructs a compiler for neural networks (pytorch2)
 4. **az1use1**: 3d parallelism
-
-## Golden Age — Software 2.0 Infrastructure Buildout
 
 Throughout the past decade, modern day AI infrastructure has rapidly evolved
 to meet the needs of deep neural networks — most notably with the throughput
