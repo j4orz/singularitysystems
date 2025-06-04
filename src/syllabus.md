@@ -16,18 +16,6 @@ Try it out with:
 pip install picograd
 ```
 
-### Prerequisites
-- solid deep learning (llama)
-- solid systems programming (C || C++ || Rust)
-
-### Syllabus
-**Core**: *Deep Learning Compilers*
-
-1. **dfdx(nd)**: implements an interpreter for neural networks (HIPS/autograd)
-2. **brrr**: accelerates the interpreter with vector processing (pytorch1)
-3. **pt2**: constructs a compiler for neural networks (pytorch2)
-4. **az1use1**: 3d parallelism
-
 **Appendix**: *Speedrunning Prerequisites*
 -  **A: s2.0**: speedruns deep neural networks (ffn -> rnn -> lstm -> gpt)
 -  **B: soul**: speedruns optimizing compilers and scalar processors (c -> riscv)

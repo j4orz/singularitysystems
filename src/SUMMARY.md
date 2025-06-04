@@ -1,14 +1,29 @@
-# Contents
+[Singularity Systems: Zero to Hero](./pref.md)
+[Dedication](./dedi.md)
 
-[Syllabus](./syllabus.md)
-[Preface](./preface.md)
-- [dfdx(nd)](./ch1.md)
+---
 
-[A. s2.0](./apa.md)
+# Singularity
+- [Overview](./sing-overview.md)
+<!-- - [Inference](./ch2.md) -->
+- [Prediction](./ch2.md)
+- [Generation]()
+- [Discovery]()
+- [Action]()
 
-<!-- - [brrr](./ch2.md)
-- [pt2](./ch3.md)
+---
 
-[A. soul](./apa.md)
-[B. s2.0](./apb.md) -->
-<!-- [B. allen&cray](./apb.md) -->
+# Systems
+- [Overview](./sys-overview.md)
+- [Tensor Compilers](./ch8.md)
+- [Vector Processors](./ch9.md)
+
+---
+
+# Appendix and Bibliography
+
+<!-- [Mathematics](./apa.md) -->
+[A. Mathematics](./apa.md)
+[B. Scalar Compilers and Processors](./apb.md)
+
+[Bibliography](./bib.md)

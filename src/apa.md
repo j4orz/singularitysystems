@@ -1,35 +1,33 @@
-![](./apa.gif)
-> *A famous colleague once sent an actually very well-written paper he was quite proud of to a famous complexity theorist. His answer: “I can’t find a theorem in the paper. I have no idea what this paper is about.”*
-# Appendix A: 2.0
 
-*This appendix speedruns deep learning prerequisites by using language modeling as a running example.*
+# 1. Mathematics
+> *God does not play dice.*
+
+<!-- *This appendix covers machine learning prerequisites by using language modeling as a running example.*
 By the end of the appendix you should be comfortable with state of the art open
-source models such as [llama](https://arxiv.org/abs/2407.21783) and [r1](https://arxiv.org/abs/2501.12948).
+source models such as [llama](https://arxiv.org/abs/2407.21783) and [r1](https://arxiv.org/abs/2501.12948). -->
 
 **Contents**
-1. [preliminaries: probability, algebra, and analysis]()
-2. [machine learning: energy](#part-1--statistical-learning-linear-to-non-linear)
-3. [deep learning: from ffn to gpt](#part-2--deep-learning-from-ffn-to-gpt)
-4. [attention is all you need]()
-5. [return of the rl]()
+- [Probability Theory](#probability-theory)
+    - [Probability Space: Measurable Space + Measure](#probability-space)
+    - [Discrete Random Variables: $Bin(n,p)$, $Poi(\lambda)$, $Geo(p)$]()
+    - [Continuous Random Variables: $Uni(\alpha,\beta)$, $Exp(\lambda)$, $Nor(\mu, \sigma^2)$]()
+    - [Joint Random Variables: Product Rule, Sum Rule, Bayes' Rule](#rulez-rule-product-rule-sum-rule-bayes-rule)
+- [Statistics](#statistics)
+    - [Maximum Likelihood Estimation (MLE)](#maximum-likelihood-estimation-mle)
+    - [Maximum a Posterior Estimation (MAP)](#maximum-a-posterior-estimation-map)
+    - [Empirical Risk Minimization (ERM)](#empirical-risk-estimation-erm)
+- [Decision Theory](#decision-theory)
+- [Linear Algebra](#linear-algebra)
+- [Matrix Calculus](#matrix-calculus)
 
-[References](#references)
-
-## Part 1 — preliminaries: probability, algebra, analysis
-
-- [Measure Theory]()
-- [Probability Theory]()
-- [Linear Algebra]()
-- [Matrix Calculus]()
-
-### Measure Theory
+## Probability Theory
 
 By default, mathematical reasoning is understood to be deterministic where
 a **statement** $S$ is either true (holds) or false (does not hold). Any
 **variable** $x$ can only take on one specific value at a time. However there are
 other times where what's desirable is describing phenomena that is in fact
-non-deterministic (while still remaining precise). Even if base reality turns
-out to be deterministic, in practice there are many scenarios where carrying
+non-deterministic (while still remaining precise). Even if base reality is
+fundamentally deterministic, in practice there are many scenarios where carrying
 out calculation is intractable. i.e, predicting tomorrow's weather with the
 position of every water molecule.
 
@@ -39,288 +37,357 @@ to alternative frameworks such as [probabilistic logic](https://en.wikipedia.org
 [uncertainty quantification](https://en.wikipedia.org/wiki/Uncertainty_quantification)).
 In probability theory  **statements** $S$ are neither true nor false. Rather,
 truth is distributed across a weighted set of **random events** $E$. Similarly,
-**random variables** $X$ do not take on a definite value but rather a set of
-values.
+**random variables** $X$ and their **probability distributions** $p$ do not take
+on definite values but rather sets of values. Probability theory is the
+generalization of aristotelian logic.
 
-The sample space $\Omega$ is the **countably discrete** set all possible
-**outcomes** $\omega$ in an experiment. Subsets of this sample space are
-**events** which are constructed by placing a boolean operator (corresponding
-to some semantic invariant) on the sample space. Functions $X: \Omega \to R$
-are **random variables**, where most of the time we use real random variables
-so $R=\mathbb{R}$.
 
-In the appendix' running example, consider describing a rappers vocabulary as
-some sample space $\Omega=\{ acid, balls, chop, death, grind, mind, poppin, pills, razor, shallow, tequila, zoey \}$. Let $X: \Omega \to \mathbb{R} $ be the r.v that maps words to their
+### Probability Space: Measurable Space + Measure
+---
+
+These three **concrete implementations** create the toolbox which serve as
+workhorses for probability theory and require an **abstract interface**. The
+Kolmogorov's 1933 formulation of probability theory in
+[Grundbegriffe der Wahrscheinlichkeitsrechnung](https://archive.org/details/kolmogoroff-1933-grundbegriffe-der-wahrscheinlichkeitsrechnung/page/10/mode/2up)
+is the universally accepted model for random events and random variables.
+The guiding light in the axiomaticization are the first two out of three properties
+that $p$ should satisfy: *non-negativity* and *normalization*, which formalize
+*impossible (surely false)* and *guaranteed (surely true)* statements. They
+ensure that probabilities are never less than 0 nor greater than 1.
+
+The foundations start with an ambient sample space $\Omega$ which is the set of all
+possible **outcomes** $\omega$ in an experiment. It's natural to expect the
+probability function $p$ to be defined on $\Omega$, which is acceptable when
+the sample space is **countable**. That is, when $|\Omega|<\aleph_1$,
+the first two properties are possible to satisfy:
+- **non-negativity:** $\forall \omega \in \Omega, P(\omega) > 0.$
+- **normalization:** $\sum\limits_{i=0}^{\infty} P(\omega_i)=1.$
+
+but when the sample space is **infinitely uncountable** then normalization is not possible.
+That is, when $|\Omega| = \aleph_1$, TODO... The next approach then is to define
+probabilities for the powerset $\mathcal{F}=2^\Omega$ with $p: \mathcal{F} \to [0,1]$.
+The powerset $F$ is the set of all subsets, and is referred to as the
+**event space**. The event space must be a **field**. That is, it must be
+**closed** under union, intersection, and complement, satisfying:
+- $\varnothing \in \mathcal{F} \land \Omega \in \mathcal{F}$.
+- $A \in \mathcal{F} \implies \Omega \setminus A\in \mathcal{F}$.
+- $A \in \mathcal{F} \land B \in \mathcal{F} \implies A \cup B \in \mathcal{F} \land A \cap B \in \mathcal{F} $.
+
+This formulation of $p$ is now defined on $E \subset \Omega$ but still does not
+support sample spaces where $|\Omega|=\aleph_1$ let alone $|\Omega|=\aleph_0$.
+The property of *closure* of union and intersection need to be extended to support
+sample spaces that are countable and uncountable infinite. Starting with the
+former, a field $F$ that satisfies
+- $E_1, E_2, \ldots \in \mathcal{F} \implies \bigcup\limits_{i=1}^{\infty}E_i \in \mathcal{F} \land \bigcup\limits_{i=1}^{\infty} \in \mathcal{F}$.
+
+is then a **$\sigma$-field** and is defined for $|\Omega|=\aleph_0$. This 
+**$\sigma$-field** with the sample space $\Omega$ form a **measurable space**.
+Finally, the original goal that motivated the need to redefine $p$'s domain from
+$\Omega$ to $\mathcal{F}=2^\Omega$ was to support uncountable infinities where
+$|\Omega|=\aleph_1$. This motivates the need to add additional properties the
+event space must satisfy which is...
+this is a borel sigma field.
+
+Returning to the probability function $p$, the original first two properties are
+satisified, in addition to a third and final one:
+- **non-negativity:** $\forall \omega \in \Omega, P(\omega) > 0.$
+- **normalization:** $\sum\limits_{i=0}^{\infty} P(\omega_i)=1.$
+- **additivity:**
+
+A measurable sapce $(\Omega, \mathcal{F})$ with a measurable function $p: \mathcal{F} \to [0,1]$
+is the abstract model for a **probability space**.
+
+<!-- going back to $p$, this lets us normalize on sample spaces that are uncountably infinte?
+we add a third property here?:
+ whereas the third property — arguably
+the most crucial — ensures we can add probabilities when two statements don't
+"overlap".
+
+Subsets of this sample space are **events** which are constructed by placing a boolean operator
+(corresponding to some semantic invariant) on the sample space. Functions
+$X: \Omega \to \mathbb{R}$ are **random variables**.. -->
+
+##### Example 1: finite probability space
+---
+
+In the notebook's running example, consider describing a rappers vocabulary as
+some sample space $\Omega=\{ acid, balls, chop, death, grind, mind, poppin, pills, razor, shallow, tequila, zoey \}$,
+and the following probability assignment (take a moment to confierm that they
+are all *non-negative* and *normalize* to 1).
+- $P(\{acid\})=0.04$
+- $P(\{balls\})=0.01$
+- $P(\{chop\})=0.09$
+- $P(\{death\})=0.08$
+- $P(\{grind\})=0.08$
+- $P(\{mind\})=0.05$
+- $P(\{poppin\})=0.04$
+- $P(\{pills\})=0.19$
+- $P(\{razor\})=0.03$
+- $P(\{shallow\})=0.22$
+- $P(\{tequila\})=0.15$
+- $P(\{zoey\})=0.02$
+
+Let $X: \Omega \to \mathbb{R} $ be the r.v that maps words to their
 lengths, and let $Y: \Omega \to \mathbb{R}, $ be the r.v that maps the word
-$\omega$ to the ordinal-based unicode number of the first letter. So the event
-$X=5$ constructs the subset $A=\{balls, death, grind, pills, razor\}$. The event
-$Y=112$ constructs the subset $B=\{poppin, pills\}$. The event where $X=5$ and
-$Y=112$ constructs the subset $C=A\cup B=\{pills\}$. With sample spaces that are
-countably discrete like the rappers vocabulary, we can assign probabilities to
-each outcome $\omega \in \Omega$ with $p: \Omega \to [0,1]$ where p needs to
-satisfiy *non-negativity*: $\forall \omega \in \Omega, p(\omega) > 0.$
-*additivity:*, and *normalization*: $\sum_{\omega \in \Omega}P(\omega) = 1$.
+$\omega$ to the ordinal-based unicode number of the first letter
 
-The problem with this model of probability is when the sample space $\Omega$
-is **uncountably continuous**. There is no sensible way of adding an uncountable
-set of outcomes where $p(\omega)=0$. Since defining probabilities on outcomes
-$\omega \in \Omega$ is nonsensical when $\Omega$ is uncountable, the next
-approach is to define probabilities on events with $P: \mathcal{F} \to [0,1]$ 
-for some class $\mathcal{F}$ of subsets $E \subset \Omega$.
-
-The question that arises naturally for the theoretician is how should
-$\mathcal{F}$ be axiomatized, and what properties should $P$ defined on
-$\mathcal{F}$ satisfy? We point the reader to explore other resources which
-delve deeper into measure-theoretic foundations proposed by Kolmogrov in 1933.
-
-### Probability Theory
-Measure theory provides an abstract model for **random events** $E$ and
-**random variables** $X$ are measurable subsets and measurable functions of a
-measurable space $\Omega$.
+- the rv taking on value $X=5$ constructs the event modeled by the subset $A=\{balls, death, grind, pills, razor\}$ and the p
+- the rv taking on value $Y=112$ constructs the event modeled by the subset $B=\{poppin, pills\}$
 
 
-Moving forward, we let the probability space fade into the background and focus
-on the probabilistic concepts invariant to sample space extensions. Recall that
+The event where $X=5$ and
+$Y=112$ constructs the subset $C=A\cup B=\{pills\}$. The event where $X=5$ or
+$Y=112$ constructs the subset $C=A\cap B=\{balls, death, grind, poppin, pills, razor\}$
 
 
-independance, joint, mutual exclusion, independance, etc.
+##### Example 2: continuous probability space
+---
+
+### Discrete Random Variables
+
+### Continuous Random Variables
+
+### Rulez Rule: Product Rule, Sum Rule, Bayes' Rule
+
+With an axiomaticization in place where **random events** $E$ and **random variables**
+$X$ are modeled as measurable subsets and measurable functions of a measurable space $\Omega$,
+the focus is now on the core — invariant to sample space modifications — probabilistic
+concepts that comprise the notion of updating beliefs.
+
+It all starts with of **conditional** probability, which is the probability of some
+event $A$ **given** that event $B$ was **observed**. If the Kolmogorov
+axiomaticization admits modeling stochastic events $A$ and $B$ as a venn diagram
+within an ambient sample space, then **conditional** probability changes the
+fidelity of description so that $B$ is the new (and narrowed) "sample space"
+being considered. That is, probability of $A$ given $B$ is denoted with
+$P(A\mid B)$ and is defined as
+
+$$P(A\mid B)\stackrel{\triangle}{=}\frac{P(A\cap B)}{P(B)}$$
+
+and can itself be proved a valid probability space. In other scenarios
+$P(A\mid B)$ is given, but $P(A\cap B)$ is not. This is
+amenable by rearranging the definition and solving for the latter with
+$P(A\cap B) = P(B)P(A\mid B)$. and is referred to as the **product rule**
+(emphasis on the product) or **chain rule** (emphasis on the factors).
+
+In other scenarios $P(A\mid B)$ is given (and now $P(A \cap B)$ by the product rule),
+but $P(A)$ is not. This too is amenable by using event $B$ as a "background event",
+where assuming events $B_1, B_2, \ldots B_n$ are mutually exclusive, then
+$P(A) = P(A \cap B_1) +  P(A \cap B_2) + \ldots + P(A\cap B_N)$. This is referred
+to as the **sum rule**, and can be composed with the product rule to further
+decompose the terms of products into terms of conditionals.
+
+Finally, in other scenarios where $P(A\mid B)$ is given but $P(B\mid A)$ is not, this
+is amenable by rewriting the numerator and denominator of conditional probability
+using the product rule and sum rule:
+
+$$
+\begin{aligned}
+P(A\mid B) &= \frac{P(A\cap B)}{P(B)}                         
+           && \text{[by definition of conditional]}\\
+           &= \frac{P(A)\,P(B\mid A)}{P(B)}                    
+           && \text{[by product rule on joint]}\\
+        %    &= \frac{P(A)\,P(B\mid A)}
+        %           {P(B\cap A)+P(B\cap\neg A)}
+        %    && \text{[by sum rule on marginal]}\\
+        %    &= \frac{P(A)\,P(B\mid A)}
+        %           {P(A)P(B|A)+P(\neg A)P(B|\neg A)}
+        %    && \text{[by product rule]}
+\end{aligned}
+$$
+
+$$
+\underbrace{p(x \mid y)}_{\text{posterior}}
+\;=\;
+\frac{
+    \overbrace{\,p(y \mid x)\,}^{\text{likelihood}}
+    \;
+    \overbrace{p(x)}^{\text{prior}}
+}{
+    \underbrace{\displaystyle\int p(y \mid x)\,p(x)\,dx}_{\text{evidence}}
+}\;.
+$$
+
+and is referred to as **bayes' rule**. The scenario where
+$P(A\mid B)$ is accessible but $P(B\mid A)$ is not comes up many times practice,
+where $A$ is some **latent** event and $B$ is an **observable** event. This
+happens in science (why bayes rule is also referred to as the *logic of science*)
+where $P(A\mid B)$ is used to model **hypothesis** and **evidence** where the
+**posterior** $P(H\mid E)$ (latent given observed) is updated by
+evaluating the product of the **prior** $P(H)$ and the **likelihood**
+(observed given latent) $P(E\mid H)$ normalized by the **evidence** $P(E)$.
 
 
-## Part 2 — machine learning: energy
-
-The goal of **machine learning** in general is to compress regularity found in
-data in order to make predictions.
-
-a probabilistic model is a special case of an energy model
-more general way than f: X->Y
-factors: F: XxY -> R which measure compatibility between input and output
-
-### Energy Models
-graphical models: factor graphs are bipartite graphs
-bipartite: two different nodes: G=({Variable, Factor}, E)
-factor graphs are generally interpreted as probabilistic models. lecun isn't going to do that.
+##### Example 3: conditional probability
+---
+Let $\Omega$ be the sample space used from the previous examples,
+$Y: \Omega \to \mathbb{R}$ once again be the r.v that maps the word
+$\omega$ to the ordinal-based unicode number of the first letter, and let
+$Z: \Omega \to \mathbb{R}$ be a new identity r.v $Z$ that maps the word
+to it's hash. What's $P(Z=hash("pills")|Y=112)$? The answer by definition
+of conditional probability is $\frac{0.19}{0.04+0.19}=0.83$, where
+$P(Y=112)=0.04+0.19$ because of *additivity*.
 
 
+todo: examples 4/5/6: product rule/sum rule/bayes rule
 
 
-
-
-
-
-
-
-
-
-
-
-
-### Decision Theory
-Particularly with **supervised learning**,
-provided a $d=\{(x^{(i)},y^{(i)})\}_{i=0}^n$ and given previously unseen
-input $x \in \mathcal{X}$, the goal is to predict output $y \in \mathcal{Y}$.
-Most often $X=\mathbb{R}^d$, whereas $Y=\{0, 1, \ldots, k\} \subseteq \mathbb{N}$
-(referred to as **classification**) or $Y=\mathbb{R}$ (referred to as **regression**).
-The primary formalization of supervised learning is the probabilistic formulation,
-where $(x^{(i)},y^{(i)}) \overset{\text{i.i.d.}}{\sim} (\mathcal{X}\times\mathcal{Y})^n$
-is assumed (the joint distribution will be referred to with $P$), and the machine
-learning algorithm is then $A: (\mathcal{X}\times\mathcal{Y})^n \to (\mathcal{X} \to \mathcal{Y})$
-where $A(d) \mapsto f: \mathcal{X} \to \mathcal{Y}$.
-
-The next component of the probabilistic formulation is the **loss** function
-and its expectation (referred to ask **risk**). The loss function is
-$l: \mathcal{Y} \times \mathcal{Y} \to \mathbb{R}_{+}$ which quantifies the error
-when a mismatch occurs between the **actual predicted output** and the
-**expected labeled output**. along with its expectation (refered to
-as **risk**).
-
-- loss function
-- risk
-- bayes predictor
-
-### Statistical Learning Theory
-
-
-### Example 1:  "fresh" lyrics crodie
-
-```
-P("
-  i got an empire of emotion,
-  a monopoly on lotion,
-  in a state of commotion,
-  i gesture at the notion.
-")
-
-P("
-  i got an empire of emotion,
-  squad see me cruisin', cruisin' in my go kart,
-  i'm war, ho, i'm warhol,
-  i'm wario when i'm in mario kart.
-")
-```
-
+### Inference: Joint Random Variables
 
 ```python
-message = "Hello, world!"
+from jax import numpy as jnp
+from jaxtyping import Array, Float
 
-print(message)
+def bayes(joint: Float[Array, "dx dy"]) -> Float[Array, "dx dy"]:
+    prior = 0
+    likelihood = 0
+    evidence = 0
+
+    posterior = 0
+    return prior, likelihood, evidence, posterior
 ```
 
+## Statistics
+In probabilistic models distributions of latent hypotheses are usually unknown
+and their posteriors are inferred with bayes rule by taking the product of the
+prior $p(h)$, likelihood $p(e,h)$, and normalizing by the evidence $p(e)$. When
+these latter distributions (more specifically, the parameters $\theta$ that
+characterize them), the parameters need to be recovered from data via
+**parameter estimation**.
 
-**Statistics** on the other hand formalizes the recovery of parameters which
-characterize the underlying probability distributions that generate the observed
-data. Once recovered, we can sample from the distribution it in order to generate
-predictions.
+### Empirical Risk Minimization (ERM)
+Risk is a quantity where the objective is to minimize.
+Reward is a quantity where the objective is to maximize.
 
-*Linear parametric models*:
-*Non-linear parametric models*:
+loss functions and risk.
+- theta_likelihood from L_likelihood (likelihood from the probabilistic perspective)
+- theta_0-1 from L_01
+- theta_absolute from L_abs
 
-show manim animation
+### Unbiased Estimators
 
-## Part 2 — deep learning: from ffn to gpt
+### Maximum Likelihood Estimation (MLE)
 
-### Sequence Modeling (Autoregressive Models)
+Maximizing the likelihood uses the probability model itself as the loss function.
+Following the notion of minimizing risk, the maximization corresponds to
+minimizing the negative likelihood $-p(x; \theta)$. One more transformation
+is applied by mapping the likelihood to log space which simplifies the
+$\operatorname{argmin}$ routine by decomposing the joint probability of the data
+$p(x_1, x_2, \ldots, x_n; \theta)$ into a product of likelihoods with the
+*chain rule* (assuming $X_1, X_2, \ldots, X_N\overset{\text{iid}}{\sim}p$). The
+parameters which minimize negative log likelihood are the same that minimize
+negative likelihood since logarithms perserve **monotonicity**. All together,
+the optimization problem is:
 
-### Diffusion Modeling
-```python
-"""
-Dimension key:
-B: batch size
-T: sequence length
-V: vocabulary size
-E: embedding dimension (E != D)
-D: model dimension
-"""
+$$
+\begin{aligned}
+\hat{\boldsymbol{\theta}} &\in \underset{\boldsymbol{\theta} \in \Theta}{\operatorname{argmax}}\ p(x;\theta) \\
+                          &= \operatorname{argmax}\ \log p(x_1,x_2, \ldots, x_n;\theta)
+                          && \text{[by monotonicity of log]}\\
+                          &= \operatorname{argmin}\ -\log p(x_1,x_2, \ldots, x_n;\theta) \\
+                          &= \operatorname{argmin}\ -\log \prod_{i=1}^{n}p(x_i;\theta)
+                          && \text{[by $X_i \overset{\text{iid}}{\sim}p$]} \\
+                          &= \operatorname{argmin}\ - \sum_{i=1}^{n}\log p(x_i;\theta)
+                          && \text{[by log laws]} \\
+\end{aligned}
+$$
 
-import picograd
-# from jaxtyping import
+In the following examples $\operatorname{argmin}$ is implemented symbolically by
+solving for $\frac{d}{d\theta}=0$.
 
-# *********************MODEL*********************
-B, T = 32, 3
-V, E, D = 27, 10, 200
+##### Example 1: maximizing likelihood with $Poi(\lambda)$
+---
+Assume $X_1, X_2, \ldots, X_n \overset{\text{iid}}{\sim} Poi(\lambda).$
+Then using negative log likelihood as the loss function corresponds to the
+following optimization:
 
-class Linear:
-  def __init__(self, D_in, D_out, bias=True):
-    self.W_DiDo = picograd.randn((D_in, D_out)) * 0.01
-    self.b_Do = picograd.zeros(D_out) if bias else None
+$$
+\begin{aligned}
+\hat{\lambda}_{MLE} &\in \operatorname{argmin} \mathcal{L(\lambda)} \\
+                          &= \operatorname{argmin} - \sum_{i=1}^{n} \log \frac{e^{-\lambda}\lambda^{x_i}}{x_i!} \\
+                          &= \operatorname{argmin} - \sum_{i=1}^{n} -\lambda + x_i\log\lambda - \log x_i!
+\end{aligned}
+$$
 
-  def __call__(self, X_Di):
-    self.X_Do = X_Di @ self.W_DiDo
-    if self.b_Do is not None: self.X_Do += self.b_Do
-    self.out = self.X_Do
-    return self.X_Do
+and solving for the arguments $\lambda$ which minimize the expression corresponds
+to taking the derivative with respect to $\lambda$ and solve for those that equal 0:
 
-  def parameters(self):
-    return [self.W_DiDo] + ([] if self.b_Do is None else [self.b_Do])
+$$
+\begin{aligned}
+\frac{\partial \mathcal{L}}{\partial \lambda} &= 0 \\
+    - \sum_{i=1}^{n} -1 + \frac{x_i}{\lambda} &= 0 \\
+     n - \frac{1}{\lambda} \sum_{i=1}^{n} x_i &= 0 \\
+               \frac{1}{n} \sum_{i=1}^{n} x_i &= \lambda_{MLE}
 
-class Tanh:
-  def __call__(self, X_BD):
-    self.X_BD = picograd.tanh(X_BD)
-    self.out = self.X_BD
-    return self.X_BD
-  
-  def parameters(self):
-    return []
+\end{aligned}
+$$
 
-model = [
-  Linear(T * E, D, bias=False), Tanh(),
-  Linear(D, D, bias=False), Tanh(),
-  Linear(D, V, bias=False)
-]
+##### Example 2: maximizing likelihood with $Ber(p)$
+---
+Assume $X_1, X_2, \ldots, X_n \overset{\text{iid}}{\sim} Ber(p).$
+Then using negative log likelihood as the loss function corresponds to the
+following optimization:
 
-C_VE = picograd.randn((V,E)) #, generator=g)
-params = [C_VE] + [p for l in model for p in l.parameters()]
-for p in params:
-    p.requires_grad = True
+$$
+\begin{aligned}
+\hat{p}_{MLE} &\in \operatorname{argmin} \mathcal{L(p)} \\
+                          &= \operatorname{argmin} - \sum_{i=1}^{n} \log[p^{x_i}(1-p)^{1-x_i}] \\
+                          &= \operatorname{argmin} - \sum_{i=1}^{n} x_i\log p + (1-x_i)\log(1-p) \\
+\end{aligned}
+$$
 
-print("model loaded to cpu")
+and solving for the arguments $p$ which minimize the expression corresponds
+to taking the derivative with respect to $p$ and solve for those that equal 0:
 
-
-# *********************INFERENCE LOOP*********************
-for _ in range(20): # 20 samples
-  output, context = [], [0] * T
-  while True:
-    X_1T = picograd.tensor([context]) # B=1 for inference, T=3, in [0..27] (set to 0 for init)
-    X_1TE = C_VE[X_1T] # using 0..27 as indices into C_VE for each B=1 example of context length T
-    X_1cTE = X_1TE.view(-1, T*E) # B=1, TE
-    X = X_1cTE
-
-    for h in model:
-      X = h(X)
-
-    y_hat = F.softmax(X, dim=1)
-
-    # sample and autoregressively update context
-    token = picograd.multinomial(y_hat, num_samples=1, replacement=True).item()#, generator=g).item()
-    context = context[1:] + [token]
-    output.append(decode[token])
-    if token == 0:
-        break
-  print(''.join(output))
-```
-
-
-## Part 3 — attention is all you need
-
-Within the GPTs, we saw the rise of [sparse attention](https://arxiv.org/abs/1904.10509).
-BERT variants showed us how [layer normalization](https://arxiv.org/abs/1607.06450) evolved into [RMSNorm](https://arxiv.org/abs/1910.07467).
-LLaMA iterations demonstrated the progression from standard attention to [grouped-query attention](https://arxiv.org/abs/1910.07467).
-DeepSeek’s releases, particularly constrained by hardware limitations, showed algorithms that enabled frontier performance without frontier compute.
+$$
+\begin{aligned}
+                                                  \frac{\partial \mathcal{L}}{\partial p} &= 0 \\
+    \frac{\partial \mathcal{L}}{\partial p} - \sum_{i=1}^{n} x_i\log p + (1-x_i)\log(1-p) &= 0 \\
+                    \frac{\partial \mathcal{L}}{\partial p} -[X\log p + (n - X)\log(1-p)] &= 0 && \text{[where $X = \sum_{i=1}^{n}x_i$]} \\
+                                                           \frac{-X}{p} + \frac{n-X}{1-p} &= 0 \\
+                                                                         -X + Xp + np -Xp &= 0 \\
+                                                                         np &= X \\
+                                                                          p_{MLE} &= \frac{1}{n}\sum_{i=1}^{n}x_i \\
 
 
-
-
-<!-- 0. [ffn]()
-1. [rnn]()
-2. [lstm]()
-3. [gpt]()
-4. [beyond gpt]() -->
-
-<!-- ## Part 0: non-linear parametric models: `nn.Linear()`, `nn.ReLU()` -->
-<!-- Before jumping into the implementation of our deep learning framework's
-multidimensional array with autodifferentiation capability, let's review the
-mathematics of neural networks. We will incrementally construct a family of
-functions from logistic regression, multiclass regression, feedforward
-neural networks, attention and chain of thought variants, all for the
-classification setting where Y⊆ℕ.
-
-Recall that the logistic regression model for binary classification recovers the
-bernouilli distribution $\mathbb{P}: \mathbb{R}^d \to [0,1]$ by assuming -->
-
-<!-- $$
-\begin{align*}
-\implies \mathbb{P}(Y=y|\textbf{X}=\textbf{x};θ) &= \hat{y}^y (1-\hat{y})^{1-y} \\
-                 &= \sigma(\textbf{w}^{\top}\textbf{x})^y [1-\sigma(\textbf{w}^{\top}\textbf{x})]^{1-y}
-\end{align*}
-$$ -->
+\end{aligned}
+$$
 
 
 
-## References
+##### Example 3: maximizing likelihood with $Nor(n, \sigma^2)$
+---
+Assume $X_1, X_2, \ldots, X_n \overset{\text{iid}}{\sim} Nor(\mu, \sigma^2).$
+Then using negative log likelihood as the loss function corresponds to the
+following optimization:
 
-*Probability Theory*
-1. [Varadhan 2001](https://www.ams.org/books/cln/007/cln007-endmatter.pdf)
-1. [Chan 2021](https://probability4datascience.com/)
-1. [Piech 2024](https://chrispiech.github.io/probabilityForComputerScientists/en/)
-1. [Harchol-Balter 2024](https://www.cs.cmu.edu/~harchol/Probability/book.html)
+$$
+\begin{aligned}
+\hat{\theta}_{MLE} &\in \operatorname{argmin} \mathcal{L(\theta)} && \text{[where $\theta=(\mu, \sigma^2)$]}\\
+                          &= \operatorname{argmin} - \sum_{i=1}^{n} \log[p^{x_i}(1-p)^{1-x_i}] \\
+\end{aligned}
+$$
 
-*Statistical Learning*
-1. [Hardt, Recht 2022](https://mlstory.org/)
-1. [Recht 2023](https://www.argmin.net/p/patterns-predictions-and-actions)
-1. [Bach 2024](https://www.di.ens.fr/~fbach/ltfp_book.pdf)
+and solving for the arguments $p$ which minimize the expression corresponds
+to taking the derivative with respect to $p$ and solve for those that equal 0:
 
-*Matrix Calculus*
-1. [Kang, Cho 2024](https://kyunghyuncho.me/linear-algebra-for-data-science/)
-1. [Scardapane 2024](https://www.sscardapane.it/alice-book/)
-1. [Bright, Edelman, Johnson 2025](https://arxiv.org/abs/2501.14787)
+$$
+\begin{aligned}
+                                                  \frac{\partial \mathcal{L}}{\partial p} &= 0 \\
+    \frac{\partial \mathcal{L}}{\partial p} - \sum_{i=1}^{n} x_i\log p + (1-x_i)\log(1-p) &= 0 \\
+                    \frac{\partial \mathcal{L}}{\partial p} -[X\log p + (n - X)\log(1-p)] &= 0 && \text{[where $X = \sum_{i=1}^{n}x_i$]} \\
+                                                           \frac{-X}{p} + \frac{n-X}{1-p} &= 0 \\
+                                                                         -X + Xp + np -Xp &= 0 \\
+                                                                         np &= X \\
+                                                                          p_{MLE} &= \frac{1}{n}\sum_{i=1}^{n}x_i \\
 
-*Machine Learning*
-1. [Ng, Ma 2023](https://cs229.stanford.edu/main_notes.pdf)
-1. [Ermon, Grover 2023](https://deepgenerativemodels.github.io/notes/index.html)
-1. [Cho 2025](https://arxiv.org/abs/2505.03861)
 
-*Deep Learning*
-1. [Cho 2015](https://arxiv.org/abs/1511.07916)
-1. [Goodfellow et al. 2016](https://www.deeplearningbook.org/)
-1. [Manning 2019](https://web.stanford.edu/class/cs224n/readings/)
-1. [Jurafsky, Martin 2025](https://web.stanford.edu/~jurafsky/slp3/)
-1. [Prince 2025](https://udlbook.github.io/udlbook/)
+\end{aligned}
+$$
+
+
+### Maximum a Posterior Estimation (MAP)
+
+## Decision Theory
+## Linear Algebra
+## Matrix Calculus
