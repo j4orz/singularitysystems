@@ -1,27 +1,25 @@
-# 2. Prediction
+# 1. Prediction
 
 > *A famous colleague once sent an actually very well-written paper he was quite proud of to a famous complexity theorist. His answer: “I can’t find a theorem in the paper. I have no idea what this paper is about.”*
 
 **Contents**
-- [Prediction Overview](#overview)
-- [Parametric Models]()
-    - [Function Approximation via Parameter Estimation (MLE/MAP)]()
-    - [Generalized Linear Models (GLMs)]()
-    - [Deep Neural Networks (DNNs)]()
-- [Non-parametric Models]()
-    - [Function Approximation via Posterior Updates (Bayes' Rule)]()
-    - [Bayesian Neural Networks (BNNs)]()
-    - [Gaussian Processes (GPs)]()
+- [1.0 Prediction Overview](#overview)
+- [1.1 Non-parametric Models with Posterior Updates]()
     - [Support Vector Machines (SVMs)]()
+    - [Gaussian Processes (GPs)]()
+    - [Bayesian Neural Networks (BNNs)]()
+- [1.2 Parametric Models with Parameter Estimation]()
+    - [Generalized Linear Models (GLMs)](#generalized-linear-models)
+    - [Deep Neural Networks (DNNs)](#deep-neural-networks)
+    - [Recurrent Neural Networks (RNNs)]()
+    - [Long Short-Term Memory Networks (LSTMs)]()
+    - [Generative Pretrained Transformers (GPTs)]()
 
-## Prediction Overview
+
+## 1.0 Prediction Overview
 The primary goal of machine learning is to leverage patterns from stochastic
 phenomena to **predict** quantities of interest without enumerating an entire
-population. In simpler cases the population can be modeled with closed form
-analytic solutions such as single random variables and their distributions
-($Bin(n,p)$, $Nor(\mu, \sigma)$). In more complex cases this is intractable, and
-so the underlying distribution must be recovered from a random sample.
-
+population. That is, to recover the underlying distribution from a random sample.
 This is often the case with machine learning, where given dataset
 $D=\{(\mathbf{x}^{(i)}, \mathbf{y}^{(i)}): (\mathbf{x}^{(i)}, \mathbf{y}^{(i)})\overset{\text{iid}}{\sim} \mathcal{X} \times \mathcal{Y} \}_{i=0}^{n}$
 with $\mathcal{X} = \mathbb{R}^{d_{in}}$, $p(\mathbf{y}|\mathbf{x})$ needs to be
@@ -59,45 +57,66 @@ is more successful *experimentally*.
 
 todo: murphy's global/local latent distinction (with cho EBMs?)
 
+---
 
-## Parametric Models
-### Function Approximation via Parameter Estimation (MLE/MAP)
-Optimization and Differentiation
+## 1.1 Non-Parametric Models with Posterior Updates
 
-The primary method in selecting the most accurate predictor from the space of
-parameterized functions is to select the parameters $\theta \in \Theta$ to
-**maximize the likelihood of the data**.
+### Gaussian Processes
+### Bayesian Logistic Regression
+### Bayesian Neural Networks
 
-todo: consider just 1 random variable. X^(1), X^(2), ... X^(n)
+---
 
- That is,
+## 1.2 Parametric Models with Parameter Estimation
+
+Autoregressive language models.
+logistic regression -> FFN -> RNN -> LSTM -> Transformer.
+
+in chapter 3. generation, other generative DNN variants will be covered.
+- diffusion
+- ebm
+- etc.
+
+### Generalized Linear Models (GLMs)
+A natural inductive bias to make is that the input and output
+spaces $\mathcal{X}$, $\mathcal{Y}$ are **affinely** related. We will
+see these models are all exponential...
+
+**Naive Bayes**
+
+**Logistic ~~Regression~~ Classification**
+
+When the output space $\mathcal{Y}=\{-1, 1\}$ is a **binary** encoding of positive/negative
+outcomes, the distribution used for the **discriminative** model $p(y|\mathbf{x}; \theta)$ is $Ber(p)$.
+That is,
 $$
 \begin{aligned}
-\hat{\boldsymbol{\theta}} &\in \underset{\boldsymbol{\theta} \in \Theta}{\operatorname{argmax}}\ p(x;\theta) \\
-                          &= \underset{\boldsymbol{\theta} \in \Theta}{\operatorname{argmax}}\ \log p(x;\theta)
-                          && \text{[by monotonicity of log]}\\
+&p(Y=1|\mathbf{X}=\mathbf{x}) := \sigma(w^{\mathsf{T}}\mathbf{x})\\
+\implies &p(Y=-1|\mathbf{X}=\mathbf{x}) = 1 - \sigma(w^{\mathsf{T}}\mathbf{x}) \\
 \end{aligned}
 $$
 
-where $\operatorname{argmin}$ for simple cases can be solved symbolically.
-but for more complex cases need to be solved algorithmically with automatic differentiation/gradient descent.
+where $p=p(Y=1|\mathbf{X}=\mathbf{x})$ and $\sigma: \mathbb{R} \to [0,1]$, $\sigma := \frac{1}{1+\exp(-z)}$.
+The closed form *continuous* and *differentiable* mass function for $Ber(p)$ whose parameter $p=\sigma(w^{\mathsf{T}}\mathbf{x})$
+needs to be estimated from the data $D=\{(\mathbf{x}^{(i)}, \mathbf{y}^{(i)}): (\mathbf{x}^{(i)}, \mathbf{y}^{(i)})\overset{\text{iid}}{\sim} \mathcal{X} \times \mathcal{Y} \}_{i=0}^{n}$ is then
 
+$$
+\begin{aligned}
+p(Y=c|\mathbf{X}=\mathbf{x}) &= p^c(1-p)^{1-c} \\
+                             &= \sigma(w^{\mathsf{T}}\mathbf{x})^c(1-\sigma(w^{\mathsf{T}}\mathbf{x}))^{1-c}
+\end{aligned}
+$$
 
-Optimization is the primary method used to  selecting some function from the space of functions parameterized
-by
-is **optimization**. Namely,
+Before moving on to the estimation of parameter $p$, take a moment to convince
+yourself what the assumption $\sigma(w^{\mathsf{T}}\mathbf{x})$ is *really* doing.
 
-### Generalized Linear Models
-the first models with two random variables which model the input space and output space.
+*Multinomial Classification*
 
-##### Linear Regression
-##### ~~Logistic Regression~~ Sigmoidal Classification
+**Linear Regression**
 
-### Deep Neural Networks
+### Deep Neural Networks (DNNs)
 
-## Non-Parametric Models
-### Bayesian Neural Networks
-### Gaussian Processes
+---
 
 ## Energy Perspective: Parameterization, Learning, Inference.
 The energy perspective to machine learning not only provides a unifying
