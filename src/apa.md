@@ -1,5 +1,5 @@
 
-# 1. Mathematics
+# A. Posteriors and Parameters
 > *God does not play dice.*
 
 <!-- *This appendix covers machine learning prerequisites by using language modeling as a running example.*
@@ -7,19 +7,22 @@ By the end of the appendix you should be comfortable with state of the art open
 source models such as [llama](https://arxiv.org/abs/2407.21783) and [r1](https://arxiv.org/abs/2501.12948). -->
 
 **Contents**
-- [Probability Theory](#probability-theory)
-    - [Probability Space: Measurable Space + Measure](#probability-space)
-    - [Discrete Random Variables: $Bin(n,p)$, $Poi(\lambda)$, $Geo(p)$]()
-    - [Continuous Random Variables: $Uni(\alpha,\beta)$, $Exp(\lambda)$, $Nor(\mu, \sigma^2)$]()
-    - [Joint Random Variables: Product Rule, Sum Rule, Bayes' Rule](#rulez-rule-product-rule-sum-rule-bayes-rule)
-- [Statistics](#statistics)
-    - [Maximum Likelihood Estimation (MLE)](#maximum-likelihood-estimation-mle)
-    - [Maximum a Posterior Estimation (MAP)](#maximum-a-posterior-estimation-map)
-    - [Empirical Risk Minimization (ERM)](#empirical-risk-estimation-erm)
+- [A.1 Mathematics for Posterior Updates](#probability-theory)
+    - [Probability Theory]()
+        - [Probability Space: Measurable Space + Measure](#probability-space)
+        - [Discrete Random Variables: $Bin(n,p)$, $Poi(\lambda)$, $Geo(p)$]()
+        - [Continuous Random Variables: $Uni(\alpha,\beta)$, $Exp(\lambda)$, $Nor(\mu, \sigma^2)$]()
+        - [Joint Random Variables: Product Rule, Sum Rule, Bayes' Rule](#rulez-rule-product-rule-sum-rule-bayes-rule)
+    - [Linear Algebra]()
+- [A.2 Mathematics for Parameter Estimation](#statistics)
+    - [Statistics]()
+        - [Maximum Likelihood Estimation (MLE)](#maximum-likelihood-estimation-mle)
+        - [Maximum a Posterior Estimation (MAP)](#maximum-a-posterior-estimation-map)
+        - [Empirical Risk Minimization (ERM)](#empirical-risk-estimation-erm)
+    - [Matrix Calculus]()
 - [Decision Theory](#decision-theory)
-- [Linear Algebra](#linear-algebra)
-- [Matrix Calculus](#matrix-calculus)
 
+# A.1 Mathematics for Posterior Updates
 ## Probability Theory
 
 By default, mathematical reasoning is understood to be deterministic where
@@ -247,6 +250,7 @@ def bayes(joint: Float[Array, "dx dy"]) -> Float[Array, "dx dy"]:
     return prior, likelihood, evidence, posterior
 ```
 
+# A.2 Mathematics for Parameter Estimation
 ## Statistics
 In probabilistic models distributions of latent hypotheses are usually unknown
 and their posteriors are inferred with bayes rule by taking the product of the

@@ -9,14 +9,10 @@
     - [Gaussian Processes (GPs)]()
     - [Bayesian Neural Networks (BNNs)]()
 - [1.2 Parametric Models with Parameter Estimation]()
-    - [Generalized Linear Models (GLMs)](#generalized-linear-models)
+    - [Generalized Linear Models (GLMs)](#generalized-linear-models-glms)
     - [Deep Neural Networks (DNNs)](#deep-neural-networks)
-    - [Recurrent Neural Networks (RNNs)]()
-    - [Long Short-Term Memory Networks (LSTMs)]()
-    - [Generative Pretrained Transformers (GPTs)]()
 
-
-## 1.0 Prediction Overview
+# 1.0 Prediction Overview
 The primary goal of machine learning is to leverage patterns from stochastic
 phenomena to **predict** quantities of interest without enumerating an entire
 population. That is, to recover the underlying distribution from a random sample.
@@ -59,66 +55,156 @@ todo: murphy's global/local latent distinction (with cho EBMs?)
 
 ---
 
-## 1.1 Non-Parametric Models with Posterior Updates
+# 1.1 Non-Parametric Models with Posterior Updates
 
-### Gaussian Processes
-### Bayesian Logistic Regression
-### Bayesian Neural Networks
+## Gaussian Processes
+## Bayesian Logistic Regression
+## Bayesian Neural Networks
 
 ---
 
-## 1.2 Parametric Models with Parameter Estimation
+# 1.2 Parametric Models with Parameter Estimation
 
-Autoregressive language models.
-logistic regression -> FFN -> RNN -> LSTM -> Transformer.
-
-in chapter 3. generation, other generative DNN variants will be covered.
-- diffusion
-- ebm
-- etc.
-
-### Generalized Linear Models (GLMs)
+## Generalized Linear Models (GLMs)
 A natural inductive bias to make is that the input and output
 spaces $\mathcal{X}$, $\mathcal{Y}$ are **affinely** related. We will
 see these models are all exponential...
 
+### Regression
+
+
+### Classification
+Recall that the supervised learning problem is considered classification
+when $\mathcal{Y} \subseteq \mathbb{N}$. The simple case when the output space is
+$\mathcal{Y}=\{-1, 1\}$ is referred to as **binary classification**,
+and in the case when the output space is $\mathcal{Y}=\{0,1, \ldots, k\}$ is
+referred to as **multi-class classification**.
+
+Many predictive values of interest that can be posed as answers to yes/no questions
+are suitable to be modeled as binary classifiers. For instance, benign or malignant
+in health care, innocent or guilty in law, real or spam in engineering. The running
+example used for the next two models will be the domain of music — to classifying
+a set of rap lyrics as a praise or diss. The set of lyrics $x^{(i)}$ that is of
+particular interest is Kendrick's featured verse in Kanye's "No More Parties in LA":
+
+```
+Hey baby you forgot your Ray Bans
+And my sheets still orange from your spray tan
+It was more than soft porn for the K-man
+She remember my Sprinter, said "I was in the grape van"
+Uhm, well cutie, I like your bougie booty
+Come Erykah Badu me, well, let's make a movie
+Hell, you know my repertoire is like a wrestler
+I show you the ropes, connect the dots
+A country girl that love Hollywood
+Mama used to cook red beans and rice
+Now it's Denny's, 4 in the morning, spoil your appetite
+Liquor pouring and niggas swarming your section with erection
+Smoke in every direction, middle finger pedestrians
+R&B singers and lesbians, rappers and managers
+Music and iPhone cameras
+This shit unanimous for you, it's damaging for you, I think
+That pussy should only be holding exclusive rights to me, I mean
+He flew you in this motherfucker on first class
+Even went out his way so you could check in an extra bag
+Now you wanna divide the yam like it equate the math?
+That shit don't add up, you're making him mad as fuck
+She said she came out here to find an A-list rapper
+I said baby, spin that round and say the alphabet backwards
+You're dealing with malpractice, don't kill a good nigga's confidence
+Just cause he a nerd and you don't know what a condom is
+The head still good though, the head still good though
+Make me say "Nam Myoho Renge Kyo"
+Make a nigga say big words and act lyrical
+Make me get spiritual
+Make me believe in miracles, Buddhist monks and Cap'n Crunch cereal
+Lord have mercy, thou will not hurt me
+Five buddies all herded up on a Thursday
+Bottle service, head service, I came in first place
+The opportunity, the proper top of breast and booty cheek
+The pop community, I mean these bitches come with union fee
+And I want two of these, moving units through consumer streets
+Then my shoe released, she was kicking in gratuity
+And yeah G, I was all for it
+She said K Lamar, you kind of dumb to be a poet
+I'mma put you on game for the lames that don't know they're a rookie
+Instagram is the best way to promote some pussy
+```
+
+The sentiment of "No More Parties in LA" is extremely difficult for a machine to
+classify correctly due to Kendrick's wordplay, double entendres, and insinuations.
+Consider the positive/negative dictionaries where
+positive={baby, cutie, love, good, spiritual, miracles, buddhist, buddies, opportunity, promote}
+and negative={shit, spoil, damaging, motherfucker, mad, fuck, malpractice, kill, mercy, hurt, fee, dumb}.
+Then a possible feature extractor $\phi: \mathcal{X} \to \mathbb{R}^3$ which maps
+raw input to dimensioned feature representation is defined by:
+
+| Dim             | Feature             | Value     |
+|-----------------|-----------------------|------------------|
+| $\phi(x)_1$ | $|\{ \forall w \in x : w \in positive\}|$                              | 10   |
+| $\phi(x)_2$ | $|\{ \forall w \in x : w \in negative\}|$                          | 12    |
+| $\phi(x)_3$ | $$\begin{cases} 1 & \text{if "lamar"} \in \text{x} \\ 0 & \text{otherwise} \end{cases}$$                          | 1 |
+
+Now that the input space $\mathcal{X}$, feature extractor $\phi:\mathcal{X}\to \mathbb{R}^3$,
+and output space $\mathcal{Y}=\{-1, 1\}$ is defined, the goal is to select some
+function $f: \mathcal{X} \to \mathcal{Y}$.
+
 **Naive Bayes**
 
-**Logistic ~~Regression~~ Classification**
+**Logistic Regression**
 
-When the output space $\mathcal{Y}=\{-1, 1\}$ is a **binary** encoding of positive/negative
-outcomes, the distribution used for the **discriminative** model $p(y|\mathbf{x}; \theta)$ is $Ber(p)$.
-That is,
+The logistic regression model is a **discriminative**  $p(Y=c|\mathbf{X}=\mathbf{x}; \theta)\sim Ber(p)$
+which assumes that the parameter $p$ is affine. That is,
 $$
 \begin{aligned}
-&p(Y=1|\mathbf{X}=\mathbf{x}) := \sigma(w^{\mathsf{T}}\mathbf{x})\\
-\implies &p(Y=-1|\mathbf{X}=\mathbf{x}) = 1 - \sigma(w^{\mathsf{T}}\mathbf{x}) \\
+&p(Y=1|\mathbf{X}=\mathbf{x}) := \sigma(w^{\mathsf{T}}\phi(x))\\
+\implies &p(Y=-1|\mathbf{X}=\mathbf{x}) = 1 - \sigma(w^{\mathsf{T}}\phi(x)) \\
 \end{aligned}
 $$
 
-where $p=p(Y=1|\mathbf{X}=\mathbf{x})$ and $\sigma: \mathbb{R} \to [0,1]$, $\sigma := \frac{1}{1+\exp(-z)}$.
-The closed form *continuous* and *differentiable* mass function for $Ber(p)$ whose parameter $p=\sigma(w^{\mathsf{T}}\mathbf{x})$
+where $\sigma: \mathbb{R} \to [0,1]$, $\sigma := \frac{1}{1+\exp(-z)}$.
+The closed form *continuous* and *differentiable* mass function $Ber(p)$ whose parameter $p=\sigma(w^{\mathsf{T}}\mathbf{x})$
 needs to be estimated from the data $D=\{(\mathbf{x}^{(i)}, \mathbf{y}^{(i)}): (\mathbf{x}^{(i)}, \mathbf{y}^{(i)})\overset{\text{iid}}{\sim} \mathcal{X} \times \mathcal{Y} \}_{i=0}^{n}$ is then
 
 $$
 \begin{aligned}
 p(Y=c|\mathbf{X}=\mathbf{x}) &= p^c(1-p)^{1-c} \\
-                             &= \sigma(w^{\mathsf{T}}\mathbf{x})^c(1-\sigma(w^{\mathsf{T}}\mathbf{x}))^{1-c}
+                             &= \sigma[w^{\mathsf{T}}\phi(x)]^c[1-\sigma[w^{\mathsf{T}}\phi(x)]]^{1-c}
 \end{aligned}
 $$
 
-Before moving on to the estimation of parameter $p$, take a moment to convince
-yourself what the assumption $\sigma(w^{\mathsf{T}}\mathbf{x})$ is *really* doing.
+todo: why it's called logit. log odds.
 
-*Multinomial Classification*
+parameter estimation of weights and bias.
 
-**Linear Regression**
+**Multinomial Logistic Regression**
 
 ### Deep Neural Networks (DNNs)
 
----
+| Feature                                                                                     | Dimension             | Value     |
+|-----------------|-----------------------|------------------|
+| $|\{ \forall w \in x : w \in positive\}|$                                                                    | $\phi(x)_1$                              | 12   |
+| $|\{ \forall w \in x : w \in negative\}|$                                                                    | $\phi(x)_2$                          | 11    |
+| $$\begin{cases} 1 & \text{if "lamar"} \in \text{x} \\ 0 & \text{otherwise} \end{cases}$$              | $\phi(x)_3$                          | 1 |
 
-## Energy Perspective: Parameterization, Learning, Inference.
+which apriori seems difficult to learn a useful mapping for, given that the
+first and second dimension of the feature representation which respectively encode
+positive/negative sentiment are roughly tied. For instance, what is the feature
+extractor that maps the following set of lyrics (with subtle insinuations)
+into a *useful* feature representation for a sentiment classifier?
+
+```
+A country girl that love Hollywood
+Mama used to cook red beans and rice
+Now it's Denny's, 4 in the morning, spoil your appetite
+Liquor pouring and niggas swarming your section with erection
+```
+
+The short answer is that it's difficult because the concept and negative sentiment
+becomes apparent after reading the entire paragraph rather than any specific word.
+This is the motivation for representation learning.
+
+<!-- ## Energy Perspective: Parameterization, Learning, Inference.
 The energy perspective to machine learning not only provides a unifying
 foundation, but also relates the discipline and it's toolbox to that of the one
 used by physicists dating back to the 19th century, which is
@@ -158,4 +244,4 @@ the future.
 
 TODO
 - learning (backprop. sgd) of $\theta$
-- parameterization (networks) of $e$
+- parameterization (networks) of $e$ -->

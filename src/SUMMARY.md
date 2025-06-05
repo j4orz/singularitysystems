@@ -23,7 +23,7 @@
 # Appendix and Bibliography
 
 <!-- [Mathematics](./apa.md) -->
-[A. Mathematics](./apa.md)
-[B. Scalar Compilers and Processors](./apb.md)
+[A. Posteriors and Parameters](./apa.md)
+[B. Compilers and Processors](./apb.md)
 
 [Bibliography](./bib.md)
