@@ -7,15 +7,15 @@
 # Singularity
 <!-- - [Inference](./ch2.md) -->
 - [Prediction](./ch2.md)
-- [Generation]()
-- [Discovery]()
+- [Generation](./ch3.md)
+<!-- - [Discovery (SS 2.0)]() -->
 - [Action]()
 
 ---
 
 # Systems
-- [Tensor Interpreters](./ch5.md)
-- [Vector Processors]()
+- [Interpreters](./ch5.md)
+- [Parallel Processors]()
 - [Tensor Compilers]()
 
 ---
@@ -24,6 +24,6 @@
 
 <!-- [Mathematics](./apa.md) -->
 [A. Posteriors and Parameters](./apa.md)
-[B. Compilers and Processors](./apb.md)
+[B. Compilers and Chips](./apb.md)
 
 [Bibliography](./bib.md)

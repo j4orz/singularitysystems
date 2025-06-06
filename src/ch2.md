@@ -8,9 +8,9 @@
     - [Support Vector Machines (SVMs)]()
     - [Gaussian Processes (GPs)]()
     - [Bayesian Neural Networks (BNNs)]()
-- [1.2 Parametric Models with Parameter Estimation]()
+- [1.2 Parametric Models with Parameter Estimation](#12-parametric-models-with-parameter-estimation)
     - [Generalized Linear Models (GLMs)](#generalized-linear-models-glms)
-    - [Deep Neural Networks (DNNs)](#deep-neural-networks)
+    - [Deep Neural Networks (DNNs)](#deep-neural-networks-dnns)
 
 # 1.0 Prediction Overview
 The primary goal of machine learning is to leverage patterns from stochastic
@@ -153,29 +153,54 @@ function $f: \mathcal{X} \to \mathcal{Y}$.
 
 **Logistic Regression**
 
-The logistic regression model is a **discriminative**  $p(Y=c|\mathbf{X}=\mathbf{x}; \theta)\sim Ber(p)$
+The logistic regression model is a **discriminative**  $p(Y=y|\mathbf{X}=\mathbf{x}; \theta)\sim Ber(p)$
 which assumes that the parameter $p$ is affine. That is,
 $$
 \begin{aligned}
-&p(Y=1|\mathbf{X}=\mathbf{x}) := \sigma(w^{\mathsf{T}}\phi(x))\\
-\implies &p(Y=-1|\mathbf{X}=\mathbf{x}) = 1 - \sigma(w^{\mathsf{T}}\phi(x)) \\
+&p(Y=1|\mathbf{X}=\mathbf{x}) := \sigma(\mathbf{w}^{\mathsf{T}}\phi(x))
+&& \text{[$\phi(x)_0 = 1$]}\\
+\implies &p(Y=-1|\mathbf{X}=\mathbf{x}) = 1 - \sigma(\mathbf{w}^{\mathsf{T}}\phi(x)) \\
 \end{aligned}
 $$
 
 where $\sigma: \mathbb{R} \to [0,1]$, $\sigma := \frac{1}{1+\exp(-z)}$.
-The closed form *continuous* and *differentiable* mass function $Ber(p)$ whose parameter $p=\sigma(w^{\mathsf{T}}\mathbf{x})$
-needs to be estimated from the data $D=\{(\mathbf{x}^{(i)}, \mathbf{y}^{(i)}): (\mathbf{x}^{(i)}, \mathbf{y}^{(i)})\overset{\text{iid}}{\sim} \mathcal{X} \times \mathcal{Y} \}_{i=0}^{n}$ is then
-
+The closed form *continuous* and *differentiable* mass function is then
 $$
 \begin{aligned}
-p(Y=c|\mathbf{X}=\mathbf{x}) &= p^c(1-p)^{1-c} \\
-                             &= \sigma[w^{\mathsf{T}}\phi(x)]^c[1-\sigma[w^{\mathsf{T}}\phi(x)]]^{1-c}
+p(Y=c|\mathbf{X}=\mathbf{x}) &= Ber(p) \\
+                             &= p^y(1-p)^{1-y} \\
+                             &= \sigma(\mathbf{w}^{\mathsf{T}}\phi(x))^y(1-\sigma(\mathbf{w}^{\mathsf{T}}\phi(x)))^{1-y}
 \end{aligned}
 $$
 
-todo: why it's called logit. log odds.
+whose parameter $w$ needs to be estimated from the data $D=\{(\mathbf{x}^{(i)}, \mathbf{y}^{(i)}): (\mathbf{x}^{(i)}, \mathbf{y}^{(i)})\overset{\text{iid}}{\sim} \mathcal{X} \times \mathcal{Y} \}_{i=0}^{n}$.
+This is done by using the negatve log likelihood $-\log p(y|\mathbf{x})$ as the loss function $\mathcal{L}$:
 
-parameter estimation of weights and bias.
+$$
+\begin{aligned}
+\hat{\mathbf{w}}_{MLE} &\in \operatorname{argmin} \mathcal{L(\mathbf{w})} \\
+                          &= \operatorname{argmin} - \sum_{i=1}^{n} \log \sigma(\mathbf{w}^{\mathsf{T}}\phi(x^{(i)}))^{y^{(i)}}(1-\sigma(\mathbf{w}^{\mathsf{T}}\phi(x^{(i)})))^{1-y} \\
+                          &= \operatorname{argmin} - \sum_{i=1}^{n} y^{(i)}\log \sigma(\mathbf{w}^{\mathsf{T}}\phi(x^{(i)})) + (1-y^{(i)})\log (1-\sigma[\mathbf{w}^{\mathsf{T}}\phi(x^{(i)})]) \\
+\end{aligned}
+$$
+
+```
+==> θ̂ ∈ argmin -Σlog[σ(wᵀx)^y [1-σ(wᵀx)]^(1-y)] [by def]
+      = argmin ylogσ(wᵀx) - (1-y)log[1-σ(wᵀx)]
+==> θ^(t+1) := θ^t - α∇[ ylogσ(wᵀx) - (1-y)log[1-σ(wᵀx)] ]
+
+    ∂ℒ/∂wi = ∂/wi [ ylogσ(wᵀx) - (1-y)log[1-σ(wᵀx)] ]
+            = - ∂/wi[ylogσ(wᵀx)] + ∂/∂wi[(1-y)log[1-σ(wᵀx)]] [∂ linear]
+            = -y/σ(wᵀx)*∂/wi[σ(wᵀx)] + -(1-y)/[1-σ(wᵀx)]*∂/∂wi[1-σ(wᵀx)] [chain rule]
+            = ∂/wi[σ(wᵀx)] * -[y/σ(wᵀx) - (1-y)/[1-σ(wᵀx)]]
+            = TODO: ...
+            = [σ(wᵀx)-y]xi
+```
+
+but since |θ| where θ={w,b} are reaching the billions and trillions, deriving the gradient of the loss function with respect to weights and biases becomes intractable. So in part 2 and part 3 we will add autodifferentiation
+
+todo: why it's cross entropy. - [ylogp + (1-y)log(1-p)]
+todo: why it's called logit. log odds.
 
 **Multinomial Logistic Regression**
 

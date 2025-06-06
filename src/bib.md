@@ -32,7 +32,7 @@ Grover, A. (2018). CS236 Deep Generative Models Course Notes. Github.io. [https:
 
 Hardt, M., & Recht, B. (2022). Patterns, Predictions, and Actions: Foundations of Machine Learning. Princeton University Press. [https://mlstory.org/](https://mlstory.org/)
 
-Kirk, D., & Wen-Mei Hwu. (2022). Programming Massively Parallel Processors: a Hands-on Approach. Morgan Kaufmann Elsevier
+Kirk, D., & Wen-Mei Hwu. (2022). Programming Massively Parallel Processdors: a Hands-on Approach. Morgan Kaufmann Elsevier
 
 Jurafsky, D., & Martin, J. H. (2014). Speech and Language Processing: an Introduction to Natural Language processing, Computational linguistics, and Speech Recognition. Dorling Kindersley Pvt, Ltd. [https://web.stanford.edu/~jurafsky/slp3/ed3book.pdfKang](https://web.stanford.edu/~jurafsky/slp3/ed3book.pdfKang)
 

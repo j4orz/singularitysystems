@@ -7,22 +7,29 @@ By the end of the appendix you should be comfortable with state of the art open
 source models such as [llama](https://arxiv.org/abs/2407.21783) and [r1](https://arxiv.org/abs/2501.12948). -->
 
 **Contents**
-- [A.1 Mathematics for Posterior Updates](#probability-theory)
+- [A.1 Posterior Updates](#probability-theory)
     - [Probability Theory]()
         - [Probability Space: Measurable Space + Measure](#probability-space)
         - [Discrete Random Variables: $Bin(n,p)$, $Poi(\lambda)$, $Geo(p)$]()
         - [Continuous Random Variables: $Uni(\alpha,\beta)$, $Exp(\lambda)$, $Nor(\mu, \sigma^2)$]()
         - [Joint Random Variables: Product Rule, Sum Rule, Bayes' Rule](#rulez-rule-product-rule-sum-rule-bayes-rule)
     - [Linear Algebra]()
-- [A.2 Mathematics for Parameter Estimation](#statistics)
+- [A.2 Parameter Estimation](#statistics)
     - [Statistics]()
         - [Maximum Likelihood Estimation (MLE)](#maximum-likelihood-estimation-mle)
         - [Maximum a Posterior Estimation (MAP)](#maximum-a-posterior-estimation-map)
         - [Empirical Risk Minimization (ERM)](#empirical-risk-estimation-erm)
-    - [Matrix Calculus]()
-- [Decision Theory](#decision-theory)
+    - [Matrix Calculus](#matrix-calculus)
+        - [Gradients](#gradients)
+        - [Jacobians](#jacobians)
+        - [Automatic Diffrentiation](#automatic-differentiation)
+    - [Optimization](#optimization)
+        - [Gradient Descent]()
+        - [Stochastic Gradient Descent]()
+        - [Adam]()
+        - [Muon]()
 
-# A.1 Mathematics for Posterior Updates
+# A.1 Posterior Updates
 ## Probability Theory
 
 By default, mathematical reasoning is understood to be deterministic where
@@ -250,7 +257,7 @@ def bayes(joint: Float[Array, "dx dy"]) -> Float[Array, "dx dy"]:
     return prior, likelihood, evidence, posterior
 ```
 
-# A.2 Mathematics for Parameter Estimation
+# A.2 Parameter Estimation
 ## Statistics
 In probabilistic models distributions of latent hypotheses are usually unknown
 and their posteriors are inferred with bayes rule by taking the product of the
@@ -392,93 +399,53 @@ $$
 
 ### Maximum a Posterior Estimation (MAP)
 
-## Decision Theory
-## Linear Algebra
 ## Matrix Calculus
-We have built an abstraction for the multidimensional array, which makes the
-current framework more or less on par with the capabilities of numpy. But in
-order to train neural networks we need to recover the most likely parameters
-that characterize the underlying generating distribution:
-```
-    θ̂ ∈ argmin ℒ(Θ)
-      = argmin -P(y1|x1,...yn|xn;Θ)
-      = argmin -ΠP(y^i|x^i;Θ) [assuming (X^i,Y^i)~iid]
-      = argmin -logΠP(y^i|x^i;Θ) [log monotonicity]
-      = argmin -ΣlogP(y^i|x^i;Θ) [log laws]
+Recall that for some scalar function $f: \mathbb{R} \to \mathbb{R}$ that the
+derivative is usually defined as $\frac{df}{dx} = f'(x)$ where the **derivative**
+$f'(x)$ is the **ratio** between the **differentials** (**inifinitesmal differences**)
+of input $dx$ and output $df$. While $/: \mathbb{R} \to \mathbb{R}$ is defined
+on $\mathbb{R}$, this is not always the case for higher dimensional euclidean
+spaces.
 
-where argmin is implemented iteratively via gradient descent:
-    θ^(t+1) := θ^t - α∇ℒ(Θ)
-             = θ^t - α∇-ΣlogP(y^i|x^i;Θ)
+Moreover, the problem with the formulation of derivatives as $\frac{df}{dx}$ is
+not limited to denotational semantic lawyering — there's also a problem with the
+derivative **rules** themselves. Consider the function
+$f: \mathbb{R}^{n \times n} \to \mathbb{R}^{n \times n}$, $f(\mathbf{X}) := \mathbf{X}^2$
+which squares a matrix. The power rule of scalar functions does not generalize here,
+because $f'(x) \neq 2\mathbf{X}$.
 
-and so in the case of binary classification with logistic regression:
-    P: ℝ^d -> [0,1]
-    P(y^i|x^i;θ={w,b}) := ŷ^y (1-ŷ)^(1-y) = σ(wᵀx)^y [1-σ(wᵀx)]^(1-y)
-==> θ̂ ∈ argmin -Σlog[σ(wᵀx)^y [1-σ(wᵀx)]^(1-y)] [by def]
-      = argmin ylogσ(wᵀx) - (1-y)log[1-σ(wᵀx)]
-==> θ^(t+1) := θ^t - α∇[ ylogσ(wᵀx) - (1-y)log[1-σ(wᵀx)] ]
+Defining $f'(x)$ as $f'(x) = \frac{df}{dx}$ does not generalize. Instead, the
+correct approach is to define the **derivative-as-linearization** which defines
+the derivative as the linear operator you apply to a change in output to receive
+a change in output. That is, $df = f'(x)dx$. This formulation of the derivative
+generalizes **scalar** and **vector** differential calculus over
+$\mathbb{R}$ and $\mathbb{R}^n$ into higher dimensional vector spaces for
+**matrix** and **tensor** calculus over $\mathbb{R}^{n\times m}$ and
+$\mathbb{R}^{d_0 \times d_1 \cdots \times d_n}$. In essence, linearization
+is locally approximating complex surfaces in vector spaces $\mathcal{V}$
+with **linear operators** $L$ so that $\Delta \text{out} = L[\Delta\text{in}]$.
 
-    ∂ℒ/∂wi = ∂/wi [ ylogσ(wᵀx) - (1-y)log[1-σ(wᵀx)] ]
-            = - ∂/wi[ylogσ(wᵀx)] + ∂/∂wi[(1-y)log[1-σ(wᵀx)]] [∂ linear]
-            = -y/σ(wᵀx)*∂/wi[σ(wᵀx)] + -(1-y)/[1-σ(wᵀx)]*∂/∂wi[1-σ(wᵀx)] [chain rule]
-            = ∂/wi[σ(wᵀx)] * -[y/σ(wᵀx) - (1-y)/[1-σ(wᵀx)]]
-            = TODO: ...
-            = [σ(wᵀx)-y]xi
+numerical example.
 
-and in the case of multiclass classification with softmax regression:
-    P: ℝ^d -> [0,1]^k
-    P(y^i|x^i) = softmax(Wx), where W ∈ ℝ^{kxd}, x ∈ ℝ^d : x_0 = 1
-==> θ̂ ∈ argmin -Σlog[softmax(Wx)] [by def]
-==> θ^(t+1) := θ^t - α∇[ -Σlog[softmax(Wx)] ]
+### Gradients
 
-and in the case of multiclass classification with neural networks:
-    P: ℝ^d -> [0,1]^k
-    P(x;θ={w,b}) := (softmax ◦ W_L ◦ (φ ◦ W_{L-1}) ◦ ... ◦ (φ ◦ W_1))(x)
-==> θ̂ ∈ argmin -Σlog[(softmax ◦ W_L ◦ (φ ◦ W_{L-1}) ◦ ... ◦ (φ ◦ W_1))(x)] [by def]
-==> θ^(t+1) := θ^t - α∇[-Σlog[(softmax ◦ W_L ◦ (φ ◦ W_{L-1}) ◦ ... ◦ (φ ◦ W_1))(x)]]
-```
-
-but since |θ| where θ={w,b} are reaching the billions and trillions, deriving
-the gradient of the loss function with respect to weights and biases becomes
-intractable. So in part 2 and part 3 we will add autodifferentiation and
-gradient descent support to our tensor library enabling the training of deep
-neural networks where deriving the gradient and optimizing the network is
-abstracted for the user with a loss.backward() and an optim.step(). The framework
-will be able to interpret the following training loop for the FFN from above
+### Jacobians
 
 
-2a — Derivative: approximation via local linearization
-  2b — Derivative rules: backward methods
-  2c — Automatic differentiation: calculus on computational graph
-  2d — Advanced AD: jacobian-vector and vector-jacobian products
-  2e — Gradient descent: non-convex optimization
+### Automatic Differentiation
+as opposed to symbolic or numerical.
 
-2a — Derivative: approximation via local linearization
-------------------------------------------------------
-The first place to start is to clarify and disambiguate the notion of a derivative
-in order to generalize the denotation we use for higher dimensions to hold a more
-precise semantics. At the end of part 2a you will have a clear understanding
-why the gradient and jacobian are defined the way they are, and how what most
-people refer to as "gradients" with pytorch are really jacobians.
+## Optimization
 
-By redefining the derivative as a linear operator L defined on some vector space
-V that you apply to a change in input to obtain a change in output (sometimes
-referred to as the Frechét derivative), it becomes very clear why the gradient
-and jacobian are defined the way they are. Clarity that is not achievable when
-defining them by fiat. (i.e. "let's *just* rearrange the partials in a vector/matrix").
+### Gradient Descent
 
-Let's begin by recalling that for some f: ℝ -> ℝ the difference of a function at
-a point x and x+δx is f(x+δx)-f(x) = δf which can be approximated by f'(x)δx plus
-some error terms. That is,
+### Stochastic Gradient Descent
 
-```
-    f(x+δx)-f(x) = δf
-                 = f'(x)δx + o(δx)
-                 ≈ f'(x)δx
+### Adam
 
-and if we take the difference to be an infinitesimal then it becomes a differential
-    f(x+dx)-f(x) = df
-                 = f'(x)dx
-```
+### Muon
+
+
 
 and more generally we define the derivative *as* the linear operator L on vector
 space V which you apply to a change in input in order to obtain the change in
