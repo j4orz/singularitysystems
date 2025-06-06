@@ -14,7 +14,7 @@
 ---
 
 # Systems
-- [Interpreters](./ch5.md)
+- [Tensor Interpreters](./ch5.md)
 - [Parallel Processors]()
 - [Tensor Compilers]()
 

@@ -20,9 +20,8 @@ source models such as [llama](https://arxiv.org/abs/2407.21783) and [r1](https:/
         - [Maximum a Posterior Estimation (MAP)](#maximum-a-posterior-estimation-map)
         - [Empirical Risk Minimization (ERM)](#empirical-risk-estimation-erm)
     - [Matrix Calculus](#matrix-calculus)
-        - [Gradients](#gradients)
-        - [Jacobians](#jacobians)
-        - [Automatic Diffrentiation](#automatic-differentiation)
+        - [Derivatives, Gradients, and Jacobians](#derivatives-gradients-and-jacobians)
+        - [Automatic Diffrentiation: Sum Rule, Product Rule, Chain Rule](#automatic-differentiation)
     - [Optimization](#optimization)
         - [Gradient Descent]()
         - [Stochastic Gradient Descent]()
@@ -414,8 +413,8 @@ $f: \mathbb{R}^{n \times n} \to \mathbb{R}^{n \times n}$, $f(\mathbf{X}) := \mat
 which squares a matrix. The power rule of scalar functions does not generalize here,
 because $f'(x) \neq 2\mathbf{X}$.
 
-Defining $f'(x)$ as $f'(x) = \frac{df}{dx}$ does not generalize. Instead, the
-correct approach is to define the **derivative-as-linearization** which defines
+Defining $f'(x)$ as a ratio $f'(x) = \frac{df}{dx}$ does not generalize. Instead, the
+correct approach is to define the derivative as **linearization** which defines
 the derivative as the linear operator you apply to a change in output to receive
 a change in output. That is, $df = f'(x)dx$. This formulation of the derivative
 generalizes **scalar** and **vector** differential calculus over
@@ -423,14 +422,21 @@ $\mathbb{R}$ and $\mathbb{R}^n$ into higher dimensional vector spaces for
 **matrix** and **tensor** calculus over $\mathbb{R}^{n\times m}$ and
 $\mathbb{R}^{d_0 \times d_1 \cdots \times d_n}$. In essence, linearization
 is locally approximating complex surfaces in vector spaces $\mathcal{V}$
-with **linear operators** $L$ so that $\Delta \text{out} = L[\Delta\text{in}]$.
+(more specifically, **Banach spaces** equipped with norm $||x||$) with
+**linear operators** $L: \mathcal{V} \to \mathcal{V}$ ($L[v_1+v_2] = L[v_1] + L[v_2]$) so that $\Delta \text{out} = L[\Delta\text{in}]$.
+
+### Derivatives, Gradients, and Jacobians
+- for some function $f: \mathbb{R} \to \mathbb{R}$, $f'(x)$ is the term such that
+$df = f'(x)[dx]$. For this expression to be defined,
+$dx \in \mathbb{R} \land df \in \mathbb{R} \implies f'(x) \in \mathbb{R} \land [\bullet]:= *$ where $*: \mathbb{R} \to \mathbb{R}$.
+- for some function $f: \mathbb{R}^n \to \mathbb{R}$, $f'(\mathbf{x})$ is the term such that
+$df = f'(\mathbf{x})[d\mathbf{x}]$. For this expression to be defined,
+$d\mathbf{x} \in \mathbb{R}^n \land df \in \mathbb{R} \implies f'(\mathbf{x}) \in \mathbb{R}^n \land [\bullet]:= \cdot$ where $\cdot: \mathbb{R}^n, \mathbb{R}^n \to \mathbb{R}$. In this case, $f'(\mathbf{x})$ is often referred to as the **gradient** of $f$ and denoted by $\nabla f$ 
+- for some function $f: \mathbb{R}^n \to \mathbb{R}^m$, $f'(\mathbf{x})$ is the term such that
+$d\mathbf{f} = f'(\mathbf{x})[d\mathbf{x}]$. For this expression to be defined,
+$d\mathbf{x} \in \mathbb{R}^n \land d\mathbf{f} \in \mathbb{R}^m \implies f'(\mathbf{x}) \in \mathbb{R}^{m\times n} \land [\bullet]:= @$ where $@: \mathbb{R}^n \to \mathbb{R}^m$. In this case, $f'(\mathbf{x})$ is often referred to as the **jacobian** of $f$ and denoted by $Jf$ 
 
 numerical example.
-
-### Gradients
-
-### Jacobians
-
 
 ### Automatic Differentiation
 as opposed to symbolic or numerical.
