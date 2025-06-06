@@ -153,36 +153,45 @@ function $f: \mathcal{X} \to \mathcal{Y}$.
 
 **Logistic Regression**
 
-The logistic regression model is a **discriminative**  $p(Y=y|\mathbf{X}=\mathbf{x}; \theta)\sim Ber(p)$
-which assumes that the parameter $p$ is affine. That is,
+The logistic regression model is a **discriminative** $p(Y=y|\mathbf{X}=\mathbf{x}; \theta)\sim Ber(p)$
+with a **decision boundary** $k \in [0,1]$ that assumes that the parameter $p$ is affine. That is,
 $$
 \begin{aligned}
-&p(Y=1|\mathbf{X}=\mathbf{x}) := \sigma(\mathbf{w}^{\mathsf{T}}\phi(x))
-&& \text{[$\phi(x)_0 = 1$]}\\
-\implies &p(Y=-1|\mathbf{X}=\mathbf{x}) = 1 - \sigma(\mathbf{w}^{\mathsf{T}}\phi(x)) \\
+p(Y=1 \mid \mathbf X=\mathbf x) &:= \sigma\bigl(\mathbf w^{\mathsf T}\phi(x)\bigr) 
+                                 &&\text{[$\phi(x)_0 = 1$]} \\[4pt]
+\implies\; p(Y=-1 \mid \mathbf X=\mathbf x) &= 1-\sigma\bigl(\mathbf w^{\mathsf T}\phi(x)\bigr) \\[4pt]
+\implies\; p(Y=y \mid \mathbf X=\mathbf x)  &= \operatorname{Ber}(p) \\[4pt]
+                                           &= p^{y}(1-p)^{1-y} \\[4pt]
+                                           &= \sigma\bigl(\mathbf w^{\mathsf T}\phi(x)\bigr)^{y} \bigl[1-\sigma\bigl(\mathbf w^{\mathsf T}\phi(x)\bigr)\bigr]^{1-y}
+
 \end{aligned}
 $$
 
-where $\sigma: \mathbb{R} \to [0,1]$, $\sigma := \frac{1}{1+\exp(-z)}$.
-The closed form *continuous* and *differentiable* mass function is then
-$$
-\begin{aligned}
-p(Y=c|\mathbf{X}=\mathbf{x}) &= Ber(p) \\
-                             &= p^y(1-p)^{1-y} \\
-                             &= \sigma(\mathbf{w}^{\mathsf{T}}\phi(x))^y(1-\sigma(\mathbf{w}^{\mathsf{T}}\phi(x)))^{1-y}
-\end{aligned}
-$$
-
-whose parameter $w$ needs to be estimated from the data $D=\{(\mathbf{x}^{(i)}, \mathbf{y}^{(i)}): (\mathbf{x}^{(i)}, \mathbf{y}^{(i)})\overset{\text{iid}}{\sim} \mathcal{X} \times \mathcal{Y} \}_{i=0}^{n}$.
-This is done by using the negatve log likelihood $-\log p(y|\mathbf{x})$ as the loss function $\mathcal{L}$:
+where $\sigma: \mathbb{R} \to [0,1]$, $\sigma := \frac{1}{1+\exp(-z)}$. With the
+model now defined, the parameter $w$ now needs to be estimated from the data $D=\{(\mathbf{x}^{(i)}, \mathbf{y}^{(i)}): (\mathbf{x}^{(i)}, \mathbf{y}^{(i)})\overset{\text{iid}}{\sim} \mathcal{X} \times \mathcal{Y} \}_{i=0}^{n}$.
+This is done by using the negatve log likelihood as the loss function $\mathcal{L}: \mathbb{R}^n \to \mathbb{R}$
+to **minimize** so that $\mathcal{L(\mathbf{w})} := -\log \prod_{i=1}^{n} p(y^{(i)}|\mathbf{x}^{(i)})$
+is fixed with respect to the data $(x^{(i)}, y^{(i)})$
 
 $$
 \begin{aligned}
 \hat{\mathbf{w}}_{MLE} &\in \operatorname{argmin} \mathcal{L(\mathbf{w})} \\
-                          &= \operatorname{argmin} - \sum_{i=1}^{n} \log \sigma(\mathbf{w}^{\mathsf{T}}\phi(x^{(i)}))^{y^{(i)}}(1-\sigma(\mathbf{w}^{\mathsf{T}}\phi(x^{(i)})))^{1-y} \\
-                          &= \operatorname{argmin} - \sum_{i=1}^{n} y^{(i)}\log \sigma(\mathbf{w}^{\mathsf{T}}\phi(x^{(i)})) + (1-y^{(i)})\log (1-\sigma[\mathbf{w}^{\mathsf{T}}\phi(x^{(i)})]) \\
+                          &= \operatorname{argmin} - \sum_{i=1}^{n} \log \sigma\bigl(\mathbf w^{\mathsf T}\phi(x^{(i)})\bigr)^{y^{(i)}} \bigl[1-\sigma\bigl(\mathbf w^{\mathsf T}\phi(x^{(i)})\bigr)\bigr]^{1-y^{(i)}} \\
+                          &= \operatorname{argmin} - \sum_{i=1}^{n} y^{(i)}\log  \sigma\bigl(\mathbf w^{\mathsf T}\phi(x^{(i)})\bigr) + (1-y^{(i)})\log  \sigma\bigl(\mathbf w^{\mathsf T}\phi(x^{(i)})\bigr) \\
 \end{aligned}
 $$
+
+where $\operatorname{argmin}$ is implemented by first evaluating the **gradient**
+$\nabla \mathcal{L(\mathbf{w})}$ and then iteratively applying **gradient descent**
+where for time step $t$, $\mathbf{w}^{(t+1)} := \mathbf{w}^{t} -\alpha \nabla \mathcal{L(\mathbf{w})}$.
+First, evaluating the gradient gives:
+
+$$
+\begin{aligned}
+\nabla \mathcal{L(\mathbf{w})}
+\end{aligned}
+$$
+
 
 ```
 ==> θ̂ ∈ argmin -Σlog[σ(wᵀx)^y [1-σ(wᵀx)]^(1-y)] [by def]

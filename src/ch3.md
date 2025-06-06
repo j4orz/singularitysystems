@@ -1,19 +1,20 @@
-# 3. Generation
+# 2. Generation
 
 **Contents**
-- [3.1 Autoregressive Models]()
+- [2.1 Autoregressive Models]()
     - [Recurrent Neural Networks (RNNs)]()
     - [Long Short-Term Memory Networks (LSTMs)]()
-    - [Generative Pretrained Transformers (GPTs)]()
-    - [Generative Pretrained Transformers++]()
-- [3.2 Diffusion Models]()
+    - [Generative Pretrained Transformers (GPTs) with dense qwen/llama]()
+    - [Mixture of Experts (MoEs) with moe deepseek/olmoe]()
+<!-- - [3.2 Diffusion Models]()
+https://x.com/DrYangSong/status/1891314153580556468
+https://x.com/dpkingma/status/1863662926101434594
 - [3.3 Variational Autocenters]()
 - [3.4 Normalizing Flow Models]()
 - [3.5 Generative Adversarial Networks]()
-- [3.3 Energy Based Models]()
+- [3.3 Energy Based Models]() -->
 
-
-# 3.1 Autoregressive Models
+# 2.1 Autoregressive Models
 
 ## Feedforward Neural Networks (FNNs)
 
@@ -185,5 +186,5 @@ for _ in range(20): # n samples
 ## Generative Pretrained Transformers (GPTs++)
 
 - 1. manning ebook-2.torchtitan/torchtune-3.flexattention: llama1, llama2, llama3, llama4
-- nanogpt
+- modded nanogpt by keller. based on llm.c by karpathy.
 - beyondnanogpt

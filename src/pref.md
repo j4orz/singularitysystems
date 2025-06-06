@@ -9,6 +9,12 @@ covering both the machine learning `program` and the `evaluator/translator`.
 After successfully completing the course you will have the solid foundation to
 further specialize as a **research scientist**, a **kernel authorer**, or a **compiler engineer**.
 
+### Contributing
+The Singularity Systems [textbook](https://github.com/j4orz/singsys) and
+`picograd` [framework](https://github.com/j4orz/picograd) are both
+open source. For discussion join the `#singularity-systems` work group in
+the [GPU Mode Discord](https://discord.com/invite/Wu4pdW8QqM).
+
 ### Citation
 ```
 @article{j4orz2025singsys,

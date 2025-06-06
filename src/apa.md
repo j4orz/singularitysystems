@@ -26,6 +26,7 @@ source models such as [llama](https://arxiv.org/abs/2407.21783) and [r1](https:/
         - [Gradient Descent]()
         - [Stochastic Gradient Descent]()
         - [Adam]()
+        - [Shampoo]()
         - [Muon]()
 
 # A.1 Posterior Updates
@@ -448,6 +449,8 @@ as opposed to symbolic or numerical.
 ### Stochastic Gradient Descent
 
 ### Adam
+
+### Shampoo
 
 ### Muon
 
