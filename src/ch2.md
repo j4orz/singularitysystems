@@ -4,16 +4,16 @@
 
 **Contents**
 - [1.0 Prediction Overview](#overview)
-- [1.1 Non-parametric Models with Posterior Updates]()
+- [1.1 Non-parametric Inference with Posterior Updates]()
     - [Support Vector Machines (SVMs)]()
     - [Gaussian Processes (GPs)]()
     - [Bayesian Neural Networks (BNNs)]()
-- [1.2 Parametric Models with Parameter Estimation](#12-parametric-models-with-parameter-estimation)
+- [1.2 Parametric Inference with Parameter Estimation](#12-parametric-models-with-parameter-estimation)
     - [Generalized Linear Models (GLMs)](#generalized-linear-models-glms)
     - [Deep Neural Networks (DNNs)](#deep-neural-networks-dnns)
 
 # 1.0 Prediction Overview
-The primary goal of machine learning is to leverage patterns from stochastic
+The primary goal of supervised machine learning is to leverage patterns from stochastic
 phenomena to **predict** quantities of interest without enumerating an entire
 population. That is, to recover the underlying distribution from a random sample.
 This is often the case with machine learning, where given dataset
@@ -55,7 +55,7 @@ todo: murphy's global/local latent distinction (with cho EBMs?)
 
 ---
 
-# 1.1 Non-Parametric Models with Posterior Updates
+# 1.1 Non-Parametric Inference with Posterior Updates
 
 ## Gaussian Processes
 ## Bayesian Logistic Regression
@@ -63,14 +63,15 @@ todo: murphy's global/local latent distinction (with cho EBMs?)
 
 ---
 
-# 1.2 Parametric Models with Parameter Estimation
+# 1.2 Parametric Inference with Parameter Estimation
 
 ## Generalized Linear Models (GLMs)
-A natural inductive bias to make is that the input and output
-spaces $\mathcal{X}$, $\mathcal{Y}$ are **affinely** related. We will
-see these models are all exponential...
 
 ### Regression
+Recall that the supervised learning problem is considered regreession when
+$\mathcal{Y} = \mathbb{R}$.
+
+x: youtube views y: spotify streams
 
 
 ### Classification
@@ -154,21 +155,27 @@ function $f: \mathcal{X} \to \mathcal{Y}$.
 **Logistic Regression**
 
 The logistic regression model is a **discriminative** $p(Y=y|\mathbf{X}=\mathbf{x}; \theta)\sim Ber(p)$
-with a **decision boundary** $k \in [0,1]$ that assumes that the parameter $p$ is affine. That is,
+with a **decision boundary** $k \in [0,1]$ (in the case of $Ber(p)$, $k$ is usually set to $0.5$ so
+as to divide the mass by 2) that assumes that the parameter $p$ is affine with respect to $x$. That is,
 $$
 \begin{aligned}
-p(Y=1 \mid \mathbf X=\mathbf x) &:= \sigma\bigl(\mathbf w^{\mathsf T}\phi(x)\bigr) 
+p(Y=1 \mid \mathbf X=\mathbf x) &= p := \sigma\bigl(\mathbf w^{\mathsf T}\phi(x)\bigr) 
                                  &&\text{[$\phi(x)_0 = 1$]} \\[4pt]
-\implies\; p(Y=-1 \mid \mathbf X=\mathbf x) &= 1-\sigma\bigl(\mathbf w^{\mathsf T}\phi(x)\bigr) \\[4pt]
-\implies\; p(Y=y \mid \mathbf X=\mathbf x)  &= \operatorname{Ber}(p) \\[4pt]
-                                           &= p^{y}(1-p)^{1-y} \\[4pt]
+\implies\; p(Y=-1 \mid \mathbf X=\mathbf x) &= 1-p = 1-\sigma\bigl(\mathbf w^{\mathsf T}\phi(x)\bigr) \\[4pt]
+\implies\; p(Y=y \mid \mathbf X=\mathbf x) &= p^{y}(1-p)^{1-y} \\[4pt]
                                            &= \sigma\bigl(\mathbf w^{\mathsf T}\phi(x)\bigr)^{y} \bigl[1-\sigma\bigl(\mathbf w^{\mathsf T}\phi(x)\bigr)\bigr]^{1-y}
 
 \end{aligned}
 $$
 
-where $\sigma: \mathbb{R} \to [0,1]$, $\sigma := \frac{1}{1+\exp(-z)}$. With the
-model now defined, the parameter $w$ now needs to be estimated from the data $D=\{(\mathbf{x}^{(i)}, \mathbf{y}^{(i)}): (\mathbf{x}^{(i)}, \mathbf{y}^{(i)})\overset{\text{iid}}{\sim} \mathcal{X} \times \mathcal{Y} \}_{i=0}^{n}$.
+where $\sigma: \mathbb{R} \to [0,1]$ is a non-linear function
+$\sigma := \frac{1}{1+\exp(-z)}$, and where $\mathbf{w^{\mathsf T} \phi(x)}$ is
+referred to as the **logit** since the inverse $\sigma^{-1}:= \log \frac{p}{1-p}$
+is defined as the log odds ratio.
+
+todo: remark 2.1.1 in course notes
+
+With the model now defined, the parameter $w$ needs to be estimated from the data $D=\{(\mathbf{x}^{(i)}, \mathbf{y}^{(i)}): (\mathbf{x}^{(i)}, \mathbf{y}^{(i)})\overset{\text{iid}}{\sim} \mathcal{X} \times \mathcal{Y} \}_{i=0}^{n}$.
 This is done by using the negatve log likelihood as the loss function $\mathcal{L}: \mathbb{R}^n \to \mathbb{R}$
 to **minimize** so that $\mathcal{L(\mathbf{w})} := -\log \prod_{i=1}^{n} p(y^{(i)}|\mathbf{x}^{(i)})$
 is fixed with respect to the data $(x^{(i)}, y^{(i)})$
@@ -181,39 +188,56 @@ $$
 \end{aligned}
 $$
 
+where todo kl->ce.
+
 where $\operatorname{argmin}$ is implemented by first evaluating the **gradient**
 $\nabla \mathcal{L(\mathbf{w})}$ and then iteratively applying **gradient descent**
-where for time step $t$, $\mathbf{w}^{(t+1)} := \mathbf{w}^{t} -\alpha \nabla \mathcal{L(\mathbf{w})}$.
-First, evaluating the gradient gives:
+for each time step $t$, $\mathbf{w}^{(t+1)} := \mathbf{w}^{t} -\alpha \nabla \mathcal{L(\mathbf{w})}$.
+
+First, to evaluate the gradient, $\nabla \mathcal{L}(\mathbf{w})$,
+the negative log likelihood as loss function is simplified by defining
+$\hat{y}^{(i)} := \sigma(\mathbf w^{\mathsf T}\phi(x^{(i)}))$ so that
+$\nabla \mathcal{L}(\mathbf{w}) = - \sum_{i=1}^{n} y^{(i)}\log  \hat{y}^{(i)} + (1-y^{(i)})\log \hat{y}^{(i)}$.
+Note that $\hat{y}$ is not the target label but the probability of the target label.
+Then, since the derivative is linear with the derivative of the sum is the sum
+of the derivatives where
+$\frac{\partial}{\partial\mathbf{w}}\sum_{i=1}^{n}f(\mathbf{w}) = \sum_{i=1}^{n}\frac{\partial}{\partial\mathbf{w}}f(\mathbf{w})$, taking the derivative for a *single* example $i \in [1, n]$ where $\mathcal{L}(\mathbf{w}) = y\log  \hat{y} + (1-y)\log \hat{y}$ looks like
 
 $$
 \begin{aligned}
-\nabla \mathcal{L(\mathbf{w})}
+\frac{\partial \mathcal{L(\mathbf{w})}}{\partial\mathbf{w}_j} &= \frac{\partial\mathcal{L}(\mathbf{w})}{\partial\hat{y}} \frac{\partial \hat{y}}{\partial \mathbf{w}_j}
+&& \text{[by chain rule]}\\
+&= \frac{\partial\mathcal{L}(\mathbf{w})}{\partial\hat{y}} \hat{y}(1-\hat{y})\phi(x)_j
+&& \text{[$= \sigma(1-\sigma)$]}\\
+&= \bigl[\frac{y}{\hat{y}} - \frac{1-y}{1-\hat{y}}\bigr] \hat{y}(1-\hat{y})\phi(x)_j
+&& \text{[by $\frac{d\log(x)}{dx} = \frac{1}{x}$]}\\
+&= \bigl[\frac{y(1-\hat{y}) - \hat{y}(1-y) }{\hat{y}(1-\hat{y})}\bigr] \hat{y}(1-\hat{y})\phi(x)_j \\
+&= \bigl[y(1-\hat{y}) - \hat{y}(1-y)\bigr]\phi(x)_j\\
+&= \bigl(y -\hat{y})\phi(x)_j\\
 \end{aligned}
 $$
 
+and so the evaluating the derivative of all examples
+$\nabla \mathcal{L}(\mathbf{w}) = - \sum_{i=1}^{n} y^{(i)}\log  \hat{y}^{(i)} + (1-y^{(i)})\log \hat{y}^{(i)}$
+where $\hat{y}^{(i)} := \sigma(\mathbf w^{\mathsf T}\phi(x^{(i)}))$ looks like
 
-```
-==> θ̂ ∈ argmin -Σlog[σ(wᵀx)^y [1-σ(wᵀx)]^(1-y)] [by def]
-      = argmin ylogσ(wᵀx) - (1-y)log[1-σ(wᵀx)]
-==> θ^(t+1) := θ^t - α∇[ ylogσ(wᵀx) - (1-y)log[1-σ(wᵀx)] ]
+$$
+\begin{aligned}
+\frac{\partial \mathcal{L(\mathbf{w})}}{\partial\mathbf{w}_j} &= - \sum_{i=1}^{n} \frac{\partial}{\partial \mathbf{w}_j}\bigl[y^{(i)}\log  \hat{y}^{(i)} + (1-y^{(i)})\log \hat{y}^{(i)}\bigr] \\
+&= - \sum_{i=1}^{n} \bigl(y^{(i)} -\hat{y^{(i)}})\phi(x^{(i)})_j \\
+&= - \sum_{i=1}^{n} \bigl(y^{(i)} -\sigma(\mathbf w^{\mathsf T}\phi(x^{(i)}))\bigr]\phi(x^{(i)})_j \\
+\end{aligned}
+$$
 
-    ∂ℒ/∂wi = ∂/wi [ ylogσ(wᵀx) - (1-y)log[1-σ(wᵀx)] ]
-            = - ∂/wi[ylogσ(wᵀx)] + ∂/∂wi[(1-y)log[1-σ(wᵀx)]] [∂ linear]
-            = -y/σ(wᵀx)*∂/wi[σ(wᵀx)] + -(1-y)/[1-σ(wᵀx)]*∂/∂wi[1-σ(wᵀx)] [chain rule]
-            = ∂/wi[σ(wᵀx)] * -[y/σ(wᵀx) - (1-y)/[1-σ(wᵀx)]]
-            = TODO: ...
-            = [σ(wᵀx)-y]xi
-```
-
-but since |θ| where θ={w,b} are reaching the billions and trillions, deriving the gradient of the loss function with respect to weights and biases becomes intractable. So in part 2 and part 3 we will add autodifferentiation
-
-todo: why it's cross entropy. - [ylogp + (1-y)log(1-p)]
-todo: why it's called logit. log odds.
+Recall the second step in implementing $\operatorname{argmin}$ after taking
+$\nabla \mathcal{L}(\mathbf{w})$ is to then iteratively apply gradient descent
+for each time step $t$, $\mathbf{w}^{(t+1)} := \mathbf{w}^{t} -\alpha \nabla \mathcal{L(\mathbf{w})}$.
 
 **Multinomial Logistic Regression**
 
-### Deep Neural Networks (DNNs)
+### GLM: $\mathcal{N}(\mu, \sigma^2)$ and $Ber(p)$ is $Exp()$
+
+## Deep Neural Networks (DNNs)
 
 | Feature                                                                                     | Dimension             | Value     |
 |-----------------|-----------------------|------------------|

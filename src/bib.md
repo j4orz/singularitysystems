@@ -5,7 +5,7 @@
 - **Linear Algebra** Kang/Cho
 - **Matrix Calculus** Scardapane -> Bright/Edelman
 - **Probability Theory** Piech -> Chan -> Tao -> Varadhan
-- **Machine Learning** Hardt/Recht -> Jurafsky/Martin -> Ng/Ma -> MacKay -> Murphy -> Cho
+- **Machine Learning** Jurafsky/Martin -> Ng/Ma -> MacKay -> Murphy -> Cho
 - **Deep Learning** Cho -> Goodfellow -> Zhang et al -> Ermon/Grover
 - **Compilers** Siek -> Appel -> Cooper/Torczon -> Muchnick -> Rastello
 - **Computer Architecture** Kirk/Hwu
@@ -29,8 +29,6 @@ Cooper, K., & Torczon, L. (2022). Engineering a Compiler. Morgan Kaufmann
 Goodfellow, I., Bengio, Y., & Courville, A. (2016). Deep Learning. The MIT Press. [https://www.deeplearningbook.org/](https://www.deeplearningbook.org/)
 
 Grover, A. (2018). CS236 Deep Generative Models Course Notes. Github.io. [https://deepgenerativemodels.github.io/notes/](https://deepgenerativemodels.github.io/notes/)
-
-Hardt, M., & Recht, B. (2022). Patterns, Predictions, and Actions: Foundations of Machine Learning. Princeton University Press. [https://mlstory.org/](https://mlstory.org/)
 
 Kirk, D., & Wen-Mei Hwu. (2022). Programming Massively Parallel Processdors: a Hands-on Approach. Morgan Kaufmann Elsevier
 

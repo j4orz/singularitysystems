@@ -23,11 +23,9 @@ source models such as [llama](https://arxiv.org/abs/2407.21783) and [r1](https:/
         - [Derivatives, Gradients, and Jacobians](#derivatives-gradients-and-jacobians)
         - [Automatic Diffrentiation: Sum Rule, Product Rule, Chain Rule](#automatic-differentiation)
     - [Optimization](#optimization)
-        - [Gradient Descent]()
-        - [Stochastic Gradient Descent]()
-        - [Adam]()
-        - [Shampoo]()
-        - [Muon]()
+        - [First Order Methods: GD, SGD, Adam, Shampoo, Muon]()
+        - [Approximate Second Order Methods:]()
+        - [Second Order Methods: Newtons Method?, ...]()
 
 # A.1 Posterior Updates
 ## Probability Theory
