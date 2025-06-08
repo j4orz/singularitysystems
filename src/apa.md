@@ -14,7 +14,7 @@ source models such as [llama](https://arxiv.org/abs/2407.21783) and [r1](https:/
         - [Bayesian Linear Models]()
         - [Bayesian Neural Networks (BNNs)]()
     - [Parametric Inference with Parameter Estimation](#12-parametric-inference-with-parameter-estimation)
-        - [Generalized Linear Models (GLMs): Linear Regression, Logistic Regression](#generalized-linear-models-glms)
+        - [Generalized Linear Models (GLMs): Linear and Logistic Regression](#generalized-linear-models-glms-linear-and-logistic-regression)
         - [Deep Neural Networks (DNNs)](#deep-neural-networks-dnns)
 - [A.2 Posterior Updates](#probability-theory)
     - [Probability Theory]()
@@ -45,10 +45,9 @@ SAT.JUN.14
 229 PREDICTION
 - glms
 - dnns
-
-AP.A THEORY
-- loss functions need information theory (cross entropy. relative entropy. compression)
-- training needs gradient(matrix calculus) and argmin(optimization)
+- theory
+    - information theory loss functions: (cross entropy. relative entropy. compression)
+    - param optimization is argmin(optimization) of gradient(matrix calculus)
 
 
 
@@ -105,13 +104,11 @@ todo: murphy's global/local latent distinction (with cho EBMs?)
 
 # 1.2 Parametric Inference with Parameter Estimation
 
-## Generalized Linear Models (GLMs)
+## Generalized Linear Models (GLMs): Linear and Logistic Regression
 
 ### Linear Regression
 Recall that the supervised learning problem is considered **regression** when
-$\mathcal{Y} = \mathbb{R}$.
-
-spotify dataset
+$\mathcal{Y} = \mathbb{R}$. spotify dataset
 
 The **linear regression model** recovers $p(Y=y|\mathbf{X}=\mathbf{x};\mathbf{w})\sim \mathcal{N}(\mu, \sigma^2)$ that assumes $\mu$ is affine with respect to $x$. That is,
 
@@ -129,7 +126,40 @@ where error is unbiased. expectation(e) is 0.
 error is model (unmodelled features im x)/data(measurement) uncertainty,
 then the loss is the likelihood.
 
-parma est: 2.opt 1.gradloss
+With the model now defined, the parameter $\mathbf{w}$ needs to be estimated from the data $D=\{(\mathbf{x}^{(i)}, \mathbf{y}^{(i)}): (\mathbf{x}^{(i)}, \mathbf{y}^{(i)})\overset{\text{iid}}{\sim} \mathcal{X} \times \mathcal{Y} \}_{i=0}^{n}$.
+This is done by using the negatve log likelihood as the loss function $\mathcal{L}: \mathbb{R}^n \to \mathbb{R}$
+to **minimize** so that $\mathcal{L(\mathbf{w})} := -\log \prod_{i=1}^{n} p(y^{(i)}|\mathbf{x}^{(i)})$
+is fixed with respect to the data $(x^{(i)}, y^{(i)})$ and known variance $\sigma^2$:
+
+$$
+\begin{aligned}
+\hat{\mathbf{w}}_{MLE} &\in \operatorname*{argmin}_{\mathbf{w} \in \mathbf{W}} \mathcal{L(\mathbf{w})} \\
+                          &= \operatorname{argmin} - \sum_{i=1}^{n} \log [\frac{1}{\sqrt{2\pi\sigma^2}}\exp(\frac{[y^{(i)}-\mathbf{w}^{\mathsf T}\phi(x^{(i)})]^2}{2\sigma^2})] \\
+                          &= \operatorname{argmin} - \sum_{i=1}^{n} \log \frac{1}{\sqrt{2\pi\sigma^2}} + \frac{[y^{(i)}-\mathbf{w}^{\mathsf T}\phi(x^{(i)})]^2}{2\sigma^2} \\
+                          &= \operatorname{argmin} - \sum_{i=1}^{n} \frac{1}{2}[y^{(i)}-\mathbf{w}^{\mathsf T}\phi(x^{(i)})]^2
+                          && \text{[by min wrt $\mathbf{w}$]}\\
+\end{aligned}
+$$
+
+where $\operatorname{argmin}$ is implemented by first evaluating the **gradient**
+$\nabla \mathcal{L(\mathbf{w})}$ and then iteratively applying **gradient descent**
+for each time step $t$, $\mathbf{w}^{(t+1)} := \mathbf{w}^{t} -\alpha \nabla \mathcal{L(\mathbf{w})}$.
+
+First, evaluating the gradient $\nabla \mathcal{L}(\mathbf{w})$ looks like:
+
+$$
+\begin{aligned}
+\frac{\partial\mathcal{L}(\mathbf{w})}{\partial\mathbf{w}_j} &= - \frac{\partial}{\partial\mathbf{w}_j} \sum_{i=1}^{n} \frac{1}{2}[y^{(i)}-\mathbf{w}^{\mathsf T}\phi(x^{(i)})]^2 \\
+                                                             &= - \sum_{i=1}^{n} \frac{\partial}{\partial\mathbf{w}_j} \frac{1}{2}[y^{(i)}-\mathbf{w}^{\mathsf T}\phi(x^{(i)})]^2 \\
+                                                             &= - \sum_{i=1}^{n} [y^{(i)}-\mathbf{w}^{\mathsf T}\phi(x^{(i)})][-\phi(x^{(i)})_j]  \\
+\end{aligned}
+$$
+
+And so the swapping indices $j$ for the entire gradient gives
+$\nabla \mathcal{L}(\mathbf{w})=- \sum_{i=1}^{n} [y^{(i)}-\mathbf{w}^{\mathsf T}\phi(x^{(i)})][-\phi(x^{(i)})]$. Recall now that the second step in
+implementing $\operatorname{argmin}$ after taking
+$\nabla \mathcal{L}(\mathbf{w})$ is to then iteratively apply gradient descent
+for each time step $t$, $\mathbf{w}^{(t+1)} := \mathbf{w}^{t} -\alpha \nabla \mathcal{L(\mathbf{w})}$.
 
 
 ### Logistic Regression
@@ -231,7 +261,7 @@ $\sigma := \frac{1}{1+\exp(-z)}$, and where $\mathbf{w^{\mathsf T} \phi(x)}$ is
 referred to as the **logit** since the inverse $\sigma^{-1}:= \log \frac{p}{1-p}$
 is defined as the log odds ratio.
 
-With the model now defined, the parameter $w$ needs to be estimated from the data $D=\{(\mathbf{x}^{(i)}, \mathbf{y}^{(i)}): (\mathbf{x}^{(i)}, \mathbf{y}^{(i)})\overset{\text{iid}}{\sim} \mathcal{X} \times \mathcal{Y} \}_{i=0}^{n}$.
+With the model now defined, the parameter $\mathbf{w}$ needs to be estimated from the data $D=\{(\mathbf{x}^{(i)}, \mathbf{y}^{(i)}): (\mathbf{x}^{(i)}, \mathbf{y}^{(i)})\overset{\text{iid}}{\sim} \mathcal{X} \times \mathcal{Y} \}_{i=0}^{n}$.
 This is done by using the negatve log likelihood as the loss function $\mathcal{L}: \mathbb{R}^n \to \mathbb{R}$
 to **minimize** so that $\mathcal{L(\mathbf{w})} := -\log \prod_{i=1}^{n} p(y^{(i)}|\mathbf{x}^{(i)})$
 is fixed with respect to the data $(x^{(i)}, y^{(i)})$
