@@ -6,10 +6,9 @@
 
 # Singularity
 <!-- - [Inference](./ch2.md) -->
-- [Prediction](./ch2.md)
-- [Generation](./ch3.md)
+- [Pre-training: Generation](./ch3.md)
 <!-- - [Discovery (SS 2.0)]() -->
-- [Action]()
+- [Post-training: Action]()
 
 ---
 
@@ -23,7 +22,7 @@
 # Appendix and Bibliography
 
 <!-- [Mathematics](./apa.md) -->
-[A. Posteriors and Parameters](./apa.md)
+[A. Prediction, Posteriors, Parameters](./apa.md)
 [B. Compilers and Chips](./apb.md)
 
 [Bibliography](./bib.md)
