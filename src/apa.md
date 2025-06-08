@@ -14,9 +14,7 @@ source models such as [llama](https://arxiv.org/abs/2407.21783) and [r1](https:/
         - [Bayesian Linear Models]()
         - [Bayesian Neural Networks (BNNs)]()
     - [Parametric Inference with Parameter Estimation](#12-parametric-inference-with-parameter-estimation)
-        - [Generalized Linear Models (GLMs)](#generalized-linear-models-glms)
-            - [Linear Regression]()
-            - [Classification]()
+        - [Generalized Linear Models (GLMs): Linear Regression, Logistic Regression](#generalized-linear-models-glms)
         - [Deep Neural Networks (DNNs)](#deep-neural-networks-dnns)
 - [A.2 Posterior Updates](#probability-theory)
     - [Probability Theory]()
@@ -45,11 +43,10 @@ source models such as [llama](https://arxiv.org/abs/2407.21783) and [r1](https:/
 
 SAT.JUN.14
 229 PREDICTION
-- regression
-- naive bayes
 - glms
 - dnns
-AP.A
+
+AP.A THEORY
 - loss functions need information theory (cross entropy. relative entropy. compression)
 - training needs gradient(matrix calculus) and argmin(optimization)
 
@@ -110,21 +107,32 @@ todo: murphy's global/local latent distinction (with cho EBMs?)
 
 ## Generalized Linear Models (GLMs)
 
-### Regression
+### Linear Regression
 Recall that the supervised learning problem is considered **regression** when
 $\mathcal{Y} = \mathbb{R}$.
 
-x: youtube views y: spotify streams
+spotify dataset
 
-**Least Squares Linear Regression**
-The lienar regression model recovers $p(Y=y|\mathbf{X}=\mathbf{x};\mathbf{w})\sim \mathcal{N}(\mu, \sigma^2)$ that assumes $\mu$ is affine with respect to $x$. That is,
+The **linear regression model** recovers $p(Y=y|\mathbf{X}=\mathbf{x};\mathbf{w})\sim \mathcal{N}(\mu, \sigma^2)$ that assumes $\mu$ is affine with respect to $x$. That is,
 
-**Ridge regression**
+$$
+\begin{aligned}
+y^{(i)} :&= \mathbf w^{\mathsf T}\phi(x^{(i)}) + \epsilon^{(i)}
+&&\text{[where $\epsilon^{(i)} \sim \mathcal{N}(\mu=0, \sigma^2)$]} \\
+&\implies \epsilon^{(i)} = y^{(i)} - \mathbf{w}^{\mathsf T}\phi(x^{(i)}) \sim \mathcal{N}(\mu=0, \sigma^2) \\
+&\implies y^{(i)} \sim \mathcal{N}(\mathbf{w}^{\mathsf T}\phi(x^{(i)}), \sigma^2) \\
+&\implies p(y^{(i)}|x^{(i)}; \mathbf{w}) =  \frac{1}{\sqrt{2\pi\sigma^2}}\exp(\frac{[y^{(i)}-\mathbf{w}^{\mathsf T}\phi(x^{(i)})]^2}{2\sigma^2}) \\
+\end{aligned}
+$$
 
-**Lasso Regression**
+where error is unbiased. expectation(e) is 0.
+error is model (unmodelled features im x)/data(measurement) uncertainty,
+then the loss is the likelihood.
+
+parma est: 2.opt 1.gradloss
 
 
-### Classification
+### Logistic Regression
 Recall that the supervised learning problem is considered **classification**
 when $\mathcal{Y} \subseteq \mathbb{N}$. The simple case when the output space is
 $\mathcal{Y}=\{-1, 1\}$ is referred to as **binary classification**,
@@ -202,8 +210,6 @@ function $f: \mathcal{X} \to \mathcal{Y}$.
 
 todo: use regression. motivate the need for the range to be a p \in [0,1]
 
-**Naive Bayes**
-
 **Logistic Regression**
 
 The logistic regression model is a **discriminative** $p(Y=y|\mathbf{X}=\mathbf{x}; \theta)\sim Ber(p)$
@@ -280,7 +286,9 @@ $$
 \end{aligned}
 $$
 
-Recall the second step in implementing $\operatorname{argmin}$ after taking
+And so the swapping indices $j$ for the entire gradient gives
+$\nabla \mathcal{L}(\mathbf{w})=- \sum_{i=1}^{n} \bigl(y^{(i)} -\sigma(\mathbf w^{\mathsf T}\phi(x^{(i)}))\bigr]\phi(x^{(i)})$. Recall now that the second step in
+implementing $\operatorname{argmin}$ after taking
 $\nabla \mathcal{L}(\mathbf{w})$ is to then iteratively apply gradient descent
 for each time step $t$, $\mathbf{w}^{(t+1)} := \mathbf{w}^{t} -\alpha \nabla \mathcal{L(\mathbf{w})}$.
 
