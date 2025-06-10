@@ -9,6 +9,8 @@
 <!-- - [3.2 Diffusion Models]()
 https://x.com/DrYangSong/status/1891314153580556468
 https://x.com/dpkingma/status/1863662926101434594
+https://x.com/sirbayes/status/1773771737127428236
+https://diffusion.csail.mit.edu/
 - [3.3 Variational Autocenters]()
 - [3.4 Normalizing Flow Models]()
 - [3.5 Generative Adversarial Networks]()

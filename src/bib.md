@@ -8,13 +8,15 @@
 - **Machine Learning** Jurafsky/Martin -> Ng/Ma -> MacKay -> Murphy -> Cho
 - **Deep Learning** Cho -> Goodfellow -> Zhang et al -> Ermon/Grover
 - **Compilers** Siek -> Appel -> Cooper/Torczon -> Muchnick -> Rastello
-- **Computer Architecture** Kirk/Hwu
+- **Chips** Harris -> Hennessy ->Herlihy -> Kirk/Hwu
 
 ## References
 
 Aho, A. V., Lam, M. S., Ravi Sethi, & Ullman, J. D. (2015). Compilers : Principles, Techniques, and Tools. Pearson India Education Services
 
 Appel, A. W., & Ginsburg, M. (2004). Modern Compiler Implementation in C. Cambridge University Press.
+
+Bakhvalov, D. (2024). Performance Analysis and Tuning on Modern CPUs. Independently Published.
 
 Bright, P., Edelman, A., & Johnson, S. G. (2025). Matrix Calculus (for Machine Learning and Beyond). ArXiv.org. [https://arxiv.org/abs/2501.14787](https://arxiv.org/abs/2501.14787)
 
@@ -29,6 +31,12 @@ Cooper, K., & Torczon, L. (2022). Engineering a Compiler. Morgan Kaufmann
 Goodfellow, I., Bengio, Y., & Courville, A. (2016). Deep Learning. The MIT Press. [https://www.deeplearningbook.org/](https://www.deeplearningbook.org/)
 
 Grover, A. (2018). CS236 Deep Generative Models Course Notes. Github.io. [https://deepgenerativemodels.github.io/notes/](https://deepgenerativemodels.github.io/notes/)
+
+Harris, S. L., & Harris, D. (2021). Digital Design and Computer Architecture, RISC-V Edition. Morgan Kaufmann. [https://pages.hmc.edu/harris/ddca/](https://pages.hmc.edu/harris/ddca/)
+
+Hennessy, J. L., & Patterson, D. A. (2019). Computer Architecture: a Quantitative Approach. Morgan Kaufmann.
+
+Herlihy, M., Nir Shavit, Luchangco, V., & Spear, M. (2020). The Art of Multiprocessor Programming. Newnes.
 
 Kirk, D., & Wen-Mei Hwu. (2022). Programming Massively Parallel Processdors: a Hands-on Approach. Morgan Kaufmann Elsevier
 

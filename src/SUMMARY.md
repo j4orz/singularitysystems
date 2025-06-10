@@ -1,6 +1,6 @@
 [Singularity Systems: Zero to Hero](./pref.md)
 [Dedication](./dedi.md)
-[Overview](./sys-overview.md)
+[Overview](./over.md)
 
 ---
 
@@ -13,9 +13,10 @@
 ---
 
 # Systems
-- [Interpreters](./ch5.md)
-- [Processors]()
-- [Compilers]()
+- [Vector Processor]()
+- [Eager Interpreter](./ch5.md)
+- [Tensor Processor]()
+- [Graph Compiler]()
 
 ---
 
@@ -23,6 +24,6 @@
 
 <!-- [Mathematics](./apa.md) -->
 [A. Prediction, Posteriors, Parameters](./apa.md)
-[B. Compilers and Chips](./apb.md)
+[B. Computing, Chips, Compilers](./apb.md)
 
 [Bibliography](./bib.md)

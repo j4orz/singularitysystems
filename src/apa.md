@@ -43,12 +43,10 @@ source models such as [llama](https://arxiv.org/abs/2407.21783) and [r1](https:/
 
 SAT.JUN.14
 229 PREDICTION
-- glms
 - dnns
 - theory
-    - information theory loss functions: (cross entropy. relative entropy. compression)
-    - param optimization is argmin(optimization) of gradient(matrix calculus)
-
+    - posteriors: **information theory** loss functions: (cross entropy. relative entropy. compression)
+    - params: mle **stats**, param optimization is argmin(**optimization**) of gradient(**matrix calculus**)
 
 
 # A.1 Prediction
@@ -94,19 +92,19 @@ todo: murphy's global/local latent distinction (with cho EBMs?)
 
 ---
 
-# 1.1 Non-Parametric Inference with Posterior Updates
+## 1.1 Non-Parametric Inference with Posterior Updates
 
-## Gaussian Processes
-## Bayesian Logistic Regression
-## Bayesian Neural Networks
+### Gaussian Processes
+### Bayesian Logistic Regression
+### Bayesian Neural Networks
 
 ---
 
-# 1.2 Parametric Inference with Parameter Estimation
+## 1.2 Parametric Inference with Parameter Estimation
 
-## Generalized Linear Models (GLMs): Linear and Logistic Regression
+### Generalized Linear Models (GLMs): Linear and Logistic Regression
 
-### Linear Regression
+#### Linear Regression
 Recall that the supervised learning problem is considered **regression** when
 $\mathcal{Y} = \mathbb{R}$. spotify dataset
 
@@ -162,7 +160,7 @@ $\nabla \mathcal{L}(\mathbf{w})$ is to then iteratively apply gradient descent
 for each time step $t$, $\mathbf{w}^{(t+1)} := \mathbf{w}^{t} -\alpha \nabla \mathcal{L(\mathbf{w})}$.
 
 
-### Logistic Regression
+#### Logistic Regression
 Recall that the supervised learning problem is considered **classification**
 when $\mathcal{Y} \subseteq \mathbb{N}$. The simple case when the output space is
 $\mathcal{Y}=\{-1, 1\}$ is referred to as **binary classification**,
@@ -324,13 +322,13 @@ for each time step $t$, $\mathbf{w}^{(t+1)} := \mathbf{w}^{t} -\alpha \nabla \ma
 
 **Multinomial Logistic Regression**
 
-### GLM: $\mathcal{N}(\mu, \sigma^2)$ and $Ber(p)$ is $Exp()$
+#### GLM: $\mathcal{N}(\mu, \sigma^2)$ and $Ber(p)$ is $Exp()$
 sigmoid justification
 - nice derivative \frac{d\sigma}{d?} = \sigma(1-\sigma) (which helps with calculus -> optimization -> parameter estimation)
 - glms justify the choice of logistic/sigmoid non-linear squashing function 1/1+exp(-z).
 
 
-## Deep Neural Networks (DNNs)
+### Deep Neural Networks (DNNs)
 
 | Feature                                                                                     | Dimension             | Value     |
 |-----------------|-----------------------|------------------|
